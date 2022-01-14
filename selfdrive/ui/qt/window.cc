@@ -80,7 +80,10 @@ void MainWindow::closeSettings() {
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
-  if (event->type() == QEvent::MouseButtonPress || event->type() == QEvent::TouchBegin) {
+  const static QSet<QEvent::Type> evts({QEvent::MouseButtonPress, QEvent::MouseMove,
+                                 QEvent::TouchBegin, QEvent::TouchUpdate, QEvent::TouchEnd});
+
+  if (evts.contains(event->type())) {
     device.resetInteractiveTimout();
   }
 
