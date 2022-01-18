@@ -845,6 +845,7 @@ struct LongitudinalPlan @0xe00b5b3eba12876c {
   accels @32 :List(Float32);
   speeds @33 :List(Float32);
   jerks @34 :List(Float32);
+  solverExecutionTime @35 :Float32;  
 
   enum LongitudinalPlanSource {
     cruise @0;
@@ -906,9 +907,10 @@ struct LateralPlan @0xe1e9318e2ae8b51e {
   psis @26 :List(Float32);
   curvatures @27 :List(Float32);
   curvatureRates @28 :List(Float32);
+  solverExecutionTime @30 :Float32;  
   
-  autoLaneChangeEnabled @30 :Bool;
-  autoLaneChangeTimer @31 :Int8;
+  autoLaneChangeEnabled @31 :Bool;
+  autoLaneChangeTimer @32 :Int8;
 
   enum Desire {
     none @0;
