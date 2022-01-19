@@ -16,7 +16,7 @@ GearShifter = car.CarState.GearShifter
 EventName = car.CarEvent.EventName
 
 MAX_CTRL_SPEED = (V_CRUISE_MAX + 4) * CV.KPH_TO_MS
-ACCEL_MAX = 3.0
+ACCEL_MAX = 2.5
 ACCEL_MIN = -3.5
 
 
