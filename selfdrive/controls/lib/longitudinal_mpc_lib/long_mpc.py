@@ -45,7 +45,7 @@ CRUISE_GAP_BP = [1., 2., 3., 4.]
 CRUISE_GAP_V = [1.2, 1.5, 1.8, 2.1]
 
 AUTO_TR_BP = [0., 10.*CV.KPH_TO_MS, 70.*CV.KPH_TO_MS, 110.*CV.KPH_TO_MS]
-AUTO_TR_V = [1.1, 1.2, 1.7, 1.9]
+AUTO_TR_V = [1., 1.1, 1.5, 1.7]
 
 AUTO_TR_CRUISE_GAP = 4
 
