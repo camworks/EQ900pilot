@@ -24,8 +24,8 @@ class CarInterface(CarInterfaceBase):
 
     v_current_kph = current_speed * CV.MS_TO_KPH
 
-    gas_max_bp = [0., 10, 20, 30., 50., 70., 100, 130.]
-    gas_max_v = [CarControllerParams.ACCEL_MAX, 2., .9, .8, .7, .45,  .25,  .1]
+    gas_max_bp = [0., 15, 30., 50., 70., 100, 130.]
+    gas_max_v = [CarControllerParams.ACCEL_MAX, .9, .8, .7, .45,  .25,  .1]
 
     return CarControllerParams.ACCEL_MIN, interp(v_current_kph, gas_max_bp, gas_max_v)
 
@@ -67,12 +67,12 @@ class CarInterface(CarInterfaceBase):
     ret.longitudinalTuning.kpBP = [0., 10.*CV.KPH_TO_MS, 30.*CV.KPH_TO_MS, 70.*CV.KPH_TO_MS, 130.*CV.KPH_TO_MS]
     ret.longitudinalTuning.kpV = [1.0, 0.85, 0.65, 0.55, 0.35]
     ret.longitudinalTuning.kiBP = [0., 5. * CV.KPH_TO_MS, 20. * CV.KPH_TO_MS, 50. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
-    ret.longitudinalTuning.kiV = [0.1, 0.015, 0.03, 0.1, 0.06]
+    ret.longitudinalTuning.kiV = [0.05, 0.01, 0.03, 0.1, 0.02]
 
     ret.stopAccel = -2.0
     ret.stoppingDecelRate = 0.15  # brake_travel/s while trying to stop
-    ret.vEgoStopping = 0.8
-    ret.vEgoStarting = 0.3  # needs to be >= vEgoStopping to avoid state transition oscillation
+    ret.vEgoStopping = 0.9
+    ret.vEgoStarting = 0.2  # needs to be >= vEgoStopping to avoid state transition oscillation
 
     # genesis
     if candidate == CAR.GENESIS:
@@ -89,7 +89,7 @@ class CarInterface(CarInterfaceBase):
       ret.wheelbase = 3.01
       ret.centerToFront = ret.wheelbase * 0.4
     elif candidate == CAR.GENESIS_EQ900:
-      tire_stiffness_factor = .8
+      tire_stiffness_factor = .9
       ret.mass = 2120
       ret.wheelbase = 3.2
       ret.centerToFront = ret.wheelbase * 0.4
