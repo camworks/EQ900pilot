@@ -11,7 +11,7 @@ LongCtrlState = car.CarControl.Actuators.LongControlState
 
 # As per ISO 15622:2018 for all speeds
 ACCEL_MIN_ISO = -3.5  # m/s^2
-ACCEL_MAX_ISO = 2.5  # m/s^2
+ACCEL_MAX_ISO = 3.  # m/s^2
 
 
 def long_control_state_trans(CP, active, long_control_state, v_ego, v_target_future, v_pid,
