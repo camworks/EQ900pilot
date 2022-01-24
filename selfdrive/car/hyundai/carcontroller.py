@@ -66,6 +66,9 @@ class CarController():
 
     self.turning_indicator_alert = False
     self.lane_blink_on = False
+    self.last_blinker_frame = 0
+
+    self.scc_smoother = SccSmoother()
     self.active_hda = None
 
     param = Params()
@@ -78,13 +81,8 @@ class CarController():
     self.steeringwheel_haptic = param.get_bool('SteeringwheelHaptic')
 
 
-
-    self.scc_smoother = SccSmoother()
-    self.last_blinker_frame = 0
-
   def update(self, enabled, CS, frame, CC, actuators, pcm_cancel_cmd, visual_alert,
              left_lane, right_lane, left_lane_depart, right_lane_depart, set_speed, lead_visible, controls):
-
 
     # Steering Torque
     new_steer = int(round(actuators.steer * CarControllerParams.STEER_MAX))
@@ -112,14 +110,6 @@ class CarController():
       if not recent_blinker and self.scc_smoother.over_speed_limit:
         left_lane_depart = True
         self.last_blinker_frame = controls.sm.frame
-
-    if self.steeringwheel_haptic:
-      if self.scc_smoother.active_cam: # NDA가 카메라 인식후 차로를 깜빡이게 하기
-        if frame % 50 == 0:
-          self.lane_blink_on = not self.lane_blink_on
-        left_lane_warning = right_lane_warning = 1 # 1을 넣으면 핸들진동 기능과 함께 깜빡임이 된다.. 2는 차로 소리가 나온다.(계기판 동시) 3은 허드에서만 표시가 나온다..
-      else:
-        self.lane_blink_on = False # NDA가 카메라 인식후 차로를 깜빡이게 하기    
 
     sys_warning, sys_state, left_lane_warning, right_lane_warning = \
       process_hud_alert(enabled, self.car_fingerprint, visual_alert,
@@ -154,6 +144,14 @@ class CarController():
     self.prev_scc_cnt = CS.scc11["AliveCounterACC"]
 
     self.lkas11_cnt = (self.lkas11_cnt + 1) % 0x10
+
+    if self.steeringwheel_haptic:
+      if self.scc_smoother.active_cam:
+        if frame % 50 == 0:
+          self.lane_blink_on = not self.lane_blink_on
+        left_lane_warning = right_lane_warning = 1
+      else:
+        self.lane_blink_on = False
 
     can_sends = []
     can_sends.append(create_lkas11(self.packer, frame, self.car_fingerprint, apply_steer, lkas_active,
