@@ -42,7 +42,6 @@ def manager_init() -> None:
     ("CompletedTrainingVersion", "0"),
     ("HasAcceptedTerms", "0"),
     ("OpenpilotEnabledToggle", "1"),
-    ("CommunityFeaturesToggle", "1"),
     ("IsMetric", "1"),
 
     # HKG
@@ -149,7 +148,7 @@ def manager_thread() -> None:
   params = Params()
 
   ignore: List[str] = []
-  if params.get("DongleId", encoding='utf8') in (None, UNREGISTERED_DONGLE_ID):
+  if params.get("DongleId", encoding='utf8') == UNREGISTERED_DONGLE_ID:
     ignore += ["manage_athenad", "uploader"]
   if os.getenv("NOBOARD") is not None:
     ignore.append("pandad")
