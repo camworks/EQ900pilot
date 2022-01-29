@@ -81,7 +81,7 @@ class CarController():
     self.steeringwheel_haptic = param.get_bool('SteeringwheelHaptic')
 
 
-  def update(self, enabled, CS, frame, CC, actuators, pcm_cancel_cmd, visual_alert,
+  def update(self, c, enabled, CS, frame, CC, actuators, pcm_cancel_cmd, visual_alert,
              left_lane, right_lane, left_lane_depart, right_lane_depart, set_speed, lead_visible, controls):
 
     # Steering Torque
@@ -90,7 +90,7 @@ class CarController():
                                                 CarControllerParams)
 
     # disable if steer angle reach 90 deg, otherwise mdps fault in some models
-    lkas_active = enabled and not CS.out.steerWarning and abs(CS.out.steeringAngleDeg) < CS.CP.maxSteeringAngleDeg
+    lkas_active = c.active and not CS.out.steerWarning and abs(CS.out.steeringAngleDeg) < CS.CP.maxSteeringAngleDeg
 
     # Disable steering while turning blinker on and speed below 60 kph
     if CS.out.leftBlinker or CS.out.rightBlinker:
