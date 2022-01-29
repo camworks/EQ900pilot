@@ -90,7 +90,7 @@ class CarController():
     apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.out.steeringTorque,
                                                 CarControllerParams)
 
-    # disable if steer angle reach 90 deg, otherwise mdps fault in some models
+    # disable when temp fault is active, or below LKA minimum speed
     lkas_active = c.active and not CS.out.steerWarning and abs(CS.out.steeringAngleDeg) < CS.CP.maxSteeringAngleDeg
 
     # Disable steering while turning blinker on and speed below 60 kph
@@ -208,8 +208,10 @@ class CarController():
       if frame % 2 == 0:
         
         stopping = controls.LoC.long_control_state == LongCtrlState.stopping
-        apply_accel = clip(actuators.accel, CarControllerParams.ACCEL_MIN, CarControllerParams.ACCEL_MAX)
+        apply_accel = clip(actuators.accel if c.active else 0,
+                           CarControllerParams.ACCEL_MIN, CarControllerParams.ACCEL_MAX)
         apply_accel = self.scc_smoother.get_apply_accel(CS, controls.sm, apply_accel, stopping)
+
         self.accel = apply_accel
 
         controls.apply_accel = apply_accel
