@@ -132,10 +132,10 @@ class nTune():
     if self.checkValue("steerRatio", 10.0, 20.0, 16.5):
       updated = True
 
-    if self.checkValue("steerActuatorDelay", 0., 0.8, 0.1):
+    if self.checkValue("steerActuatorDelay", 0., 0.8, 0.15):
       updated = True
 
-    if self.checkValue("steerRateCost", 0.1, 1.5, 0.4):
+    if self.checkValue("steerRateCost", 0.1, 1.5, 0.5):
       updated = True
 
     if self.checkValue("cameraOffset", -1.0, 1.0, -0.04 if TICI else 0.06):
@@ -146,7 +146,7 @@ class nTune():
   def checkValidLQR(self):
     updated = False
 
-    if self.checkValue("scale", 500.0, 5000.0, 1800.0):
+    if self.checkValue("scale", 500.0, 5000.0, 1700.0):
       updated = True
 
     if self.checkValue("ki", 0.0, 0.2, 0.01):
@@ -169,10 +169,10 @@ class nTune():
     if self.checkValue("sccBrakeFactor", 0.5, 1.5, 1.0):
       updated = True
 
-    if self.checkValue("sccCurvatureFactor", 0.5, 1.5, 0.98):
+    if self.checkValue("sccCurvatureFactor", 0.5, 1.5, 1.0):
       updated = True
 
-    if self.checkValue("longitudinalActuatorDelayLowerBound", 0.1, 1.5, 0.15):
+    if self.checkValue("longitudinalActuatorDelayLowerBound", 0.1, 1.5, 0.3):
       updated = True
 
     if self.checkValue("longitudinalActuatorDelayUpperBound", 0.1, 1.5, 0.3):
@@ -187,8 +187,6 @@ class nTune():
 
     self.lqr.dc_gain = float(self.config["dcGain"])
 
-    self.lqr.sat_limit = float(self.config["steerLimitTimer"])
-
     self.lqr.x_hat = np.array([[0], [0]])
     self.lqr.reset()
 
@@ -201,8 +199,6 @@ class nTune():
           self.config["scale"] = round(self.CP.lateralTuning.lqr.scale, 2)
           self.config["ki"] = round(self.CP.lateralTuning.lqr.ki, 3)
           self.config["dcGain"] = round(self.CP.lateralTuning.lqr.dcGain, 6)
-          self.config["steerLimitTimer"] = round(self.CP.steerLimitTimer, 2)
-          self.config["steerMax"] = round(self.CP.steerMaxV[0], 2)
         else:
           self.config["useLiveSteerRatio"] = 1.
           self.config["steerRatio"] = round(self.CP.steerRatio, 2)

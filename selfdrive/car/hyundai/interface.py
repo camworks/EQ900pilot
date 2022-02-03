@@ -45,8 +45,8 @@ class CarInterface(CarInterfaceBase):
     ret.lateralTuning.init('lqr')
 
     ret.lateralTuning.lqr.scale = 1700.
-    ret.lateralTuning.lqr.ki = 0.03
-    ret.lateralTuning.lqr.dcGain = 0.0028
+    ret.lateralTuning.lqr.ki = 0.01
+    ret.lateralTuning.lqr.dcGain = 0.002858
 
     ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
     ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
@@ -55,7 +55,7 @@ class CarInterface(CarInterfaceBase):
     ret.lateralTuning.lqr.l = [0.3233671, 0.3185757]
 
     ret.steerRatio = 16.5
-    ret.steerActuatorDelay = 0.1
+    ret.steerActuatorDelay = 0.2
     ret.steerLimitTimer = 2.5
     ret.steerRateCost = 0.5
     ret.steerMaxBP = [0.]
@@ -69,7 +69,7 @@ class CarInterface(CarInterfaceBase):
 
     ret.stopAccel = -2.0
     ret.stoppingDecelRate = 0.1  # brake_travel/s while trying to stop
-    ret.vEgoStopping = 0.85
+    ret.vEgoStopping = 1.
     ret.vEgoStarting = 0.3  # needs to be >= vEgoStopping to avoid state transition oscillation
 
     # genesis
@@ -165,13 +165,13 @@ class CarInterface(CarInterfaceBase):
       ret.mass = 1640. + STD_CARGO_KG
       ret.wheelbase = 2.845
       ret.centerToFront = ret.wheelbase * 0.385
-      ret.steerRatio = 17.5
+      ret.steerRatio = 17.
     elif candidate in [CAR.GRANDEUR_IG_FL, CAR.GRANDEUR_IG_FL_HEV]:
       tire_stiffness_factor = 0.8
       ret.mass = 1725. + STD_CARGO_KG
       ret.wheelbase = 2.885
       ret.centerToFront = ret.wheelbase * 0.385
-      ret.steerRatio = 17.5
+      ret.steerRatio = 17.
     elif candidate == CAR.VELOSTER:
       ret.mass = 3558. * CV.LB_TO_KG
       ret.wheelbase = 2.80
