@@ -2,9 +2,22 @@ import copy
 
 import crcmod
 from selfdrive.car.hyundai.values import CAR, CHECKSUM, FEATURES, EV_HYBRID_CAR
+from cereal import car
+from selfdrive.car.hyundai.values import Buttons
+# from selfdrive.car.hyundai.scc_smoother import SccSmoother
 
 hyundai_checksum = crcmod.mkCrcFun(0x11D, initCrc=0xFD, rev=False, xorOut=0xdf)
 
+ButtonType = car.CarState.ButtonEvent.Type
+ButtonPrev = ButtonType.unknown
+ButtonCnt = 0
+LongPressed = False
+
+def __init__(self):
+  self.btn = Buttons.NONE
+
+def reset(self):
+  self.btn = Buttons.NONE
 
 def create_lkas11(packer, frame, car_fingerprint, apply_steer, steer_req,
                   lkas11, sys_warning, sys_state, enabled,
@@ -91,7 +104,9 @@ def create_lfahda_mfc(packer, enabled, active):
 
   return packer.make_can_msg("LFAHDA_MFC", 0, values)
 
-def create_hda_mfc(packer, active, state, CS, left_lane, right_lane):
+def create_hda_mfc(packer, active, state, CS, left_lane, right_lane, enabled):
+  ascc_enabled = CS.acc_mode and enabled and CS.cruiseState_enabled \
+                 and 1 < CS.cruiseState_speed < 255 and not CS.brake_pressed
   values = CS.hda
 
   ldwSysState = 0
@@ -101,12 +116,25 @@ def create_hda_mfc(packer, active, state, CS, left_lane, right_lane):
     ldwSysState += 2
 
   values["HDA_LdwSysState"] = ldwSysState
-  values["HDA_Icon_Wheel"] = 1 if active > 1 else 0
 
   values["HDA_USM"] = 2
-  values["HDA_Icon_State"] = state if active > 1 else 0
+  # values["HDA_Icon_State"] = state if active > 1 else 0
+  # values["HDA_Icon_Wheel"] = 1 if active > 1 else 0
   values["HDA_VSetReq"] = 100
-  values["HDA_Chime"] = 1 if active > 1 else 0
+  # values["HDA_Chime"] = 1 if active > 1 else 0
+
+  if active > 1 and ascc_enabled:
+    values["HDA_Icon_Wheel"] = 0
+    values["HDA_Icon_State"] = state
+    values["HDA_Chime"] = 0
+  elif active > 1 and ascc_enabled and Buttons.SET_DECEL:
+    values["HDA_Icon_Wheel"] = 1
+    values["HDA_Icon_State"] = 0
+    values["HDA_Chime"] = 1
+  else:
+    values["HDA_Icon_Wheel"] = 0
+    values["HDA_Icon_State"] = 0
+    values["HDA_Chime"] = 0
 
   return packer.make_can_msg("LFAHDA_MFC", 0, values)
 

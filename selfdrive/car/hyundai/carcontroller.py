@@ -271,7 +271,7 @@ class CarController():
         can_sends.append(create_lfahda_mfc(self.packer, enabled, activated_hda))
       elif CS.mdps_bus == 0:
         state = 2 if self.car_fingerprint in FEATURES["send_has_hda"] else 1
-        can_sends.append(create_hda_mfc(self.packer, activated_hda, state, CS, left_lane, right_lane))
+        can_sends.append(create_hda_mfc(self.packer, activated_hda, state, CS, left_lane, right_lane, enabled))
 
     new_actuators = actuators.copy()
     new_actuators.steer = apply_steer / CarControllerParams.STEER_MAX
