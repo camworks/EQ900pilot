@@ -652,7 +652,6 @@ void NvgWindow::drawSpeed(QPainter &p) {
   UIState *s = uiState();
   const SubMaster &sm = *(uiState()->sm);
   auto car_state = sm["carState"].getCarState();
-  auto data = sm["carState"].getCarState();
   float cur_speed = std::max(0.0, sm["carState"].getCarState().getCluSpeedMs() * (s->scene.is_metric ? MS_TO_KPH : MS_TO_MPH));
 
   bool brakeLights = car_state.getBrakeLights();
@@ -958,7 +957,6 @@ void NvgWindow::drawDebugText(QPainter &p) {
 void NvgWindow::drawCurrentGear(QPainter &p) {
   const SubMaster &sm = *(uiState()->sm);
   auto car_state = sm["carState"].getCarState();
-  auto data = sm["carState"].getCarState();
 
   float currentGear = car_state.getCurrentGear();
   int gearShifter = (int)car_state.getGearShifter();
