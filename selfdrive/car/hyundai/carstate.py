@@ -632,18 +632,16 @@ class CarState(CarStateBase):
         ("SCC12", 50),
       ]
 
-    # for activate HDA
-    if CP.carFingerprint in FEATURES["send_has_hda"]:
-      signals += [
-        ("HDA_USM", "LFAHDA_MFC"),
-        ("HDA_Active", "LFAHDA_MFC"),
-        ("HDA_Icon_State", "LFAHDA_MFC"),
-        ("HDA_LdwSysState", "LFAHDA_MFC"),
-        ("HDA_Icon_Wheel", "LFAHDA_MFC"),
-        ("HDA_Chime", "LFAHDA_MFC"),
-        ("HDA_VSetReq", "LFAHDA_MFC"),
-      ]
-      checks += [("LFAHDA_MFC", 20)]
+      # for activate HDA
+      if CP.carFingerprint in FEATURES["send_has_hda"]:
+        signals += [
+          ("HDA_USM", "LFAHDA_MFC"),
+          ("HDA_Active", "LFAHDA_MFC"),
+          ("HDA_Icon_State", "LFAHDA_MFC"),
+          ("HDA_LdwSysState", "LFAHDA_MFC"),
+          ("HDA_Icon_Wheel", "LFAHDA_MFC"),
+        ]
+        checks += [("LFAHDA_MFC", 20)]
 
     return CANParser(DBC[CP.carFingerprint]["pt"], signals, checks, 2, enforce_checks=False)
 
