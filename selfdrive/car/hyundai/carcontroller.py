@@ -17,8 +17,6 @@ from selfdrive.road_speed_limiter import road_speed_limiter_get_active
 
 VisualAlert = car.CarControl.HUDControl.VisualAlert
 min_set_speed = 30 * CV.KPH_TO_MS
-activated_hda = road_speed_limiter_get_active() # activated_hda: 0 - off, 1 - main road, 2 - highway
-
 
 SP_CARS = (CAR.GENESIS, CAR.GENESIS_G70, CAR.GENESIS_G80,
            CAR.GENESIS_EQ900, CAR.GENESIS_EQ900_L, CAR.K9, CAR.GENESIS_G90)
@@ -247,8 +245,9 @@ class CarController():
                                       CS.out.gasPressed, CS.out.brakePressed, CS.out.cruiseState.standstill,
                                       self.car_fingerprint))
 
+        activated_hda = road_speed_limiter_get_active()
         can_sends.append(create_scc11(self.packer, frame, enabled, set_speed, lead_visible, self.scc_live, CS.scc11,
-                                      self.scc_smoother.active_cam, stock_cam, self.car_fingerprint, activated_hda))
+                                      self.scc_smoother.active_cam, stock_cam, activated_hda))
 
         if frame % 20 == 0 and CS.has_scc13:
           can_sends.append(create_scc13(self.packer, CS.scc13))
@@ -271,11 +270,13 @@ class CarController():
 
     # 20 Hz LFA MFA message
     if frame % 5 == 0:
+      activated_hda = road_speed_limiter_get_active()
+      # activated_hda: 0 - off, 1 - main road, 2 - highway      
       if self.car_fingerprint in FEATURES["send_lfa_mfa"]:
         can_sends.append(create_lfahda_mfc(self.packer, enabled, activated_hda))
       elif CS.mdps_bus == 0:
-        state = 2 if self.car_fingerprint in FEATURES["send_has_hda"] else 1
-        can_sends.append(create_hda_mfc(self.packer, activated_hda, state, CS, left_lane, right_lane))
+        state = 2 if self.car_fingerprint in FEATURES["send_hda_state_2"] else 1
+        can_sends.append(create_hda_mfc(self.packer, activated_hda, CS, left_lane, right_lane, state))
 
     new_actuators = actuators.copy()
     new_actuators.steer = apply_steer / CarControllerParams.STEER_MAX

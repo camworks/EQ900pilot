@@ -19,7 +19,6 @@ def create_lkas11(packer, frame, car_fingerprint, apply_steer, steer_req,
   values["CF_Lkas_ActToi"] = steer_req
   values["CF_Lkas_ToiFlt"] = 0
   values["CF_Lkas_MsgCount"] = frame % 0x10
-  values["CF_Lkas_Chksum"] = 0
 
   if car_fingerprint in FEATURES["send_lfa_mfa"]:
     values["CF_Lkas_LdwsActivemode"] = int(left_lane) + (int(right_lane) << 1)
@@ -92,8 +91,8 @@ def create_lfahda_mfc(packer, enabled, active):
 
   return packer.make_can_msg("LFAHDA_MFC", 0, values)
 
-def create_hda_mfc(packer, active, state, CS, left_lane, right_lane):
-  values = CS.hda
+def create_hda_mfc(packer, active, CS, left_lane, right_lane, state):
+  values = copy.copy(CS.hda_mfc)
 
   ldwSysState = 0
   if left_lane:
@@ -102,12 +101,24 @@ def create_hda_mfc(packer, active, state, CS, left_lane, right_lane):
     ldwSysState += 2
 
   values["HDA_LdwSysState"] = ldwSysState
-  values["HDA_Icon_Wheel"] = 1 if active > 1 else 0
-
   values["HDA_USM"] = 2
+  values["HDA_VSetReq"] = 100  
+  values["HDA_Icon_Wheel"] = 1 if active > 1 and CS.out.cruiseState.enabledAcc else 0
   values["HDA_Icon_State"] = state if active > 1 else 0
-  values["HDA_VSetReq"] = 100
-  values["HDA_Chime"] = 1 if active > 1 else 0
+  values["HDA_Chime"] = 1 if active > 1 and CS.out.cruiseState.enabledAcc else 0
+
+  # if active > 1 and CS.out.cruiseState.enabledAcc:
+  #   values["HDA_Icon_Wheel"] = 1
+  #   values["HDA_Icon_State"] = 1
+  #   values["HDA_Chime"] = 1
+  # elif active > 1:
+  #   values["HDA_Icon_Wheel"] = 0
+  #   values["HDA_Icon_State"] = 1
+  #   values["HDA_Chime"] = 0
+  # else:
+  #   values["HDA_Icon_Wheel"] = 0
+  #   values["HDA_Icon_State"] = 0
+  #   values["HDA_Chime"] = 0
 
   return packer.make_can_msg("LFAHDA_MFC", 0, values)
 
@@ -124,17 +135,13 @@ def create_mdps12(packer, frame, mdps12):
 
   return packer.make_can_msg("MDPS12", 2, values)
 
-def create_scc11(packer, frame, enabled, set_speed, lead_visible, scc_live, scc11, active_cam, stock_cam, car_fingerprint, active):
+def create_scc11(packer, frame, enabled, set_speed, lead_visible, scc_live, scc11, active_cam, stock_cam, active):
   values = copy.copy(scc11)
   values["AliveCounterACC"] = frame // 2 % 0x10
 
-  if car_fingerprint in FEATURES["send_has_hda"] and not stock_cam and active < 2:
+  if not stock_cam and active < 2:
     values["Navi_SCC_Camera_Act"] = 2 if active_cam else 0
     values["Navi_SCC_Camera_Status"] = 2 if active_cam else 0
-  # else:
-  #   if not stock_cam:
-  #     values["Navi_SCC_Camera_Act"] = 2 if active_cam else 0
-  #     values["Navi_SCC_Camera_Status"] = 2 if active_cam else 0
 
   if not scc_live:
     values["MainMode_ACC"] = 1

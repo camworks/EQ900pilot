@@ -5,7 +5,6 @@ from opendbc.can.parser import CANParser
 from opendbc.can.can_define import CANDefine
 from selfdrive.config import Conversions as CV
 from common.params import Params
-import copy
 
 GearShifter = car.CarState.GearShifter
 
@@ -37,7 +36,6 @@ class CarState(CarStateBase):
     self.cruise_unavail_cnt = 0
 
     self.apply_steer = 0.
-    self.hda = None
 
     # scc smoother
     self.acc_mode = False
@@ -206,6 +204,10 @@ class CarState(CarStateBase):
     self.cruise_unavail_cnt += 1 if cp.vl["TCS13"]["CF_VSM_Avail"] != 1 and cp.vl["TCS13"]["ACCEnable"] != 0 else -self.cruise_unavail_cnt
     self.cruise_unavail = self.cruise_unavail_cnt > 100
 
+    # HDA
+    if self.CP.carFingerprint in FEATURES["send_hda_state_2"]:
+      self.hda_mfc = cp_cam.vl["LFAHDA_MFC"]
+
     self.lead_distance = cp_scc.vl["SCC11"]["ACC_ObjDist"] if not self.no_radar else 0
     if self.has_scc13:
       self.scc13 = cp_scc.vl["SCC13"]
@@ -228,10 +230,6 @@ class CarState(CarStateBase):
     ret.tpms.fr = tpms_unit * cp.vl["TPMS11"]["PRESSURE_FR"]
     ret.tpms.rl = tpms_unit * cp.vl["TPMS11"]["PRESSURE_RL"]
     ret.tpms.rr = tpms_unit * cp.vl["TPMS11"]["PRESSURE_RR"]
-
-    # for activate HDA
-    if self.CP.carFingerprint in FEATURES["send_has_hda"]:
-      self.hda = copy.copy(cp_cam.vl["LFAHDA_MFC"])
 
     return ret
 
@@ -635,8 +633,8 @@ class CarState(CarStateBase):
         ("SCC12", 50),
       ]
 
-      # for activate HDA
-      if CP.carFingerprint in FEATURES["send_has_hda"]:
+      # HDA
+      if CP.carFingerprint in FEATURES["send_hda_state_2"]:
         signals += [
           ("HDA_USM", "LFAHDA_MFC"),
           ("HDA_Active", "LFAHDA_MFC"),

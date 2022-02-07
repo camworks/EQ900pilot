@@ -3,7 +3,7 @@
 from cereal import car
 from common.numpy_fast import interp
 from selfdrive.config import Conversions as CV
-from selfdrive.car.hyundai.values import CAR, Buttons, CarControllerParams
+from selfdrive.car.hyundai.values import CAR, Buttons, CarControllerParams, FEATURES
 from selfdrive.car import STD_CARGO_KG, scale_rot_inertia, scale_tire_stiffness, gen_empty_fingerprint, get_safety_config
 from selfdrive.car.interfaces import CarInterfaceBase
 from common.params import Params
@@ -282,6 +282,7 @@ class CarInterface(CarInterfaceBase):
       ret.hasScc14 = 905 in fingerprint[ret.sccBus]
 
     ret.hasEms = 608 in fingerprint[0] and 809 in fingerprint[0]
+    ret.hasHda = 1157 in fingerprint[0] or candidate in FEATURES['has_hda']
 
     ret.radarOffCan = ret.sccBus == -1
     ret.pcmCruise = not ret.radarOffCan
