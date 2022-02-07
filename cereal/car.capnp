@@ -205,6 +205,7 @@ struct CarState {
   autoHold @41 : Int32;
   tpms @42 : Tpms;
   vCluRatio @43 :Float32;
+  aBasis @44 :Float32;
 
   struct Tpms {
     fl @0 :Float32;
@@ -214,7 +215,7 @@ struct CarState {
   }
 
   # Gear Current By Tenesi
-  currentGear @44 :Float32;
+  currentGear @45 :Float32;
 
   struct WheelSpeeds {
     # optional wheel speeds
