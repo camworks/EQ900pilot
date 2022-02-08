@@ -639,15 +639,9 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
                                             "",
                                             "../assets/offroad/icon_openpilot.png",
                                             this));
-  toggles.append(new ParamControl("WarningOverSpeedLimit",
-                                            "Warning when speeding",
-                                            "Warning when the current speed exceeds the speed limit",
-                                            "../assets/offroad/icon_openpilot.png",
-                                            this));
-  
-  toggles.append(new ParamControl("SteeringwheelHaptic",
-                                            "Steeringwheel haptic(speed-cam alert)",
-                                            "Activating steeringwheel haptic and dispay lane blink on HUD when the T-map detects a speed-cam",
+  toggles.append(new ParamControl("HapticFeedbackWhenSpeedCamera",
+                                            "Haptic feedback (speed-cam alert)",
+                                            "Haptic feedback when a speed camera is detected",
                                             "../assets/offroad/icon_openpilot.png",
                                             this));
 
