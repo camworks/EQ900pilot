@@ -199,11 +199,14 @@ class CarState(CarStateBase):
     self.scc11 = cp_scc.vl["SCC11"]
     self.scc12 = cp_scc.vl["SCC12"]
     self.mdps12 = cp_mdps.vl["MDPS12"]
-    self.lfahda_mfc = cp_cam.vl["LFAHDA_MFC"]
     self.park_brake = cp.vl["CGW1"]["CF_Gway_ParkBrakeSw"]
     self.steer_state = cp_mdps.vl["MDPS12"]["CF_Mdps_ToiActive"] #0 NOT ACTIVE, 1 ACTIVE
     self.cruise_unavail_cnt += 1 if cp.vl["TCS13"]["CF_VSM_Avail"] != 1 and cp.vl["TCS13"]["ACCEnable"] != 0 else -self.cruise_unavail_cnt
     self.cruise_unavail = self.cruise_unavail_cnt > 100
+
+    # HDA
+    if self.CP.carFingerprint in FEATURES["send_hda_state_2"]:
+      self.hda_mfc = cp_cam.vl["LFAHDA_MFC"]
 
     self.lead_distance = cp_scc.vl["SCC11"]["ACC_ObjDist"] if not self.no_radar else 0
     if self.has_scc13:
@@ -630,14 +633,16 @@ class CarState(CarStateBase):
         ("SCC12", 50),
       ]
 
-      signals += [
-        ("HDA_USM", "LFAHDA_MFC"),
-        ("HDA_Active", "LFAHDA_MFC"),
-        ("HDA_Icon_State", "LFAHDA_MFC"),
-        ("HDA_LdwSysState", "LFAHDA_MFC"),
-        ("HDA_Icon_Wheel", "LFAHDA_MFC"),
-      ]
-      checks += [("LFAHDA_MFC", 20)]
+      # HDA
+      if CP.carFingerprint in FEATURES["send_hda_state_2"]:
+        signals += [
+          ("HDA_USM", "LFAHDA_MFC"),
+          ("HDA_Active", "LFAHDA_MFC"),
+          ("HDA_Icon_State", "LFAHDA_MFC"),
+          ("HDA_LdwSysState", "LFAHDA_MFC"),
+          ("HDA_Icon_Wheel", "LFAHDA_MFC"),
+        ]
+        checks += [("LFAHDA_MFC", 20)]
 
     return CANParser(DBC[CP.carFingerprint]["pt"], signals, checks, 2, enforce_checks=False)
 

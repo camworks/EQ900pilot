@@ -92,7 +92,7 @@ def create_lfahda_mfc(packer, enabled, active):
   return packer.make_can_msg("LFAHDA_MFC", 0, values)
 
 def create_hda_mfc(packer, active, CS, left_lane, right_lane, state):
-  values = copy.copy(CS.lfahda_mfc)
+  values = copy.copy(CS.hda_mfc)
 
   ldwSysState = 0
   if left_lane:
