@@ -75,8 +75,8 @@ class CarController():
 
     self.scc_smoother = SccSmoother()
     self.last_blinker_frame = 0
-    self.prev_active_cam = False
-    self.active_cam_timer = 0
+    # self.prev_active_cam = False
+    # self.active_cam_timer = 0
 
   def update(self, c, enabled, CS, frame, CC, actuators, pcm_cancel_cmd, visual_alert,
              left_lane, right_lane, left_lane_depart, right_lane_depart, set_speed, lead_visible, controls):
@@ -107,14 +107,17 @@ class CarController():
                         left_lane, right_lane, left_lane_depart, right_lane_depart)
 
     if self.haptic_feedback_speed_camera:
-      if self.prev_active_cam != self.scc_smoother.active_cam:
-        self.prev_active_cam = self.scc_smoother.active_cam
-        if self.scc_smoother.active_cam:
-          self.active_cam_timer = int(1.5 / DT_CTRL)
-
-      if self.active_cam_timer > 0:
-        self.active_cam_timer -= 1
+      if self.scc_smoother.active_cam:
         left_lane_warning = right_lane_warning = 1
+
+      # if self.prev_active_cam != self.scc_smoother.active_cam:
+      #   self.prev_active_cam = self.scc_smoother.active_cam
+      #   if self.scc_smoother.active_cam:
+      #     self.active_cam_timer = int(2. / DT_CTRL)
+      #
+      # if self.active_cam_timer > 0:
+      #   self.active_cam_timer -= 1
+      #   left_lane_warning = right_lane_warning = 1
 
     clu11_speed = CS.clu11["CF_Clu_Vanz"]
     enabled_speed = 38 if CS.is_set_speed_in_mph else 60
