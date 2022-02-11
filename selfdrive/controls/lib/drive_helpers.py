@@ -24,7 +24,7 @@ CAR_ROTATION_RADIUS = 0.0
 
 # this corresponds to 80deg/s and 20deg/s steering angle in a toyota corolla
 MAX_CURVATURE_RATES = [0.03762194918267951, 0.00940548729]
-MAX_CURVATURE_RATE_SPEEDS = [0, 27.8]
+MAX_CURVATURE_RATE_SPEEDS = [0, 35]
 
 CRUISE_LONG_PRESS = 50
 CRUISE_NEAREST_FUNC = {
@@ -122,6 +122,6 @@ def get_lag_adjusted_curvature(CP, v_ego, psis, curvatures, curvature_rates):
                                           -max_curvature_rate,
                                           max_curvature_rate)
   safe_desired_curvature = clip(desired_curvature,
-                                     current_curvature - max_curvature_rate * DT_MDL * 6,
-                                     current_curvature + max_curvature_rate * DT_MDL * 6)
+                                     current_curvature - max_curvature_rate * DT_MDL * 8,
+                                     current_curvature + max_curvature_rate * DT_MDL * 8)
   return safe_desired_curvature, safe_desired_curvature_rate
