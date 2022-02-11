@@ -634,6 +634,8 @@ class CarState(CarStateBase):
           ("HDA_Icon_State", "LFAHDA_MFC"),
           ("HDA_LdwSysState", "LFAHDA_MFC"),
           ("HDA_Icon_Wheel", "LFAHDA_MFC"),
+          ("HDA_VSetReq", "LFAHDA_MFC"),
+          ("HDA_Chime", "LFAHDA_MFC"),
         ]
         checks += [("LFAHDA_MFC", 20)]
 
