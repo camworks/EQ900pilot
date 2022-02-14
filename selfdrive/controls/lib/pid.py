@@ -13,19 +13,14 @@ def apply_deadzone(error, deadzone):
   return error
 
 class PIController():
-  def __init__(self, k_p, k_i, k_f=None, pos_limit=None, neg_limit=None, rate=100):
-    if k_f is None:
-      k_f = [0., 1.]
+  def __init__(self, k_p, k_i, k_f=1., pos_limit=None, neg_limit=None, rate=100):
     self._k_p = k_p  # proportional gain
     self._k_i = k_i  # integral gain
-    self._k_f = k_f   # feedforward gain
-
+    self.k_f = k_f   # feedforward gain
     if isinstance(self._k_p, Number):
       self._k_p = [[0], [self._k_p]]
     if isinstance(self._k_i, Number):
       self._k_i = [[0], [self._k_i]]
-    if isinstance(self._k_f, Number):
-      self._k_f = [[0], [self._k_f]]
 
     self.pos_limit = pos_limit
     self.neg_limit = neg_limit
@@ -42,10 +37,6 @@ class PIController():
   @property
   def k_i(self):
     return interp(self.speed, self._k_i[0], self._k_i[1])
-
-  @property
-  def k_f(self):
-    return interp(self.speed, self._k_f[0], self._k_f[1])
 
   def reset(self):
     self.p = 0.0
