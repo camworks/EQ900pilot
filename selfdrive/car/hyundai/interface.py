@@ -66,6 +66,7 @@ class CarInterface(CarInterfaceBase):
     ret.longitudinalTuning.kpV = [1.3, 0.95, 0.75, 0.55, 0.35]
     ret.longitudinalTuning.kiBP = [0., 5. * CV.KPH_TO_MS, 20. * CV.KPH_TO_MS, 50. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
     ret.longitudinalTuning.kiV = [0.02, 0.01, 0.035, 0.05, 0.02]
+    ret.longitudinalTuning.kf = 0.95
 
     ret.stopAccel = -2.0
     ret.stoppingDecelRate = 0.05  # brake_travel/s while trying to stop
