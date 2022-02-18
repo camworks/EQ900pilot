@@ -63,18 +63,15 @@ class LongControl():
     """Update longitudinal control. This updates the state machine and runs a PID loop"""
     # Interp control trajectory
     speeds = long_plan.speeds
-    if len(speeds) == CONTROL_N:      
-      longitudinalActuatorDelayLowerBound = ntune_scc_get('longitudinalActuatorDelayLowerBound')
-      longitudinalActuatorDelayUpperBound = ntune_scc_get('longitudinalActuatorDelayUpperBound')
-            
+    if len(speeds) == CONTROL_N:
       v_target = interp(t_since_plan, T_IDXS[:CONTROL_N], speeds)
       a_target = interp(t_since_plan, T_IDXS[:CONTROL_N], long_plan.accels)
 
-      v_target_lower = interp(longitudinalActuatorDelayLowerBound + t_since_plan, T_IDXS[:CONTROL_N], speeds)
-      a_target_lower = 2 * (v_target_lower - v_target) / longitudinalActuatorDelayLowerBound - a_target
+      v_target_lower = interp(CP.longitudinalActuatorDelayLowerBound + t_since_plan, T_IDXS[:CONTROL_N], speeds)
+      a_target_lower = 2 * (v_target_lower - v_target) / CP.longitudinalActuatorDelayLowerBound - a_target
 
-      v_target_upper = interp(longitudinalActuatorDelayUpperBound + t_since_plan, T_IDXS[:CONTROL_N], speeds)
-      a_target_upper = 2 * (v_target_upper - v_target) / longitudinalActuatorDelayUpperBound - a_target
+      v_target_upper = interp(CP.longitudinalActuatorDelayUpperBound + t_since_plan, T_IDXS[:CONTROL_N], speeds)
+      a_target_upper = 2 * (v_target_upper - v_target) / CP.longitudinalActuatorDelayUpperBound - a_target
       a_target = min(a_target_lower, a_target_upper)
 
       v_target_future = speeds[-1]
