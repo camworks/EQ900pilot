@@ -194,6 +194,7 @@ def gen_long_mpc_solver():
   # More iterations take too much time and less lead to inaccurate convergence in
   # some situations. Ideally we would run just 1 iteration to ensure fixed runtime.
   ocp.solver_options.qp_solver_iter_max = 10
+  ocp.solver_options.qp_tol = 1e-3
 
   # set prediction horizon
   ocp.solver_options.tf = Tf
@@ -225,6 +226,8 @@ class LongitudinalMpc:
     self.param_tr = T_FOLLOW
     for i in range(N+1):
       self.solver.set(i, 'x', np.zeros(X_DIM))
+    for i in range(N):
+      self.solver.set(i, 'u', self.u_sol[i,:])
     self.last_cloudlog_t = 0
     self.status = False
     self.crash_cnt = 0.0
@@ -392,9 +395,6 @@ class LongitudinalMpc:
 
     # qp_iter = self.solver.get_stats('statistics')[-1][-1] # SQP_RTI specific
     # print(f"long_mpc timings: tot {self.solve_time:.2e}, qp {self.time_qp_solution:.2e}, lin {self.time_linearization:.2e}, integrator {self.time_integrator:.2e}, qp_iter {qp_iter}")
-    # res = self.solver.get_residuals()
-    # print(f"long_mpc residuals: {res[0]:.2e}, {res[1]:.2e}, {res[2]:.2e}, {res[3]:.2e}")
-    # self.solver.print_statistics()
 
     for i in range(N+1):
       self.x_sol[i] = self.solver.get(i, 'x')
