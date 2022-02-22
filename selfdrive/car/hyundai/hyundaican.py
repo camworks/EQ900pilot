@@ -140,9 +140,9 @@ def create_scc11(packer, frame, enabled, set_speed, lead_visible, scc_live, scc1
   values = copy.copy(scc11)
   values["AliveCounterACC"] = frame // 2 % 0x10
 
-  if not stock_cam and active < 2:
-    values["Navi_SCC_Camera_Act"] = 2 if active_cam else 0
-    values["Navi_SCC_Camera_Status"] = 2 if active_cam else 0
+  if not stock_cam:
+    values["Navi_SCC_Camera_Act"] = 2 if active_cam and active < 2 else 0
+    values["Navi_SCC_Camera_Status"] = 2 if active_cam and active < 2 else 0
 
   if not scc_live:
     values["MainMode_ACC"] = 1
