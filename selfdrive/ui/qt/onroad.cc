@@ -457,14 +457,13 @@ void NvgWindow::drawHud(QPainter &p) {
   bool has_hda = car_params.getHasHda();  
 
   QString infoText;
-  infoText.sprintf("AO(%.2f/%.2f) SR(%.2f) SRC(%.2f) SAD(%.2f) BUS(MDPS %d, SCC %d HDA(%d) SCC(%.2f/%.2f/%.2f)",
+  infoText.sprintf("AO(%.2f/%.2f) SR(%.2f) SRC(%.2f) SAD(%.2f) BUS(MDPS %d, SCC %d HDA %d) SCC(%.2f/%.2f/%.2f)",
                       live_params.getAngleOffsetDeg(),
                       live_params.getAngleOffsetAverageDeg(),
                       controls_state.getSteerRatio(),
                       controls_state.getSteerRateCost(),
                       controls_state.getSteerActuatorDelay(),
                       mdps_bus, scc_bus, has_hda,
-
                       controls_state.getSccGasFactor(),
                       controls_state.getSccBrakeFactor(),
                       controls_state.getSccCurvatureFactor()
@@ -642,7 +641,7 @@ void NvgWindow::drawMaxSpeed(QPainter &p) {
 
 void NvgWindow::drawSpeed(QPainter &p) {
   UIState *s = uiState();
-  const SubMaster &sm = *(uiState()->sm);
+  const SubMaster &sm = *(s->sm);
   float cur_speed = std::max(0.0, sm["carState"].getCarState().getCluSpeedMs() * (s->scene.is_metric ? MS_TO_KPH : MS_TO_MPH));
   auto car_state = sm["carState"].getCarState();
   float accel = car_state.getAEgo();
@@ -802,8 +801,8 @@ void NvgWindow::drawTurnSignals(QPainter &p) {
     const int h = 160;
     const int gap = fb_w / 25;
     const int margin = (int)(fb_w / 3.8f);
-    const int base_y = 120; //(height() - h) / 2;
-    const int draw_count = 12;
+    const int base_y = (height() - h) / 2;
+    const int draw_count = 10;
 
     int x = center_x;
     int y = base_y;

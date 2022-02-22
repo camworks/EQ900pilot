@@ -85,10 +85,6 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
 
   if (evts.contains(event->type())) {
     device.resetInteractiveTimout();
-  }
-
-  if (evts.contains(event->type())) {
-    device.resetInteractiveTimout();
 #ifdef QCOM
     // filter out touches while in android activity
     if (HardwareEon::launched_activity) {

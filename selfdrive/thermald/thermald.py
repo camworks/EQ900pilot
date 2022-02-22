@@ -36,7 +36,7 @@ DISCONNECT_TIMEOUT = 5.  # wait 5 seconds before going offroad after disconnect 
 PANDA_STATES_TIMEOUT = int(1000 * 2.5 * DT_TRML)  # 2.5x the expected pandaState frequency
 
 ThermalBand = namedtuple("ThermalBand", ['min_temp', 'max_temp'])
-HardwareState = namedtuple("HardwareState", ['network_type', 'network_strength', 'network_info', 'wifiIpAddress', 'nvme_temps', 'modem_temps'])
+HardwareState = namedtuple("HardwareState", ['network_type', 'network_strength', 'network_info', 'nvme_temps', 'modem_temps', 'wifi_address'])
 
 # List of thermal bands. We will stay within this region as long as we are within the bounds.
 # When exiting the bounds, we'll jump to the lower or higher band. Bands are ordered in the dict.
@@ -172,9 +172,9 @@ def hw_state_thread(end_event, hw_queue):
           network_type=network_type,
           network_strength=HARDWARE.get_network_strength(network_type),
           network_info=HARDWARE.get_network_info(),
-          wifiIpAddress=HARDWARE.get_ip_address(),
           nvme_temps=HARDWARE.get_nvme_temperatures(),
           modem_temps=HARDWARE.get_modem_temperatures(),
+          wifi_address=HARDWARE.get_ip_address(),
         )
 
         try:
@@ -222,9 +222,9 @@ def thermald_thread(end_event, hw_queue):
     network_type=NetworkType.none,
     network_strength=NetworkStrength.unknown,
     network_info=None,
-    wifiIpAddress='N/A',
     nvme_temps=[],
     modem_temps=[],
+    wifi_address='N/A',
   )
 
   current_filter = FirstOrderFilter(0., CURRENT_TAU, DT_TRML)
@@ -272,6 +272,9 @@ def thermald_thread(end_event, hw_queue):
 
       pandaState = pandaStates[0]
 
+      if pandaState.pandaType != log.PandaState.PandaType.unknown:
+        panda_state_ts = sec_since_boot()
+
       in_car = pandaState.harnessStatus != log.PandaState.HarnessStatus.notConnected
       usb_power = peripheralState.usbPowerMode != log.PeripheralState.UsbPowerMode.client
 
@@ -289,6 +292,11 @@ def thermald_thread(end_event, hw_queue):
           cloudlog.info("Setting up EON fan handler")
           setup_eon_fan()
           handle_fan = handle_fan_eon
+    else:
+      if sec_since_boot() - panda_state_ts > 3.:
+        if onroad_conditions["ignition"]:
+          cloudlog.error("Lost panda connection while onroad")
+        onroad_conditions["ignition"] = False
 
     try:
       last_hw_state = hw_queue.get_nowait()
@@ -307,7 +315,7 @@ def thermald_thread(end_event, hw_queue):
 
     msg.deviceState.nvmeTempC = last_hw_state.nvme_temps
     msg.deviceState.modemTempC = last_hw_state.modem_temps
-    msg.deviceState.wifiIpAddress = last_hw_state.wifiIpAddress
+    msg.deviceState.wifiIpAddress = last_hw_state.wifi_address
 
     msg.deviceState.screenBrightnessPercent = HARDWARE.get_screen_brightness()
     msg.deviceState.batteryPercent = HARDWARE.get_battery_capacity()

@@ -581,13 +581,13 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
   QList<ParamControl*> toggles;
 
   toggles.append(new ParamControl("UseClusterSpeed",
-                                            "Use cluster speed",
-                                            "Use cluster speed instead of wheel speed",
+                                            "Use Cluster Speed",
+                                            "Use cluster speed instead of wheel speed.",
                                             "../assets/offroad/icon_road.png",
                                             this));
 
   toggles.append(new ParamControl("LongControlEnabled",
-                                            "Enable HKG long control",
+                                            "Enable HKG Long Control",
                                             "warnings: it is beta, be careful!! Openpilot will control the speed of your car",
                                             "../assets/offroad/icon_road.png",
                                             this));
@@ -600,24 +600,24 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
 
   toggles.append(new ParamControl("IsLdwsCar",
                                             "LDWS",
-                                            "If your car only supports LDWS, turn it on",
+                                            "If your car only supports LDWS, turn it on.",
                                             "../assets/offroad/icon_openpilot.png",
                                             this));
 
   toggles.append(new ParamControl("LaneChangeEnabled",
-                                            "Enable lane change assist",
-                                            "Perform assisted lane changes with openpilot by checking your surroundings for safety, activating the turn signal and gently nudging the steering wheel towards your desired lane. openpilot is not capable of checking if a lane change is safe. You must continuously observe your surroundings to use this feature",
+                                            "Enable Lane Change Assist",
+                                            "Perform assisted lane changes with openpilot by checking your surroundings for safety, activating the turn signal and gently nudging the steering wheel towards your desired lane. openpilot is not capable of checking if a lane change is safe. You must continuously observe your surroundings to use this feature.",
                                             "../assets/offroad/icon_road.png",
                                             this));
 
   toggles.append(new ParamControl("AutoLaneChangeEnabled",
-                                            "Enable auto lane change(Nudgeless)",
-                                            "warnings: it is beta, be careful",
+                                            "Enable Auto Lane Change(Nudgeless)",
+                                            "warnings: it is beta, be careful!!",
                                             "../assets/offroad/icon_road.png",
                                             this));
 
   toggles.append(new ParamControl("SccSmootherSlowOnCurves",
-                                            "Enable slow on curves",
+                                            "Enable Slow On Curves",
                                             "",
                                             "../assets/offroad/icon_road.png",
                                             this));
@@ -652,7 +652,7 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
                                             this));*/
 
   toggles.append(new ParamControl("DisableOpFcw",
-                                            "Disable openpilot FCW",
+                                            "Disable Openpilot FCW",
                                             "",
                                             "../assets/offroad/icon_shell.png",
                                             this));
