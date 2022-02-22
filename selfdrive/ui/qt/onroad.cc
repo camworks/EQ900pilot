@@ -457,7 +457,7 @@ void NvgWindow::drawHud(QPainter &p) {
   bool has_hda = car_params.getHasHda();  
 
   QString infoText;
-  infoText.sprintf("AO(%.2f/%.2f) SR(%.2f) SRC(%.2f) SAD(%.2f) BUS(MDPS %d, SCC %d HDA %d) SCC(%.2f/%.2f/%.2f)",
+  infoText.sprintf("AO(%.2f/%.2f) SR(%.2f) SRC(%.2f) SAD(%.2f) BUS(MDPS %d, SCC %d, HDA %d) SCC(%.2f/%.2f/%.2f)",
                       live_params.getAngleOffsetDeg(),
                       live_params.getAngleOffsetAverageDeg(),
                       controls_state.getSteerRatio(),
