@@ -69,7 +69,16 @@ def get_stopped_equivalence_factor(v_lead):
   return (v_lead**2) / (2 * COMFORT_BRAKE)
 
 def get_safe_obstacle_distance(v_ego, tr):
-  return (v_ego**2) / (2 * COMFORT_BRAKE) + tr * v_ego + STOP_DISTANCE
+  v_min = .5  # below this speed the follow distance does not decrease further
+  eps = 1e-3
+  # smooth_max(v_min, v_ego)
+  vego_smooth_max = (v_ego + v_min + np.sqrt(eps+ (v_ego-v_min)**2))/2
+  # NOTE: one could add  "-v_min * T_FOLLOW"
+  #       to achieve desired_follow_distance(0, 0) = STOP_DISTANCE
+  return (v_ego**2) / (2 * COMFORT_BRAKE) + tr * (vego_smooth_max) + STOP_DISTANCE
+
+# def get_safe_obstacle_distance(v_ego, tr):
+#   return (v_ego**2) / (2 * COMFORT_BRAKE) + tr * v_ego + STOP_DISTANCE  
 
 def desired_follow_distance(v_ego, v_lead, tr):
   return get_safe_obstacle_distance(v_ego, tr) - get_stopped_equivalence_factor(v_lead)
