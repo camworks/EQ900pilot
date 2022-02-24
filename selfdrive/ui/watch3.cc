@@ -6,7 +6,7 @@
 #include "selfdrive/ui/qt/widgets/cameraview.h"
 
 int main(int argc, char *argv[]) {
-  initApp(argc, argv);
+  setQtSurfaceFormat();
 
   QApplication a(argc, argv);
   QWidget w;

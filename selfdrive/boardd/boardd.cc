@@ -610,7 +610,6 @@ void pigeon_thread(Panda *panda) {
 }
 
 void boardd_main_thread(std::vector<std::string> serials) {
-
   PubMaster pm({"pandaStates", "peripheralState"});
   LOGW("attempting to connect");
 
