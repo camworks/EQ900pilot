@@ -81,7 +81,7 @@ class LongControl():
       a_target = 0.0
 
     if a_target > 0.:
-      a_target *= interp(CS.vEgo, [0., 20. * CV.KPH_TO_MS], [1.5, 1.])
+      a_target *= interp(CS.vEgo, [0., 20. * CV.KPH_TO_MS], [1.4, 1.])
 
     # TODO: This check is not complete and needs to be enforced by MPC
     a_target = clip(a_target, ACCEL_MIN_ISO, ACCEL_MAX_ISO)
@@ -119,7 +119,7 @@ class LongControl():
       # Keep applying brakes until the car is stopped
       if not CS.standstill or output_accel > CP.stopAccel:
         output_accel -= CP.stoppingDecelRate * DT_CTRL * \
-                        interp(output_accel, [CP.stopAccel, CP.stopAccel/2., CP.stopAccel/4., 0.], [0.5, 0.65, 1., 3.])
+                        interp(output_accel, [CP.stopAccel, CP.stopAccel/2., CP.stopAccel/4., 0.], [1., 1.25, 2., 3.])
       output_accel = clip(output_accel, accel_limits[0], accel_limits[1])
       self.reset(CS.vEgo)
 
