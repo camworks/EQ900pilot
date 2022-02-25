@@ -6,9 +6,9 @@
 #include "selfdrive/ui/qt/widgets/cameraview.h"
 
 int main(int argc, char *argv[]) {
-  QSurfaceFormat fmt;
+  initApp(argc, argv);
   fmt.setRenderableType(QSurfaceFormat::OpenGLES);
-  QSurfaceFormat::setDefaultFormat(fmt);
+  QSurfaceFormat::setDefaultFormat(fmt);  
 
   QApplication a(argc, argv);
   QWidget w;
