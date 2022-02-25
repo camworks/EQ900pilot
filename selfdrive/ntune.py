@@ -132,10 +132,10 @@ class nTune():
     if self.checkValue("steerRatio", 10.0, 20.0, 16.5):
       updated = True
 
-    if self.checkValue("steerActuatorDelay", 0., 0.8, 0.1):
+    if self.checkValue("steerActuatorDelay", 0., 0.8, 0.15):
       updated = True
 
-    if self.checkValue("steerRateCost", 0.1, 1.5, 0.5):
+    if self.checkValue("steerRateCost", 0.1, 1.5, 0.45):
       updated = True
 
     if self.checkValue("cameraOffset", -1.0, 1.0, -0.04 if TICI else 0.06):
