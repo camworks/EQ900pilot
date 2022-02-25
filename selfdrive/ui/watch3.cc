@@ -7,8 +7,6 @@
 
 int main(int argc, char *argv[]) {
   initApp(argc, argv);
-  fmt.setRenderableType(QSurfaceFormat::OpenGLES);
-  QSurfaceFormat::setDefaultFormat(fmt);  
 
   QApplication a(argc, argv);
   QWidget w;
