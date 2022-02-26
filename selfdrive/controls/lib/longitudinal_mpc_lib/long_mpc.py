@@ -35,7 +35,7 @@ X_EGO_COST = 0.
 V_EGO_COST = 0.
 A_EGO_COST = 0.
 J_EGO_COST = 5.0
-A_CHANGE_COST = 200.
+A_CHANGE_COST = 50. # 200.
 DANGER_ZONE_COST = 100.
 CRASH_DISTANCE = .5
 LIMIT_COST = 1e6
@@ -401,6 +401,9 @@ class LongitudinalMpc:
 
     # qp_iter = self.solver.get_stats('statistics')[-1][-1] # SQP_RTI specific
     # print(f"long_mpc timings: tot {self.solve_time:.2e}, qp {self.time_qp_solution:.2e}, lin {self.time_linearization:.2e}, integrator {self.time_integrator:.2e}, qp_iter {qp_iter}")
+    # res = self.solver.get_residuals()
+    # print(f"long_mpc residuals: {res[0]:.2e}, {res[1]:.2e}, {res[2]:.2e}, {res[3]:.2e}")
+    # self.solver.print_statistics()
 
     for i in range(N+1):
       self.x_sol[i] = self.solver.get(i, 'x')
