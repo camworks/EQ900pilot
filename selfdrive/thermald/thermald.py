@@ -99,7 +99,7 @@ def hw_state_thread(end_event, hw_queue):
           network_info=HARDWARE.get_network_info(),
           nvme_temps=HARDWARE.get_nvme_temperatures(),
           modem_temps=modem_temps,
-          wifi_address=HARDWARE.get_ip_address(),          
+          wifi_address=HARDWARE.get_ip_address(),
         )
 
         try:
@@ -165,10 +165,10 @@ def thermald_thread(end_event, hw_queue):
   HARDWARE.initialize_hardware()
   thermal_config = HARDWARE.get_thermal_config()
 
+  fan_controller = None
+
   restart_triggered_ts = 0.
   panda_state_ts = 0.
-
-  fan_controller = None
 
   while not end_event.is_set():
     sm.update(PANDA_STATES_TIMEOUT)
