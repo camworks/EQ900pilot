@@ -25,10 +25,10 @@ SOURCES = ['lead0', 'lead1', 'cruise']
 
 X_DIM = 3
 U_DIM = 1
-PARAM_DIM = 5
+PARAM_DIM = 3
 COST_E_DIM = 5
 COST_DIM = COST_E_DIM + 1
-CONSTR_DIM = 4
+CONSTR_DIM = 3
 
 X_EGO_OBSTACLE_COST = 3.
 X_EGO_COST = 0.
@@ -105,12 +105,10 @@ def gen_long_model():
   model.xdot = vertcat(x_ego_dot, v_ego_dot, a_ego_dot)
 
   # live parameters
-  a_min = SX.sym('a_min')
-  a_max = SX.sym('a_max')
   x_obstacle = SX.sym('x_obstacle')
   prev_a = SX.sym('prev_a')
   tr = SX.sym('tr')
-  model.p = vertcat(a_min, a_max, x_obstacle, prev_a, tr)
+  model.p = vertcat(x_obstacle, prev_a, tr)
 
   # dynamics model
   f_expl = vertcat(v_ego, a_ego, j_ego)
@@ -141,10 +139,9 @@ def gen_long_ocp():
   x_ego, v_ego, a_ego = ocp.model.x[0], ocp.model.x[1], ocp.model.x[2]
   j_ego = ocp.model.u[0]
 
-  a_min, a_max = ocp.model.p[0], ocp.model.p[1]
-  x_obstacle = ocp.model.p[2]
-  prev_a = ocp.model.p[3]
-  tr = ocp.model.p[4]
+  x_obstacle = ocp.model.p[0]
+  prev_a = ocp.model.p[1]
+  tr = ocp.model.p[2]
 
   ocp.cost.yref = np.zeros((COST_DIM, ))
   ocp.cost.yref_e = np.zeros((COST_E_DIM, ))
@@ -168,14 +165,13 @@ def gen_long_ocp():
   # the obstacle, which is treated as a slack constraint so it
   # behaves like an asymmetrical cost.
   constraints = vertcat(v_ego,
-                        (a_ego - a_min),
-                        (a_max - a_ego),
+                        a_ego,
                         ((x_obstacle - x_ego) - (3/4) * (desired_dist_comfort)) / (v_ego + 10.))
   ocp.model.con_h_expr = constraints
 
   x0 = np.zeros(X_DIM)
   ocp.constraints.x0 = x0
-  ocp.parameter_values = np.array([-1.2, 1.2, 0.0, 0.0, T_FOLLOW])
+  ocp.parameter_values = np.zeros(PARAM_DIM)
 
   # We put all constraint cost weights to 0 and only set them at runtime
   cost_weights = np.zeros(CONSTR_DIM)
@@ -184,8 +180,8 @@ def gen_long_ocp():
   ocp.cost.Zu = cost_weights
   ocp.cost.zu = cost_weights
 
-  ocp.constraints.lh = np.zeros(CONSTR_DIM)
-  ocp.constraints.uh = 1e4*np.ones(CONSTR_DIM)
+  ocp.constraints.lh = np.array([0.0, -1.2, 0.0])
+  ocp.constraints.uh = np.array([1e4, 1.2, 1e4])
   ocp.constraints.idxsh = np.arange(CONSTR_DIM)
 
   # The HPIPM solver can give decent solutions even when it is stopped early
@@ -248,9 +244,9 @@ class LongitudinalMpc:
   def set_weights(self, prev_accel_constraint=True):
     if self.e2e:
       self.set_weights_for_xva_policy()
-      self.params[:,0] = -10.
-      self.params[:,1] = 10.
-      self.params[:,2] = 1e5
+      self.a_min = -10.
+      self.a_max = 10.
+      self.params[:,0] = 1e5
     else:
       self.set_weights_for_lead_policy(prev_accel_constraint)
 
@@ -266,9 +262,11 @@ class LongitudinalMpc:
     self.solver.cost_set(N, 'W', np.copy(W[:COST_E_DIM, :COST_E_DIM]))
 
     # Set L2 slack cost on lower bound constraints
-    Zl = np.array([LIMIT_COST, LIMIT_COST, LIMIT_COST, DANGER_ZONE_COST])
+    Zl = np.array([LIMIT_COST, LIMIT_COST, DANGER_ZONE_COST])
+    Zu = np.array([0.0, LIMIT_COST, 0.0])
     for i in range(N):
       self.solver.cost_set(i, 'Zl', Zl)
+      self.solver.cost_set(i, 'Zu', Zu)
 
   def set_weights_for_xva_policy(self):
     W = np.asfortranarray(np.diag([0., 10., 1., 10., 0.0, 1.]))
@@ -279,9 +277,11 @@ class LongitudinalMpc:
     self.solver.cost_set(N, 'W', np.copy(W[:COST_E_DIM, :COST_E_DIM]))
 
     # Set L2 slack cost on lower bound constraints
-    Zl = np.array([LIMIT_COST, LIMIT_COST, LIMIT_COST, 0.0])
+    Zl = np.array([LIMIT_COST, LIMIT_COST, 0.0])
+    Zu = np.array([0.0, LIMIT_COST, 0.0])
     for i in range(N):
       self.solver.cost_set(i, 'Zl', Zl)
+      self.solver.cost_set(i, 'Zu', Zu)
 
   def set_cur_state(self, v, a):
     v_prev = self.x0[1]
@@ -333,9 +333,9 @@ class LongitudinalMpc:
     lead_xv_0 = self.process_lead(radarstate.leadOne)
     lead_xv_1 = self.process_lead(radarstate.leadTwo)
 
-    # set accel limits in params
-    self.params[:,0] = interp(float(self.status), [0.0, 1.0], [self.cruise_min_a, MIN_ACCEL])
-    self.params[:,1] = self.cruise_max_a
+    # set accel limits
+    self.a_min = interp(float(self.status), [0.0, 1.0], [self.cruise_min_a, MIN_ACCEL])
+    self.a_max = self.cruise_max_a
 
     # neokii
     cruise_gap = int(clip(carstate.cruiseGap, 1., 4.))
@@ -363,10 +363,10 @@ class LongitudinalMpc:
 
     x_obstacles = np.column_stack([lead_0_obstacle, lead_1_obstacle, cruise_obstacle])
     self.source = SOURCES[np.argmin(x_obstacles[0])]
-    self.params[:,2] = np.min(x_obstacles, axis=1)
-    self.params[:,3] = np.copy(self.prev_a)
+    self.params[:,0] = np.min(x_obstacles, axis=1)
+    self.params[:,1] = np.copy(self.prev_a)
 
-    self.params[:,4] = self.param_tr
+    self.params[:,2] = self.param_tr
 
     self.run()
     if (np.any(lead_xv_0[:,0] - self.x_sol[:,0] < CRASH_DISTANCE) and
@@ -382,13 +382,23 @@ class LongitudinalMpc:
     for i in range(N):
       self.solver.cost_set(i, "yref", self.yref[i])
     self.solver.cost_set(N, "yref", self.yref[N][:COST_E_DIM])
-    self.params[:,3] = np.copy(self.prev_a)
-    self.params[:,4] = self.param_tr
+    self.params[:,1] = np.copy(self.prev_a)
+    self.params[:,2] = self.param_tr    
     self.run()
 
   def run(self):
     for i in range(N+1):
       self.solver.set(i, 'p', self.params[i])
+
+    # set bounds (only accel limits change)
+    uh = 1e4*np.ones(CONSTR_DIM)
+    lh = np.zeros(CONSTR_DIM)
+    lh[1] = self.a_min
+    uh[1] = self.a_max
+    for i in range(N):
+      self.solver.constraints_set(i, 'lh', lh)
+      self.solver.constraints_set(i, 'uh', uh)
+
     self.solver.constraints_set(0, "lbx", self.x0)
     self.solver.constraints_set(0, "ubx", self.x0)
 
