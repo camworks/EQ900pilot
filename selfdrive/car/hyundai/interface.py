@@ -25,7 +25,7 @@ class CarInterface(CarInterfaceBase):
     v_current_kph = current_speed * CV.MS_TO_KPH
 
     gas_max_bp = [0., 20., 30., 50., 70., 100, 130.]
-    gas_max_v = [CarControllerParams.ACCEL_MAX, 1., .84, .68, .43,  .25,  .1]
+    gas_max_v = [CarControllerParams.ACCEL_MAX, .92, .82, .65, .41,  .25,  .1]
 
     return CarControllerParams.ACCEL_MIN, interp(v_current_kph, gas_max_bp, gas_max_v)
 
@@ -59,14 +59,14 @@ class CarInterface(CarInterfaceBase):
     ret.steerLimitTimer = 2.5
     ret.steerRateCost = 0.5
     ret.steerMaxBP = [0., 60.*CV.KPH_TO_MS, 100.*CV.KPH_TO_MS, 130.*CV.KPH_TO_MS]
-    ret.steerMaxV = [3., 2.5, 2., 1.5]
+    ret.steerMaxV = [2.5, 2., 1.5, 1.]
 
     # longitudinal
     ret.longitudinalTuning.kpBP = [0., 10.*CV.KPH_TO_MS, 30.*CV.KPH_TO_MS, 70.*CV.KPH_TO_MS, 130.*CV.KPH_TO_MS]
     ret.longitudinalTuning.kpV = [1.3, 0.95, 0.75, 0.55, 0.35]
     ret.longitudinalTuning.kiBP = [0., 10. * CV.KPH_TO_MS, 30. * CV.KPH_TO_MS, 50. * CV.KPH_TO_MS, 70.*CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
     ret.longitudinalTuning.kiV = [0.01, 0.012, 0.02, 0.06, 0.1, 0.01]
-    ret.longitudinalTuning.kf = 0.9
+    ret.longitudinalTuning.kf = 0.85
     ret.longitudinalActuatorDelayLowerBound = 0.3
     ret.longitudinalActuatorDelayUpperBound = 0.3    
 
@@ -90,10 +90,10 @@ class CarInterface(CarInterfaceBase):
       ret.wheelbase = 3.01
       ret.centerToFront = ret.wheelbase * 0.4
     elif candidate == CAR.GENESIS_EQ900:
-      tire_stiffness_factor = .9
+      tire_stiffness_factor = .95
       ret.mass = 2120
       ret.wheelbase = 3.2
-      ret.centerToFront = ret.wheelbase * 0.45
+      ret.centerToFront = ret.wheelbase * 0.5
     elif candidate == CAR.GENESIS_EQ900_L:
       ret.mass = 2290
       ret.wheelbase = 3.45
