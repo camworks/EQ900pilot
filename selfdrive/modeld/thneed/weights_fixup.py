@@ -68,7 +68,7 @@ def load_onnx_weights(fn):
   return onnx_layers
 
 def weights_fixup(target, source_thneed, dlc):
-  #onnx_layers = load_onnx_weights(os.path.join(BASEDIR, "models/supercombo.onnx"))
+  onnx_layers = load_onnx_weights(os.path.join(BASEDIR, "models/supercombo.onnx"))
   onnx_layers = load_dlc_weights(dlc)
   jdat = load_thneed(source_thneed)
 
