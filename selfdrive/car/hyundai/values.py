@@ -4,7 +4,7 @@ Ecu = car.CarParams.Ecu
 
 class CarControllerParams:
 
-  ACCEL_MAX = 4.
+  ACCEL_MAX = 3.
   ACCEL_MIN = -3.5
 
   STEER_MAX = 409   # 409 is the max, 255 is stock
