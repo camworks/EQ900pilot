@@ -120,6 +120,8 @@ function tici_init {
   sudo su -c 'echo "performance" > /sys/class/devfreq/soc:qcom,memlat-cpu0/governor'
   sudo su -c 'echo "performance" > /sys/class/devfreq/soc:qcom,memlat-cpu4/governor'
 
+  sudo su -c 'echo "0" > /sys/devices/platform/soc/5000000.qcom,kgsl-3d0/kgsl/kgsl-3d0/throttling'
+
   # TODO: move this to agnos
   # network manager config
   nmcli connection modify --temporary lte gsm.auto-config yes
