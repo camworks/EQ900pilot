@@ -55,7 +55,7 @@ void model_init(ModelState* s, cl_device_id device_id, cl_context context) {
 }
 
 ModelOutput* model_eval_frame(ModelState* s, VisionBuf* buf, VisionBuf* wbuf,
-                              const mat3 &transform, const mat3 &transform_wide, float *desire_in) {
+                              const mat3 &transform, const mat3 &transform_wide, float *desire_in, bool prepare_only) {
 #ifdef DESIRE
   if (desire_in != NULL) {
     for (int i = 1; i < DESIRE_LEN; i++) {
@@ -79,6 +79,11 @@ ModelOutput* model_eval_frame(ModelState* s, VisionBuf* buf, VisionBuf* wbuf,
     auto net_extra_buf = s->wide_frame->prepare(wbuf->buf_cl, wbuf->width, wbuf->height, transform_wide, static_cast<cl_mem*>(s->m->getExtraBuf()));
     s->m->addExtra(net_extra_buf, s->wide_frame->buf_size);
   }
+
+  if (prepare_only) {
+    return nullptr;
+  }
+
   s->m->execute();
 
   return (ModelOutput*)&s->output;
