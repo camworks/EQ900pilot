@@ -22,14 +22,11 @@
 #include "selfdrive/common/swaglog.h"
 #include "selfdrive/camerad/cameras/sensor2_i2c.h"
 
-// For debugging:
-// echo "4294967295" > /sys/module/cam_debug_util/parameters/debug_mdl
-
 extern ExitHandler do_exit;
 
 const size_t FRAME_WIDTH = 1928;
 const size_t FRAME_HEIGHT = 1208;
-const size_t FRAME_STRIDE = 2896;  // for 12 bit output. 1928 * 12 / 8 + 4 (alignment)
+const size_t FRAME_STRIDE = 2416;  // for 10 bit output
 
 const int MIPI_SETTLE_CNT = 33;  // Calculated by camera_freqs.py
 
@@ -202,8 +199,7 @@ void CameraState::sensors_i2c(struct i2c_random_wr_payload* dat, int len, int op
   i2c_random_wr->header.count = len;
   i2c_random_wr->header.op_code = 1;
   i2c_random_wr->header.cmd_type = CAMERA_SENSOR_CMD_TYPE_I2C_RNDM_WR;
-  //i2c_random_wr->header.data_type = CAMERA_SENSOR_I2C_TYPE_WORD;
-  i2c_random_wr->header.data_type = CAMERA_SENSOR_I2C_TYPE_BYTE;
+  i2c_random_wr->header.data_type = CAMERA_SENSOR_I2C_TYPE_WORD;
   i2c_random_wr->header.addr_type = CAMERA_SENSOR_I2C_TYPE_WORD;
   memcpy(i2c_random_wr->random_wr_payload, dat, len*sizeof(struct i2c_random_wr_payload));
 
@@ -253,8 +249,7 @@ void CameraState::sensors_init() {
       break;
     case 2:
       // port 2
-      //i2c_info->slave_addr = 0x20;
-      i2c_info->slave_addr = 0x34;
+      i2c_info->slave_addr = 0x20;
       probe->camera_id = 2;
       break;
   }
@@ -268,12 +263,8 @@ void CameraState::sensors_init() {
   probe->addr_type = CAMERA_SENSOR_I2C_TYPE_WORD;
   probe->op_code = 3;   // don't care?
   probe->cmd_type = CAMERA_SENSOR_CMD_TYPE_PROBE;
-  // ar0231
-  /*probe->reg_addr = 0x3000;
-  probe->expected_data = 0x354;*/
-  // imx390
-  probe->reg_addr = 0x330;
-  probe->expected_data = 0x1538;
+  probe->reg_addr = 0x3000; //0x300a; //0x300b;
+  probe->expected_data = 0x354; //0x7750; //0x885a;
   probe->data_mask = 0;
 
   //buf_desc[1].size = buf_desc[1].length = 148;
@@ -302,8 +293,7 @@ void CameraState::sensors_init() {
   power->count = 1;
   power->cmd_type = CAMERA_SENSOR_CMD_TYPE_PWR_UP;
   power->power_settings[0].power_seq_type = 0;
-  //power->power_settings[0].config_val_low = 19200000; //Hz
-  power->power_settings[0].config_val_low = 24000000; //Hz
+  power->power_settings[0].config_val_low = 19200000; //Hz
   power = power_set_wait(power, 10);
 
   // 8,1 is this reset?
@@ -481,10 +471,10 @@ void CameraState::config_isp(int io_mem_handle, int fence, int request_id, int b
 		 .h_init = 0x0,
 		 .v_init = 0x0,
 		};
-    io_cfg[0].format = CAM_FORMAT_MIPI_RAW_12;             // CAM_FORMAT_UBWC_TP10 for YUV
+    io_cfg[0].format = CAM_FORMAT_MIPI_RAW_10;             // CAM_FORMAT_UBWC_TP10 for YUV
     io_cfg[0].color_space = CAM_COLOR_SPACE_BASE;          // CAM_COLOR_SPACE_BT601_FULL for YUV
     io_cfg[0].color_pattern = 0x5;                         // 0x0 for YUV
-    io_cfg[0].bpp = 0xc;
+    io_cfg[0].bpp = 0xa;
     io_cfg[0].resource_type = CAM_ISP_IFE_OUT_RES_RDI_0;   // CAM_ISP_IFE_OUT_RES_FULL for YUV
     io_cfg[0].fence = fence;
     io_cfg[0].direction = CAM_BUF_OUTPUT;
@@ -625,8 +615,9 @@ void CameraState::camera_open() {
       .lane_cfg = 0x3210,
 
       .vc = 0x0,
-      .dt = 0x2C,  // CSI_RAW12
-      .format = CAM_FORMAT_MIPI_RAW_12,
+      // .dt = 0x2C; //CSI_RAW12
+      .dt = 0x2B,  //CSI_RAW10
+      .format = CAM_FORMAT_MIPI_RAW_10,
 
       .test_pattern = 0x2,  // 0x3?
       .usage_type = 0x0,
@@ -652,7 +643,7 @@ void CameraState::camera_open() {
       .num_out_res = 0x1,
       .data[0] = (struct cam_isp_out_port_info){
           .res_type = CAM_ISP_IFE_OUT_RES_RDI_0,
-          .format = CAM_FORMAT_MIPI_RAW_12,
+          .format = CAM_FORMAT_MIPI_RAW_10,
           .width = FRAME_WIDTH,
           .height = FRAME_HEIGHT,
           .comp_grp_id = 0x0, .split_point = 0x0, .secure_mode = 0x0,
@@ -685,8 +676,7 @@ void CameraState::camera_open() {
   config_isp(0, 0, 1, buf0_handle, 0);
 
   LOG("-- Configuring sensor");
-  sensors_i2c(init_array_imx390, std::size(init_array_imx390), CAM_SENSOR_PACKET_OPCODE_SENSOR_CONFIG);
-  //sensors_i2c(init_array_ar0231, std::size(init_array_ar0231), CAM_SENSOR_PACKET_OPCODE_SENSOR_CONFIG);
+  sensors_i2c(init_array_ar0231, std::size(init_array_ar0231), CAM_SENSOR_PACKET_OPCODE_SENSOR_CONFIG);
   //sensors_i2c(start_reg_array, std::size(start_reg_array), CAM_SENSOR_PACKET_OPCODE_SENSOR_STREAMON);
   //sensors_i2c(stop_reg_array, std::size(stop_reg_array), CAM_SENSOR_PACKET_OPCODE_SENSOR_STREAMOFF);
 
@@ -1019,14 +1009,14 @@ void CameraState::set_camera_exposure(float grey_frac) {
   }
   // LOGE("ae - camera %d, cur_t %.5f, sof %.5f, dt %.5f", camera_num, 1e-9 * nanos_since_boot(), 1e-9 * buf.cur_frame_data.timestamp_sof, 1e-9 * (nanos_since_boot() - buf.cur_frame_data.timestamp_sof));
 
-  /*uint16_t analog_gain_reg = 0xFF00 | (new_g << 4) | new_g;
+  uint16_t analog_gain_reg = 0xFF00 | (new_g << 4) | new_g;
   struct i2c_random_wr_payload exp_reg_array[] = {
                                                   {0x3366, analog_gain_reg},
                                                   {0x3362, (uint16_t)(dc_gain_enabled ? 0x1 : 0x0)},
                                                   {0x3012, (uint16_t)exposure_time},
                                                 };
   sensors_i2c(exp_reg_array, sizeof(exp_reg_array)/sizeof(struct i2c_random_wr_payload),
-              CAM_SENSOR_PACKET_OPCODE_SENSOR_CONFIG);*/
+              CAM_SENSOR_PACKET_OPCODE_SENSOR_CONFIG);
 }
 
 void camera_autoexposure(CameraState *s, float grey_frac) {
