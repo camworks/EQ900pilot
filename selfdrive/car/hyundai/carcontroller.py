@@ -72,9 +72,9 @@ class CarController():
 
     self.scc_smoother = SccSmoother()
     self.last_blinker_frame = 0
-    self.prev_active_cam = False
-    self.active_cam_timer = 0
-    self.last_active_cam_frame = 0
+    # self.prev_active_cam = False
+    # self.active_cam_timer = 0
+    # self.last_active_cam_frame = 0
 
   def update(self, c, enabled, CS, frame, CC, actuators, pcm_cancel_cmd, visual_alert,
              left_lane, right_lane, left_lane_depart, right_lane_depart, set_speed, lead_visible, controls):
@@ -106,16 +106,19 @@ class CarController():
                         left_lane, right_lane, left_lane_depart, right_lane_depart)
 
     if self.haptic_feedback_speed_camera:
-      if self.prev_active_cam != self.scc_smoother.active_cam:
-        self.prev_active_cam = self.scc_smoother.active_cam
-        if self.scc_smoother.active_cam:
-          if (frame - self.last_active_cam_frame) * DT_CTRL > 10.0:
-            self.active_cam_timer = int(1.5 / DT_CTRL)
-            self.last_active_cam_frame = frame
-
-      if self.active_cam_timer > 0:
-        self.active_cam_timer -= 1
+      if self.scc_smoother.active_cam:
         left_lane_warning = right_lane_warning = 1
+
+      # if self.prev_active_cam != self.scc_smoother.active_cam:
+      #   self.prev_active_cam = self.scc_smoother.active_cam
+      #   if self.scc_smoother.active_cam:
+      #     if (frame - self.last_active_cam_frame) * DT_CTRL > 10.0:
+      #       self.active_cam_timer = int(1.5 / DT_CTRL)
+      #       self.last_active_cam_frame = frame
+
+      # if self.active_cam_timer > 0:
+      #   self.active_cam_timer -= 1
+      #   left_lane_warning = right_lane_warning = 1
 
     clu11_speed = CS.clu11["CF_Clu_Vanz"]
     enabled_speed = 38 if CS.is_set_speed_in_mph else 60
@@ -237,8 +240,9 @@ class CarController():
                                       CS.out.gasPressed, CS.out.brakePressed, CS.out.cruiseState.standstill,
                                       self.car_fingerprint))
 
+        activated_hda = road_speed_limiter_get_active()
         can_sends.append(create_scc11(self.packer, frame, enabled, set_speed, lead_visible, self.scc_live, CS.scc11,
-                                      self.scc_smoother.active_cam, stock_cam))
+                                      self.scc_smoother.active_cam, stock_cam, activated_hda))
 
         if frame % 20 == 0 and CS.has_scc13:
           can_sends.append(create_scc13(self.packer, CS.scc13))
@@ -265,8 +269,9 @@ class CarController():
       # activated_hda: 0 - off, 1 - main road, 2 - highway
       if self.car_fingerprint in FEATURES["send_lfa_mfa"]:
         can_sends.append(create_lfahda_mfc(self.packer, enabled, activated_hda))
-      elif CS.has_lfa_hda:
-        can_sends.append(create_hda_mfc(self.packer, activated_hda, CS, left_lane, right_lane))
+      elif CS.has_hda:
+        state = 1 and 2 # if self.car_fingerprint in FEATURES["send_hda_state_2"] else 1        
+        can_sends.append(create_hda_mfc(self.packer, activated_hda, CS, left_lane, right_lane, state, set_speed))
 
     new_actuators = actuators.copy()
     new_actuators.steer = apply_steer / CarControllerParams.STEER_MAX

@@ -3,7 +3,7 @@
 from cereal import car
 from common.numpy_fast import interp
 from selfdrive.config import Conversions as CV
-from selfdrive.car.hyundai.values import CAR, Buttons, CarControllerParams
+from selfdrive.car.hyundai.values import CAR, Buttons, CarControllerParams, FEATURES
 from selfdrive.car import STD_CARGO_KG, scale_rot_inertia, scale_tire_stiffness, gen_empty_fingerprint, get_safety_config
 from selfdrive.car.interfaces import CarInterfaceBase
 from common.params import Params
@@ -24,8 +24,8 @@ class CarInterface(CarInterfaceBase):
 
     v_current_kph = current_speed * CV.MS_TO_KPH
 
-    gas_max_bp = [0., 10., 20., 50., 70., 130., 150.]
-    gas_max_v = [CarControllerParams.ACCEL_MAX, 1.3, 0.8, 0.65, 0.47, 0.16, 0.1]
+    gas_max_bp = [0., 5., 10., 20., 50., 70., 100, 130.]
+    gas_max_v = [CarControllerParams.ACCEL_MAX, 1.65, 1.35, .83, .6, .45,  .2,  .1]
 
     return CarControllerParams.ACCEL_MIN, interp(v_current_kph, gas_max_bp, gas_max_v)
 
@@ -44,36 +44,36 @@ class CarInterface(CarInterfaceBase):
     # lateral
     ret.lateralTuning.init('lqr')
 
-    ret.lateralTuning.lqr.scale = 1600.
-    ret.lateralTuning.lqr.ki = 0.01
-    ret.lateralTuning.lqr.dcGain = 0.0027
+    ret.lateralTuning.lqr.scale = 1680.
+    ret.lateralTuning.lqr.ki = 0.015
+    ret.lateralTuning.lqr.dcGain = 0.002858
 
     ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
     ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
     ret.lateralTuning.lqr.c = [1., 0.]
-    ret.lateralTuning.lqr.k = [-110., 451.]
-    ret.lateralTuning.lqr.l = [0.33, 0.318]
+    ret.lateralTuning.lqr.k = [-110.73572306, 451.22718255]
+    ret.lateralTuning.lqr.l = [0.3233671, 0.3185757]
 
-    ret.steerRatio = 16.5
-    ret.steerActuatorDelay = 0.15
-    ret.steerRateCost = 0.35
-
-    ret.steerLimitTimer = 2.5
-    ret.steerMaxBP = [0.]
-    ret.steerMaxV = [2.]
+    ret.steerRatio = 16.
+    ret.steerActuatorDelay = 0.0
+    ret.steerLimitTimer = 1.25
+    ret.steerRateCost = 0.5
+    ret.steerMaxBP = [0., 60.*CV.KPH_TO_MS, 100.*CV.KPH_TO_MS, 130.*CV.KPH_TO_MS]
+    ret.steerMaxV = [2.5, 1.8, 1.3, 1.]
 
     # longitudinal
-    ret.longitudinalTuning.kpBP = [0., 5.*CV.KPH_TO_MS, 10.*CV.KPH_TO_MS, 20.*CV.KPH_TO_MS, 130.*CV.KPH_TO_MS]
-    ret.longitudinalTuning.kpV = [1.6, 1.18, 0.9, 0.78, 0.48]
-    ret.longitudinalTuning.kiBP = [0., 130. * CV.KPH_TO_MS]
-    ret.longitudinalTuning.kiV = [0.1, 0.06]
-    ret.longitudinalActuatorDelayLowerBound = 0.3
-    ret.longitudinalActuatorDelayUpperBound = 0.3
+    ret.longitudinalTuning.kpBP = [0., 5.*CV.KPH_TO_MS, 10.*CV.KPH_TO_MS, 30.*CV.KPH_TO_MS, 70.*CV.KPH_TO_MS, 130.*CV.KPH_TO_MS]
+    ret.longitudinalTuning.kpV = [1.3, 1., 0.93, 0.78, 0.55, 0.35]
+    ret.longitudinalTuning.kiBP = [0., 5. * CV.KPH_TO_MS, 20. * CV.KPH_TO_MS, 50.*CV.KPH_TO_MS, 100. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
+    ret.longitudinalTuning.kiV = [0.01, 0.012, 0.045, 0.04, 0.01]
+    ret.longitudinalTuning.kf = 0.9
+    ret.longitudinalActuatorDelayLowerBound = 0.35
+    ret.longitudinalActuatorDelayUpperBound = 0.25
 
     ret.stopAccel = -2.0
-    ret.stoppingDecelRate = 0.5  # brake_travel/s while trying to stop
-    ret.vEgoStopping = 0.5
-    ret.vEgoStarting = 0.5
+    ret.stoppingDecelRate = 0.125  # brake_travel/s while trying to stop
+    ret.vEgoStopping = 0.7
+    ret.vEgoStarting = 0.3  # needs to be >= vEgoStopping to avoid state transition oscillation
 
     # genesis
     if candidate == CAR.GENESIS:
@@ -90,9 +90,10 @@ class CarInterface(CarInterfaceBase):
       ret.wheelbase = 3.01
       ret.centerToFront = ret.wheelbase * 0.4
     elif candidate == CAR.GENESIS_EQ900:
-      ret.mass = 2200
-      ret.wheelbase = 3.15
-      ret.centerToFront = ret.wheelbase * 0.4
+      tire_stiffness_factor = .95
+      ret.mass = 2120
+      ret.wheelbase = 3.2
+      ret.centerToFront = ret.wheelbase * 0.5
     elif candidate == CAR.GENESIS_EQ900_L:
       ret.mass = 2290
       ret.wheelbase = 3.45
@@ -284,7 +285,7 @@ class CarInterface(CarInterfaceBase):
       ret.hasScc14 = 905 in fingerprint[ret.sccBus]
 
     ret.hasEms = 608 in fingerprint[0] and 809 in fingerprint[0]
-    ret.hasLfaHda = 1157 in fingerprint[0]
+    ret.hasHda = 1157 in fingerprint[0] or candidate in FEATURES['has_hda']
 
     ret.radarOffCan = ret.sccBus == -1
     ret.pcmCruise = not ret.radarOffCan
@@ -390,8 +391,8 @@ class CarInterface(CarInterfaceBase):
   # scc smoother - hyundai only
   def apply(self, c, controls):
     ret = self.CC.update(c, c.enabled, self.CS, self.frame, c, c.actuators,
-                               c.cruiseControl.cancel, c.hudControl.visualAlert, c.hudControl.leftLaneVisible,
-                               c.hudControl.rightLaneVisible, c.hudControl.leftLaneDepart, c.hudControl.rightLaneDepart,
-                               c.hudControl.setSpeed, c.hudControl.leadVisible, controls)
+                         c.cruiseControl.cancel, c.hudControl.visualAlert, c.hudControl.leftLaneVisible,
+                         c.hudControl.rightLaneVisible, c.hudControl.leftLaneDepart, c.hudControl.rightLaneDepart,
+                         c.hudControl.setSpeed, c.hudControl.leadVisible, controls)
     self.frame += 1
     return ret

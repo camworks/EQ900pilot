@@ -29,7 +29,7 @@ class CarState(CarStateBase):
     self.scc_bus = CP.sccBus
     self.has_scc13 = CP.hasScc13 or CP.carFingerprint in FEATURES["has_scc13"]
     self.has_scc14 = CP.hasScc14 or CP.carFingerprint in FEATURES["has_scc14"]
-    self.has_lfa_hda = CP.hasLfaHda
+    self.has_hda = CP.hasHda
     self.leftBlinker = False
     self.rightBlinker = False
     self.cruise_main_button = 0
@@ -158,6 +158,10 @@ class CarState(CarStateBase):
       ret.gas = cp.vl["EMS12"]["PV_AV_CAN"] / 100.
       ret.gasPressed = bool(cp.vl["EMS16"]["CF_Ems_AclAct"])
 
+    if not self.car_fingerprint in FEATURES["use_elect_gears"]: # for display current state of gear by Tenesi
+      ret.currentGear = cp.vl["LVR11"]["CF_Lvr_CGear"]
+
+
     # TODO: refactor gear parsing in function
     # Gear Selection via Cluster - For those Kia/Hyundai which are not fully discovered, we can use the Cluster Indicator for Gear Selection,
     # as this seems to be standard over all cars, but is not the preferred method.
@@ -193,7 +197,7 @@ class CarState(CarStateBase):
     self.scc11 = cp_scc.vl["SCC11"]
     self.scc12 = cp_scc.vl["SCC12"]
     self.mdps12 = cp_mdps.vl["MDPS12"]
-    self.lfahda_mfc = cp_cam.vl["LFAHDA_MFC"]
+    self.hda_mfc = cp_cam.vl["LFAHDA_MFC"]    
     self.park_brake = cp.vl["CGW1"]["CF_Gway_ParkBrakeSw"]
     self.steer_state = cp_mdps.vl["MDPS12"]["CF_Mdps_ToiActive"] #0 NOT ACTIVE, 1 ACTIVE
     self.cruise_unavail_cnt += 1 if cp.vl["TCS13"]["CF_VSM_Avail"] != 1 and cp.vl["TCS13"]["ACCEnable"] != 0 else -self.cruise_unavail_cnt
@@ -271,7 +275,17 @@ class CarState(CarStateBase):
       ("ESC_Off_Step", "TCS15"),
       ("AVH_LAMP", "TCS15"),
 
-      #("CF_Lvr_GearInf", "LVR11"),        # Transmission Gear (0 = N or P, 1-8 = Fwd, 14 = Rev)
+      ("Lvr12_00", "LVR12"),      # for display current state of gear by Tenesi
+      ("Lvr12_01", "LVR12"),
+      ("Lvr12_02", "LVR12"),
+      ("Lvr12_03", "LVR12"),
+      ("Lvr12_04", "LVR12"),
+      ("Lvr12_05", "LVR12"),
+      ("Lvr12_06", "LVR12"),
+      ("Lvr12_07", "LVR12"),
+
+      ("CF_Lvr_CGear", "LVR11"),  # for display current state of gear by Tenesi
+      ("CF_Lvr_GearInf", "LVR11"),  # Transmission Gear (0 = N or P, 1-8 = Fwd, 14 = Rev)
 
       ("MainMode_ACC", "SCC11"),
       ("SCCInfoDisplay", "SCC11"),
@@ -613,13 +627,15 @@ class CarState(CarStateBase):
         ("SCC12", 50),
       ]
 
-      if CP.hasLfaHda:
+      if CP.hasHda:
         signals += [
           ("HDA_USM", "LFAHDA_MFC"),
           ("HDA_Active", "LFAHDA_MFC"),
           ("HDA_Icon_State", "LFAHDA_MFC"),
           ("HDA_LdwSysState", "LFAHDA_MFC"),
           ("HDA_Icon_Wheel", "LFAHDA_MFC"),
+          ("HDA_VSetReq", "LFAHDA_MFC"),
+          ("HDA_Chime", "LFAHDA_MFC"),
         ]
         checks += [("LFAHDA_MFC", 20)]
 

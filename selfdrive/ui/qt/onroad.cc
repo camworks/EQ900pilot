@@ -294,8 +294,8 @@ void NvgWindow::drawLaneLines(QPainter &painter, const UIScene &scene) {
   }
   // paint path
   QLinearGradient bg(0, height(), 0, height() / 4);
-  bg.setColorAt(0, scene.end_to_end ? redColor(200) : whiteColor(200));
-  bg.setColorAt(1, scene.end_to_end ? redColor(0) : whiteColor(0));
+  bg.setColorAt(0, scene.end_to_end ? redColor(200) : magentaColor(200));
+  bg.setColorAt(1, scene.end_to_end ? redColor(0) : magentaColor(0));
   painter.setBrush(bg);
   painter.drawPolygon(scene.track_vertices.v, scene.track_vertices.cnt);
 }
@@ -433,6 +433,7 @@ void NvgWindow::drawHud(QPainter &p) {
   drawSpeedLimit(p);
   drawTurnSignals(p);
   drawGpsStatus(p);
+  drawCurrentGear(p);    
 
   if(s->show_debug && width() > 1200)
     drawDebugText(p);
@@ -453,15 +454,16 @@ void NvgWindow::drawHud(QPainter &p) {
 
   int mdps_bus = car_params.getMdpsBus();
   int scc_bus = car_params.getSccBus();
+  bool has_hda = car_params.getHasHda();  
 
   QString infoText;
-  infoText.sprintf("AO(%.2f/%.2f) SR(%.2f) SRC(%.2f) SAD(%.2f) BUS(MDPS %d, SCC %d) SCC(%.2f/%.2f/%.2f)",
+  infoText.sprintf("AO(%.2f/%.2f) SR(%.2f) SRC(%.2f) SAD(%.2f) BUS(MDPS %d, SCC %d, HDA %d) SCC(%.2f/%.2f/%.2f)",
                       live_params.getAngleOffsetDeg(),
                       live_params.getAngleOffsetAverageDeg(),
                       controls_state.getSteerRatio(),
                       controls_state.getSteerRateCost(),
                       controls_state.getSteerActuatorDelay(),
-                      mdps_bus, scc_bus,
+                      mdps_bus, scc_bus, has_hda,
                       controls_state.getSccGasFactor(),
                       controls_state.getSccBrakeFactor(),
                       controls_state.getSccCurvatureFactor()
@@ -536,6 +538,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   int gap = car_state.getCruiseGap();
   bool longControl = scc_smoother.getLongControl();
   int autoTrGap = scc_smoother.getAutoTrGap();
+  x = radius / 2 + (bdr_s * 2) + (radius + 50);
 
   p.setPen(Qt::NoPen);
   p.setBrush(QBrush(QColor(0, 0, 0, 255 * .1f)));
@@ -618,7 +621,9 @@ void NvgWindow::drawMaxSpeed(QPainter &p) {
         snprintf(str, sizeof(str), "%d", (int)(cruiseMaxSpeed*KM_TO_MILE + 0.5));
 
     configFont(p, "Open Sans", 76, "Bold");
-    drawText(p, rc.center().x(), 195, str, 255);
+    QColor textColor = QColor(255, 0, 255, 200);
+    drawTextWithColor(p, rc.center().x(), 195, str, textColor);   
+
   } else {
     if(long_control) {
       configFont(p, "Open Sans", 48, "sans-semibold");
@@ -655,6 +660,12 @@ void NvgWindow::drawSpeed(QPainter &p) {
     a = std::max(a, 60);
     color = QColor(255, a, a, 230);
   }
+
+  bool brakeLights = car_state.getBrakeLights();
+  bool brakePress = car_state.getBrakePressed();
+
+  if( brakePress ) color = QColor(255, 0, 0, 200);
+  else if( brakeLights ) color = QColor(255, 0, 255, 100);
 
   QString speed;
   speed.sprintf("%.0f", cur_speed);
@@ -885,7 +896,7 @@ void NvgWindow::drawDebugText(QPainter &p) {
 
   auto controls_state = sm["controlsState"].getControlsState();
   auto car_control = sm["carControl"].getCarControl();
-  //auto car_state = sm["carState"].getCarState();
+  auto car_state = sm["carState"].getCarState();
 
   float applyAccel = controls_state.getApplyAccel();
 
@@ -893,8 +904,8 @@ void NvgWindow::drawDebugText(QPainter &p) {
   float aReqValueMin = controls_state.getAReqValueMin();
   float aReqValueMax = controls_state.getAReqValueMax();
 
-  //int sccStockCamAct = (int)controls_state.getSccStockCamAct();
-  //int sccStockCamStatus = (int)controls_state.getSccStockCamStatus();
+//  int sccStockCamAct = (int)controls_state.getSccStockCamAct();
+//  int sccStockCamStatus = (int)controls_state.getSccStockCamStatus();
 
   int longControlState = (int)controls_state.getLongControlState();
   float vPid = controls_state.getVPid();
@@ -940,7 +951,11 @@ void NvgWindow::drawDebugText(QPainter &p) {
   str.sprintf("%.3f (%.3f/%.3f)\n", aReqValue, aReqValueMin, aReqValueMax);
   p.drawText(text_x, y, str);
 
-  auto car_state = sm["carState"].getCarState();
+//  y += height;
+//  str.sprintf("CamStatus: %d, CamAct: %d\n", sccStockCamStatus, sccStockCamAct);
+//  p.drawText(text_x, y, str);
+
+  //auto car_state = sm["carState"].getCarState();
 
   y += height;
   str.sprintf("aEgo: %.3f\n", car_state.getAEgo());
@@ -955,4 +970,44 @@ void NvgWindow::drawDebugText(QPainter &p) {
   y += height;
   str.sprintf("Lead: %.1f/%.1f/%.1f\n", radar_dist, vision_dist, (radar_dist - vision_dist));
   p.drawText(text_x, y, str);
+}
+
+void NvgWindow::drawCurrentGear(QPainter &p) {
+  const SubMaster &sm = *(uiState()->sm);
+  auto car_state = sm["carState"].getCarState();
+
+  float currentGear = car_state.getCurrentGear();
+  int gearShifter = (int)car_state.getGearShifter();
+  float textSize = 25 * 7.f;
+
+  QRect rc(220, 30, 184, 202);
+  p.setPen(QPen(QColor(0xff, 0xff, 0xff, 100), 10));
+  p.setBrush(QColor(0, 0, 0, 100));
+  p.drawRoundedRect(rc, 20, 20);
+  p.setPen(Qt::NoPen);
+
+  QString str;
+  configFont(p, "Open Sans", textSize, "Bold");
+
+  QColor textColor0 = QColor(120, 255, 120, 200);
+  QColor textColor1 = QColor(255, 0, 0, 200);
+  QColor textColor2 = QColor(255, 255, 255, 200);
+  QColor textColor3 = QColor(255, 255, 0, 200);
+
+  if ((currentGear < 9) && (currentGear !=0)) {
+    str.sprintf("%.0f", currentGear);
+    drawTextWithColor(p, rc.center().x(), rc.center().y() + 70, str, textColor0);
+  } else if (currentGear == 14 ) {
+    configFont(p, "Open Sans", textSize, "Bold");
+    drawTextWithColor(p, rc.center().x(), rc.center().y() + 70, "R", textColor1);
+  } else if (gearShifter == 1 ) {
+    configFont(p, "Open Sans", textSize, "Bold");
+    drawTextWithColor(p, rc.center().x(), rc.center().y() + 70, "P", textColor2);
+  } else if (gearShifter == 3 ) {
+    configFont(p, "Open Sans", textSize, "Bold");
+    drawTextWithColor(p, rc.center().x(), rc.center().y() + 70, "N", textColor3);
+  } else {
+    configFont(p, "Open Sans", textSize, "Bold");
+    drawTextWithColor(p, rc.center().x(), rc.center().y() + 70, "", textColor3);
+  }
 }

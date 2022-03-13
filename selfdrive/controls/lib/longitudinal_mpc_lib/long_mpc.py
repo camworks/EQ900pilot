@@ -42,10 +42,10 @@ LIMIT_COST = 1e6
 
 
 CRUISE_GAP_BP = [1., 2., 3., 4.]
-CRUISE_GAP_V = [1.2, 1.35, 1.5, 1.7]
+CRUISE_GAP_V = [1.1, 1.3, 2.3, 2.3]
 
-AUTO_TR_BP = [0., 10.*CV.KPH_TO_MS, 70.*CV.KPH_TO_MS, 110.*CV.KPH_TO_MS]
-AUTO_TR_V = [1., 1.2, 1.35, 1.45]
+AUTO_TR_BP = [0., 20.*CV.KPH_TO_MS, 60.*CV.KPH_TO_MS, 110.*CV.KPH_TO_MS]
+AUTO_TR_V = [1., 1.15, 1.5, 1.9]
 
 AUTO_TR_CRUISE_GAP = 4
 
@@ -292,7 +292,7 @@ class LongitudinalMpc:
   def process_lead(self, lead):
     v_ego = self.x0[1]
     if lead is not None and lead.status:
-      x_lead = lead.dRel
+      x_lead = lead.dRel# if lead.radar else max(lead.dRel - 1., 0.)
       v_lead = lead.vLead
       a_lead = lead.aLeadK
       a_lead_tau = lead.aLeadTau
