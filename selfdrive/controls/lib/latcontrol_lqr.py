@@ -7,7 +7,7 @@ from cereal import log
 from selfdrive.controls.lib.drive_helpers import get_steer_max
 from selfdrive.ntune import nTune
 from selfdrive.controls.lib.latcontrol import LatControl, MIN_STEER_SPEED
-from selfdrive.config import Conversions as CV
+from common.conversions import Conversions as CV
 
 TORQUE_SCALE_BP = [0., 30., 80., 100., 130.]
 TORQUE_SCALE_V = [0.2, 0.35, 0.65, 0.7, 0.75]
