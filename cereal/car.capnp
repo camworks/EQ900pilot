@@ -311,8 +311,7 @@ struct RadarData @0x888ad6581cf0aacb {
 struct CarControl {
   # must be true for any actuator commands to work
   enabled @0 :Bool;
-  latActive @11: Bool;
-  longActive @12: Bool;
+  active @7 :Bool;
 
   # Actuator commands as computed by controlsd
   actuators @6 :Actuators;
@@ -328,7 +327,7 @@ struct CarControl {
   cruiseControl @4 :CruiseControl;
   hudControl @5 :HUDControl;
 
-  sccSmoother @13 :SccSmoother;
+  sccSmoother @11 :SccSmoother;
 
   struct SccSmoother {
     longControl @0:Bool;
@@ -417,7 +416,6 @@ struct CarControl {
   gasDEPRECATED @1 :Float32;
   brakeDEPRECATED @2 :Float32;
   steeringTorqueDEPRECATED @3 :Float32;
-  activeDEPRECATED @7 :Bool;
 }
 
 # ****** car param ******
