@@ -361,8 +361,6 @@ class CarInterface(CarInterfaceBase):
       events.add(EventName.belowSteerSpeed)
     if self.CC.turning_indicator_alert:
       events.add(EventName.turningIndicatorOn)
-    if self.mad_mode_enabled and EventName.pedalPressed in events.events:
-      events.events.remove(EventName.pedalPressed)
 
   # handle button presses
     for b in ret.buttonEvents:
@@ -393,7 +391,7 @@ class CarInterface(CarInterfaceBase):
 
   # scc smoother - hyundai only
   def apply(self, c, controls):
-    ret = self.CC.update(c, c.enabled, self.CS, self.frame, c, c.actuators,
+    ret = self.CC.update(c, self.CS, self.frame, c.actuators,
                          c.cruiseControl.cancel, c.hudControl.visualAlert, c.hudControl.leftLaneVisible,
                          c.hudControl.rightLaneVisible, c.hudControl.leftLaneDepart, c.hudControl.rightLaneDepart,
                          c.hudControl.setSpeed, c.hudControl.leadVisible, controls)
