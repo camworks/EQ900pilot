@@ -7,7 +7,7 @@ from selfdrive.hardware import EON, TICI
 from selfdrive.swaglog import cloudlog
 from selfdrive.ntune import ntune_common_get
 
-ENABLE_ZORROBYTE = False
+ENABLE_ZORROBYTE = True
 ENABLE_INC_LANE_PROB = True
 
 TRAJECTORY_SIZE = 33
@@ -96,7 +96,7 @@ class LanePlanner:
 
     if ENABLE_ZORROBYTE:
       # zorrobyte code
-      if l_prob > 0.5 and r_prob > 0.5:
+      if l_prob > 0.4 and r_prob > 0.4:
         self.frame += 1
         if self.frame > 20:
           self.frame = 0
@@ -116,7 +116,7 @@ class LanePlanner:
       self.lane_width_certainty.update(l_prob * r_prob)
       current_lane_width = abs(self.rll_y[0] - self.lll_y[0])
       self.lane_width_estimate.update(current_lane_width)
-      speed_lane_width = interp(v_ego, [0., 31.], [2.8, 3.5])
+      speed_lane_width = interp(v_ego, [0., 50.], [2.7, 3.7])
       self.lane_width = self.lane_width_certainty.x * self.lane_width_estimate.x + \
                         (1 - self.lane_width_certainty.x) * speed_lane_width
 
