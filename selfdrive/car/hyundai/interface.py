@@ -2,6 +2,7 @@
 
 from cereal import car
 from common.numpy_fast import interp
+from panda import Panda
 from common.conversions import Conversions as CV
 from selfdrive.car.hyundai.values import CAR, DBC, Buttons, CarControllerParams, FEATURES
 from selfdrive.car.hyundai.radar_interface import RADAR_START_ADDR
@@ -31,7 +32,7 @@ class CarInterface(CarInterfaceBase):
     return CarControllerParams.ACCEL_MIN, interp(v_current_kph, gas_max_bp, gas_max_v)
 
   @staticmethod
-  def get_params(candidate, fingerprint=gen_empty_fingerprint(), car_fw=[]):  # pylint: disable=dangerous-default-value
+  def get_params(candidate, fingerprint=gen_empty_fingerprint(), car_fw=[], disable_radar=False):  # pylint: disable=dangerous-default-value
     ret = CarInterfaceBase.get_std_params(candidate, fingerprint)
 
     ret.openpilotLongitudinalControl = Params().get_bool('LongControlEnabled')

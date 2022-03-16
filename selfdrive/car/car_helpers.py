@@ -170,15 +170,17 @@ def get_car(logcan, sendcan):
     cloudlog.warning("car doesn't match any fingerprints: %r", fingerprints)
     candidate = "mock"
 
+  disable_radar = Params().get_bool("DisableRadar")
+
   selected_car = Params().get("SelectedCar")
   if selected_car:
     candidate = selected_car.decode("utf-8")
 
   CarInterface, CarController, CarState = interfaces[candidate]
-  car_params = CarInterface.get_params(candidate, fingerprints, car_fw)
-  car_params.carVin = vin
-  car_params.carFw = car_fw
-  car_params.fingerprintSource = source
-  car_params.fuzzyFingerprint = not exact_match
+  CP = CarInterface.get_params(candidate, fingerprints, car_fw, disable_radar)
+  CP.carVin = vin
+  CP.carFw = car_fw
+  CP.fingerprintSource = source
+  CP.fuzzyFingerprint = not exact_match
 
-  return CarInterface(car_params, CarController, CarState), car_params
+  return CarInterface(CP, CarController, CarState), CP
