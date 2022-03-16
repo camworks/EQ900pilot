@@ -139,7 +139,8 @@ class CarInterfaceBase(ABC):
       events.add(EventName.wrongCruiseMode)
     #if cs_out.brakeHoldActive and self.CP.openpilotLongitudinalControl:
     #  events.add(EventName.brakeHold)
-
+    if cs_out.parkingBrake:
+      events.add(EventName.parkBrake)
 
     # Handle permanent and temporary steering faults
     self.steering_unpressed = 0 if cs_out.steeringPressed else self.steering_unpressed + 1
