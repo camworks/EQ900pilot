@@ -323,13 +323,13 @@ struct CarControl {
   # and matches what is sent to the car
   actuatorsOutput @10 :Actuators;
 
-  roll @8 :Float32;
-  pitch @9 :Float32;
+  orientationNED @13 :List(Float32);
+  angularVelocity @14 :List(Float32);
 
   cruiseControl @4 :CruiseControl;
   hudControl @5 :HUDControl;
 
-  sccSmoother @13 :SccSmoother;
+  sccSmoother @15 :SccSmoother;
 
   struct SccSmoother {
     longControl @0:Bool;
@@ -419,6 +419,8 @@ struct CarControl {
   brakeDEPRECATED @2 :Float32;
   steeringTorqueDEPRECATED @3 :Float32;
   activeDEPRECATED @7 :Bool;
+  rollDEPRECATED @8 :Float32;
+  pitchDEPRECATED @9 :Float32;
 }
 
 # ****** car param ******
