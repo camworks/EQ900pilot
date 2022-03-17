@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
 
 from cereal import car
-from panda import Panda
-from common.params import Params
-from common.conversions import Conversions as CV
-from selfdrive.car.hyundai.values import CAR, EV_CAR, HYBRID_CAR, Buttons, CarControllerParams, FEATURES
-from selfdrive.car.hyundai.radar_interface import RADAR_START_ADDR
 from common.numpy_fast import interp
+from common.conversions import Conversions as CV
+from selfdrive.car.hyundai.values import CAR, DBC, Buttons, CarControllerParams, FEATURES
+from selfdrive.car.hyundai.radar_interface import RADAR_START_ADDR
 from selfdrive.car import STD_CARGO_KG, scale_rot_inertia, scale_tire_stiffness, gen_empty_fingerprint, get_safety_config
 from selfdrive.car.interfaces import CarInterfaceBase
 from common.params import Params
@@ -62,20 +60,20 @@ class CarInterface(CarInterfaceBase):
     ret.steerLimitTimer = 1.0
     ret.steerRateCost = 0.5
     ret.steerMaxBP = [0., 60.*CV.KPH_TO_MS, 100.*CV.KPH_TO_MS, 130.*CV.KPH_TO_MS]
-    ret.steerMaxV = [2.5, 1.8, 1.3, 1.]
+    ret.steerMaxV = [2.5, 1.8, 1.5, 1.3]
 
     # longitudinal
     ret.longitudinalTuning.kpBP = [0., 20.*CV.KPH_TO_MS, 30.*CV.KPH_TO_MS, 70.*CV.KPH_TO_MS, 130.*CV.KPH_TO_MS]
     ret.longitudinalTuning.kpV = [1.2, 0.9, 0.78, 0.55, 0.35]
     ret.longitudinalTuning.kiBP = [0., 130. * CV.KPH_TO_MS]
-    ret.longitudinalTuning.kiV = [0.1, 0.06]
+    ret.longitudinalTuning.kiV = [0.06, 0.02]
     ret.longitudinalTuning.kf = 0.9	
     ret.longitudinalActuatorDelayLowerBound = 0.35
     ret.longitudinalActuatorDelayUpperBound = 0.25
 
     ret.stopAccel = -2.0
     ret.stoppingDecelRate = 0.125  # brake_travel/s while trying to stop
-    ret.vEgoStopping = 0.7
+    ret.vEgoStopping = 0.6
     ret.vEgoStarting = 0.3  # needs to be >= vEgoStopping to avoid state transition oscillation
 
     # genesis
@@ -361,8 +359,6 @@ class CarInterface(CarInterfaceBase):
       events.add(EventName.belowSteerSpeed)
     if self.CC.turning_indicator_alert:
       events.add(EventName.turningIndicatorOn)
-    if self.mad_mode_enabled and EventName.pedalPressed in events.events:
-      events.events.remove(EventName.pedalPressed)
 
   # handle button presses
     for b in ret.buttonEvents:
@@ -393,7 +389,7 @@ class CarInterface(CarInterfaceBase):
 
   # scc smoother - hyundai only
   def apply(self, c, controls):
-    ret = self.CC.update(c, c.enabled, self.CS, self.frame, c, c.actuators,
+    ret = self.CC.update(c, self.CS, self.frame, c.actuators,
                          c.cruiseControl.cancel, c.hudControl.visualAlert, c.hudControl.leftLaneVisible,
                          c.hudControl.rightLaneVisible, c.hudControl.leftLaneDepart, c.hudControl.rightLaneDepart,
                          c.hudControl.setSpeed, c.hudControl.leadVisible, controls)

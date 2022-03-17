@@ -1,9 +1,9 @@
 from cereal import car
-from common.conversions import Conversions as CV
+from selfdrive.car.hyundai.values import DBC, STEER_THRESHOLD, FEATURES, CAR, HYBRID_CAR, EV_HYBRID_CAR
+from selfdrive.car.interfaces import CarStateBase
 from opendbc.can.parser import CANParser
 from opendbc.can.can_define import CANDefine
-from selfdrive.car.hyundai.values import DBC, STEER_THRESHOLD, FEATURES, CAR, EV_CAR, HYBRID_CAR, EV_HYBRID_CAR
-from selfdrive.car.interfaces import CarStateBase
+from common.conversions import Conversions as CV
 from common.params import Params
 
 GearShifter = car.CarState.GearShifter
@@ -143,6 +143,8 @@ class CarState(CarStateBase):
     ret.brake = 0
     ret.brakePressed = cp.vl["TCS13"]["DriverBraking"] != 0
     ret.brakeHoldActive = cp.vl["TCS15"]["AVH_LAMP"] == 2  # 0 OFF, 1 ERROR, 2 ACTIVE, 3 READY
+    ret.parkingBrake = cp.vl["TCS13"]["PBRAKE_ACT"] == 1
+    #ret.parkingBrake = cp.vl["CGW1"]["CF_Gway_ParkBrakeSw"]
 
     # TODO: Check this
     ret.brakeLights = bool(cp.vl["TCS13"]["BrakeLight"] or ret.brakePressed)
@@ -198,7 +200,6 @@ class CarState(CarStateBase):
     self.scc12 = cp_scc.vl["SCC12"]
     self.mdps12 = cp_mdps.vl["MDPS12"]
     self.hda_mfc = cp_cam.vl["LFAHDA_MFC"]    
-    self.park_brake = cp.vl["CGW1"]["CF_Gway_ParkBrakeSw"]
     self.steer_state = cp_mdps.vl["MDPS12"]["CF_Mdps_ToiActive"] #0 NOT ACTIVE, 1 ACTIVE
     self.cruise_unavail_cnt += 1 if cp.vl["TCS13"]["CF_VSM_Avail"] != 1 and cp.vl["TCS13"]["ACCEnable"] != 0 else -self.cruise_unavail_cnt
     self.cruise_unavail = self.cruise_unavail_cnt > 100
@@ -269,6 +270,7 @@ class CarState(CarStateBase):
       ("ACCEnable", "TCS13"),
       ("BrakeLight", "TCS13"),
       ("DriverBraking", "TCS13"),
+      ("PBRAKE_ACT", "TCS13"),
       ("DriverOverride", "TCS13"), # scc smoother
       ("CF_VSM_Avail", "TCS13"),
 
@@ -634,8 +636,6 @@ class CarState(CarStateBase):
           ("HDA_Icon_State", "LFAHDA_MFC"),
           ("HDA_LdwSysState", "LFAHDA_MFC"),
           ("HDA_Icon_Wheel", "LFAHDA_MFC"),
-          ("HDA_VSetReq", "LFAHDA_MFC"),
-          ("HDA_Chime", "LFAHDA_MFC"),
         ]
         checks += [("LFAHDA_MFC", 20)]
 

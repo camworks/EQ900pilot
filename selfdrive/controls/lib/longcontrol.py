@@ -4,6 +4,7 @@ from common.realtime import DT_CTRL
 from selfdrive.controls.lib.pid import PIController
 from selfdrive.controls.lib.drive_helpers import CONTROL_N
 from selfdrive.modeld.constants import T_IDXS
+from selfdrive.ntune import ntune_scc_get
 from common.conversions import Conversions as CV
 
 LongCtrlState = car.CarControl.Actuators.LongControlState
@@ -119,7 +120,7 @@ class LongControl():
       # Keep applying brakes until the car is stopped
       if not CS.standstill or output_accel > CP.stopAccel:
         output_accel -= CP.stoppingDecelRate * DT_CTRL * \
-                        interp(output_accel, [CP.stopAccel, CP.stopAccel/2., CP.stopAccel/4., 0.], [0.5, 0.85, 1.35, 2.2])
+                        interp(output_accel, [CP.stopAccel, CP.stopAccel/2., CP.stopAccel/4., 0.], [0.5, 0.85, 1.2, 2.2])
       output_accel = clip(output_accel, accel_limits[0], accel_limits[1])
       self.reset(CS.vEgo)
 

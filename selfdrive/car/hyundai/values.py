@@ -8,8 +8,8 @@ class CarControllerParams:
   ACCEL_MIN = -3.5
 
   STEER_MAX = 409   # 409 is the max, 255 is stock
-  STEER_DELTA_UP = 4
-  STEER_DELTA_DOWN = 7
+  STEER_DELTA_UP = 3.5
+  STEER_DELTA_DOWN = 6
   STEER_DRIVER_ALLOWANCE = 50
   STEER_DRIVER_MULTIPLIER = 2
   STEER_DRIVER_FACTOR = 1
@@ -180,7 +180,6 @@ FEATURES = {
                    CAR.K9, CAR.GENESIS_G90, CAR.NIRO_HEV_2021, CAR.SANTA_FE_2022, CAR.SANTA_FE_HEV_2022, CAR.K5_2021,
                    CAR.SELTOS},
 
-  "send_hda_state_2": {CAR.GENESIS_G80, CAR.GENESIS_EQ900, CAR.GENESIS_EQ900_L},
   "has_hda": {CAR.GENESIS_G80, CAR.GENESIS_EQ900, CAR.GENESIS_EQ900_L},
 
   # these cars use the FCA11 message for the AEB and FCW signals, all others use SCC12
