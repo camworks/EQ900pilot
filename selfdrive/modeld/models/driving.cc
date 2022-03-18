@@ -199,6 +199,7 @@ void fill_plan(cereal::ModelDataV2::Builder &framed, const ModelOutputPlanPredic
   std::array<float, TRAJECTORY_SIZE> pos_x, pos_y, pos_z;
   std::array<float, TRAJECTORY_SIZE> pos_x_std, pos_y_std, pos_z_std;
   std::array<float, TRAJECTORY_SIZE> vel_x, vel_y, vel_z;
+  std::array<float, TRAJECTORY_SIZE> accel_x, accel_y, accel_z;
   std::array<float, TRAJECTORY_SIZE> rot_x, rot_y, rot_z;
   std::array<float, TRAJECTORY_SIZE> rot_rate_x, rot_rate_y, rot_rate_z;
 
@@ -212,6 +213,9 @@ void fill_plan(cereal::ModelDataV2::Builder &framed, const ModelOutputPlanPredic
     vel_x[i] = plan.mean[i].velocity.x;
     vel_y[i] = plan.mean[i].velocity.y;
     vel_z[i] = plan.mean[i].velocity.z;
+    accel_x[i] = plan.mean[i].acceleration.x;
+    accel_y[i] = plan.mean[i].acceleration.y;
+    accel_z[i] = plan.mean[i].acceleration.z;
     rot_x[i] = plan.mean[i].rotation.x;
     rot_y[i] = plan.mean[i].rotation.y;
     rot_z[i] = plan.mean[i].rotation.z;
@@ -222,25 +226,31 @@ void fill_plan(cereal::ModelDataV2::Builder &framed, const ModelOutputPlanPredic
 
   fill_xyzt(framed.initPosition(), T_IDXS_FLOAT, pos_x, pos_y, pos_z, pos_x_std, pos_y_std, pos_z_std);
   fill_xyzt(framed.initVelocity(), T_IDXS_FLOAT, vel_x, vel_y, vel_z);
+  fill_xyzt(framed.initAcceleration(), T_IDXS_FLOAT, accel_x, accel_y, accel_z);
   fill_xyzt(framed.initOrientation(), T_IDXS_FLOAT, rot_x, rot_y, rot_z);
   fill_xyzt(framed.initOrientationRate(), T_IDXS_FLOAT, rot_rate_x, rot_rate_y, rot_rate_z);
 }
 
 void fill_lane_lines(cereal::ModelDataV2::Builder &framed, const std::array<float, TRAJECTORY_SIZE> &plan_t,
                      const ModelOutputLaneLines &lanes) {
+
+  const auto &left_far = lanes.get_lane_idx(0);
+  const auto &left_near = lanes.get_lane_idx(1);
+  const auto &right_near = lanes.get_lane_idx(2);
+  const auto &right_far = lanes.get_lane_idx(3);
   std::array<float, TRAJECTORY_SIZE> left_far_y, left_far_z;
   std::array<float, TRAJECTORY_SIZE> left_near_y, left_near_z;
   std::array<float, TRAJECTORY_SIZE> right_near_y, right_near_z;
   std::array<float, TRAJECTORY_SIZE> right_far_y, right_far_z;
   for (int j=0; j<TRAJECTORY_SIZE; j++) {
-    left_far_y[j] = lanes.mean.left_far[j].y;
-    left_far_z[j] = lanes.mean.left_far[j].z;
-    left_near_y[j] = lanes.mean.left_near[j].y;
-    left_near_z[j] = lanes.mean.left_near[j].z;
-    right_near_y[j] = lanes.mean.right_near[j].y;
-    right_near_z[j] = lanes.mean.right_near[j].z;
-    right_far_y[j] = lanes.mean.right_far[j].y;
-    right_far_z[j] = lanes.mean.right_far[j].z;
+    left_far_y[j] = left_far.mean[j].y;
+    left_far_z[j] = left_far.mean[j].z;
+    left_near_y[j] = left_near.mean[j].y;
+    left_near_z[j] = left_near.mean[j].z;
+    right_near_y[j] = right_near.mean[j].y;
+    right_near_z[j] = right_near.mean[j].z;
+    right_far_y[j] = right_far.mean[j].y;
+    right_far_z[j] = right_far.mean[j].z;
   }
 
   auto lane_lines = framed.initLaneLines(4);
@@ -250,10 +260,10 @@ void fill_lane_lines(cereal::ModelDataV2::Builder &framed, const std::array<floa
   fill_xyzt(lane_lines[3], plan_t, X_IDXS_FLOAT, right_far_y, right_far_z);
 
   framed.setLaneLineStds({
-    exp(lanes.std.left_far[0].y),
-    exp(lanes.std.left_near[0].y),
-    exp(lanes.std.right_near[0].y),
-    exp(lanes.std.right_far[0].y),
+    exp(left_far.std[0].y),
+    exp(left_near.std[0].y),
+    exp(right_near.std[0].y),
+    exp(right_far.std[0].y),
   });
 
   framed.setLaneLineProbs({
