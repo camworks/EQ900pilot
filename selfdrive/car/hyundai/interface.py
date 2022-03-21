@@ -26,8 +26,8 @@ class CarInterface(CarInterfaceBase):
 
     v_current_kph = current_speed * CV.MS_TO_KPH
 
-    gas_max_bp = [0., 3, 10, 20., 30., 50., 70., 100, 130.]
-    gas_max_v = [CarControllerParams.ACCEL_MAX, 1.95, 1.7,  1.25, .8, .6, .45,  .2,  .1]
+    gas_max_bp = [0., 10., 20., 30., 50., 70., 100, 130.]
+    gas_max_v = [1.4, 1.6, 1.1, .8, .6, .45, .2, .1]
 
     return CarControllerParams.ACCEL_MIN, interp(v_current_kph, gas_max_bp, gas_max_v)
 
@@ -65,18 +65,18 @@ class CarInterface(CarInterfaceBase):
     ret.steerMaxV = [3., 2.3, 1.8, 1.5]
 
     # longitudinal
-    ret.longitudinalTuning.kpBP = [0., 20.*CV.KPH_TO_MS, 30.*CV.KPH_TO_MS, 70.*CV.KPH_TO_MS, 130.*CV.KPH_TO_MS]
-    ret.longitudinalTuning.kpV = [1.2, 0.9, 0.78, 0.55, 0.35]
+    ret.longitudinalTuning.kpBP = [0., 5.*CV.KPH_TO_MS, 20.*CV.KPH_TO_MS, 30.*CV.KPH_TO_MS, 70.*CV.KPH_TO_MS, 130.*CV.KPH_TO_MS]
+    ret.longitudinalTuning.kpV = [1.2, 1.15, 0.85, 0.78, 0.55, 0.35]
     ret.longitudinalTuning.kiBP = [0., 130. * CV.KPH_TO_MS]
     ret.longitudinalTuning.kiV = [0.06, 0.02]
-    ret.longitudinalTuning.kf = 0.9	
-    ret.longitudinalActuatorDelayLowerBound = 0.35
-    ret.longitudinalActuatorDelayUpperBound = 0.25
+    ret.longitudinalTuning.kf = 0.92
+    ret.longitudinalActuatorDelayLowerBound = 0.3
+    ret.longitudinalActuatorDelayUpperBound = 0.2
 
     ret.stopAccel = -2.0
     ret.stoppingDecelRate = 0.05  # brake_travel/s while trying to stop
-    ret.vEgoStopping = 0.6
-    ret.vEgoStarting = 0.3  # needs to be >= vEgoStopping to avoid state transition oscillation
+    ret.vEgoStopping = 0.5
+    ret.vEgoStarting = 0.25  # needs to be >= vEgoStopping to avoid state transition oscillation
 
     # genesis
     if candidate == CAR.GENESIS:
