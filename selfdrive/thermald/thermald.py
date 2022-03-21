@@ -538,9 +538,9 @@ def thermald_thread() -> NoReturn:
       power_monitor.charging_ctrl(msg, ts, battery_charging_max, battery_charging_min)
 
     # report to server once every 10 minutes
-    if (count % int(600. / DT_TRML)) == 0:
-      if EON and started_ts is None and msg.deviceState.memoryUsagePercent > 40:
-        cloudlog.event("High offroad memory usage", mem=msg.deviceState.memoryUsagePercent)
+    #if (count % int(600. / DT_TRML)) == 0:
+    #  if EON and started_ts is None and msg.deviceState.memoryUsagePercent > 40:
+    #    cloudlog.event("High offroad memory usage", mem=msg.deviceState.memoryUsagePercent)
 
       cloudlog.event("STATUS_PACKET",
                      count=count,
