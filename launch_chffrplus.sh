@@ -4,7 +4,7 @@ if [ ! -f "/data/openpilot/installer/boot_finish" ]; then
   echo "Installing fonts..."
   mount -o rw,remount /system
 
-  cp -f /data/openpilot/installer/spinner /data/openpilot/selfdrive/ui/qt/
+  #cp -f /data/openpilot/installer/spinner /data/openpilot/selfdrive/ui/qt/
 
 
   chmod 700 /data/openpilot/selfdrive/ui/qt/spinner
