@@ -59,13 +59,13 @@ class CarInterface(CarInterfaceBase):
 
     ret.steerRatio = 16.
     ret.steerActuatorDelay = 0.0
-    ret.steerLimitTimer = 1.0
+    ret.steerLimitTimer = 1.5
     ret.steerRateCost = 0.5
     ret.steerMaxBP = [0., 30.*CV.KPH_TO_MS, 80.*CV.KPH_TO_MS, 130.*CV.KPH_TO_MS]
     ret.steerMaxV = [3., 2.8, 2.5, 2.]
 
     # longitudinal
-    ret.longitudinalTuning.kpBP = [0., 5.*CV.KPH_TO_MS, 20.*CV.KPH_TO_MS, 30.*CV.KPH_TO_MS, 70.*CV.KPH_TO_MS, 130.*CV.KPH_TO_MS]
+    ret.longitudinalTuning.kpBP = [0., 10.*CV.KPH_TO_MS, 20.*CV.KPH_TO_MS, 30.*CV.KPH_TO_MS, 70.*CV.KPH_TO_MS, 130.*CV.KPH_TO_MS]
     ret.longitudinalTuning.kpV = [1.2, 1.15, 0.85, 0.78, 0.55, 0.35]
     ret.longitudinalTuning.kiBP = [0., 30. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
     ret.longitudinalTuning.kiV = [0.01, 0.06, 0.02]
@@ -75,7 +75,7 @@ class CarInterface(CarInterfaceBase):
 
     ret.stopAccel = -2.0
     ret.stoppingDecelRate = 0.025  # brake_travel/s while trying to stop
-    ret.vEgoStopping = 0.6
+    ret.vEgoStopping = 0.8
     ret.vEgoStarting = 0.3  # needs to be >= vEgoStopping to avoid state transition oscillation
 
     # genesis
