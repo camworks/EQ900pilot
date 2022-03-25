@@ -3,6 +3,7 @@
 #include <QStackedLayout>
 #include <QWidget>
 
+#include "selfdrive/common/util.h"
 #include "selfdrive/ui/qt/widgets/cameraview.h"
 #include "selfdrive/ui/ui.h"
 
@@ -32,7 +33,7 @@ class NvgWindow : public CameraViewWidget {
   Q_OBJECT
 
 public:
-  explicit NvgWindow(VisionStreamType type, QWidget* parent = 0) : CameraViewWidget("camerad", type, true, parent) {}
+  explicit NvgWindow(VisionStreamType type, QWidget* parent = 0);
 
 protected:
   void paintGL() override;
@@ -46,6 +47,7 @@ protected:
   inline QColor magentaColor(int alpha = 255) { return QColor(255, 0, 255, alpha); }
   inline QColor cyanColor(int alpha = 255) { return QColor(0, 255, 255, alpha); }
   double prev_draw_t = 0;
+  FirstOrderFilter fps_filter;  
 
   // neokii
   void drawIcon(QPainter &p, int x, int y, QPixmap &img, QBrush bg, float opacity);
@@ -77,7 +79,7 @@ protected:
   void drawDebugText(QPainter &p);
   void drawHud(QPainter &p);
   //boxkon
-  void drawCurrentGear(QPainter &p);   
+  void drawCurrentGear(QPainter &p);
 };
 
 // container for all onroad widgets
