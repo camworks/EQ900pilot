@@ -25,6 +25,15 @@ CAR_ROTATION_RADIUS = 0.0
 # EU guidelines
 MAX_LATERAL_JERK = 5.0
 
+# atom
+MAX_LATERAL_JERKS = [0, 0.001, 3]
+MAX_LATERAL_JERK_SPEEDS = [0, 10*CV.KPH_TO_MS, 40*CV.KPH_TO_MS]
+
+
+STEER_ACTUATORDELAYS =[1, 0.8, 0.1, 0]
+STEER_ACTUATORDELAY_SPEEDS = [0, 10*CV.KPH_TO_MS, 40*CV.KPH_TO_MS, 100*CV.KPH_TO_MS]
+
+
 CRUISE_LONG_PRESS = 50
 CRUISE_NEAREST_FUNC = {
   car.CarState.ButtonEvent.Type.accelCruise: math.ceil,
@@ -97,7 +106,9 @@ def get_lag_adjusted_curvature(CP, v_ego, psis, curvatures, curvature_rates):
     curvature_rates = [0.0]*CONTROL_N
 
   # TODO this needs more thought, use .2s extra for now to estimate other delays
-  delay = ntune_common_get('steerActuatorDelay') + .2
+  steerActuatorDelay = interp(v_ego, STEER_ACTUATORDELAY_SPEEDS, STEER_ACTUATORDELAYS )
+  delay = steerActuatorDelay + .2
+  #delay = ntune_common_get('steerActuatorDelay') + .2
   current_curvature = curvatures[0]
   psi = interp(delay, T_IDXS[:CONTROL_N], psis)
   desired_curvature_rate = curvature_rates[0]
@@ -109,7 +120,9 @@ def get_lag_adjusted_curvature(CP, v_ego, psis, curvatures, curvature_rates):
   desired_curvature = current_curvature + 2 * curvature_diff_from_psi
 
   v_ego = max(v_ego, 0.1)
-  max_curvature_rate = MAX_LATERAL_JERK / (v_ego**2)
+  LATERAL_JERK = interp(v_ego, MAX_LATERAL_JERK_SPEEDS, MAX_LATERAL_JERKS)
+  #max_curvature_rate = MAX_LATERAL_JERK / (v_ego**2)
+  max_curvature_rate = LATERAL_JERK / (v_ego**2)
   safe_desired_curvature_rate = clip(desired_curvature_rate,
                                           -max_curvature_rate,
                                           max_curvature_rate)
