@@ -5,7 +5,6 @@ from common.numpy_fast import clip, interp
 from common.realtime import DT_CTRL
 from cereal import log
 from selfdrive.controls.lib.latcontrol import LatControl, MIN_STEER_SPEED
-from common.conversions import Conversions as CV
 from selfdrive.ntune import nTune
 
 TORQUE_SCALE_BP = [0., 30., 80., 100., 130.]
@@ -40,7 +39,7 @@ class LatControlLQR(LatControl):
     lqr_log = log.ControlsState.LateralLQRState.new_message()
 
     #torque_scale = (0.45 + CS.vEgo / 60.0)**2  # Scale actuator model with speed
-    torque_scale = interp(CS.vEgo*3.6, TORQUE_SCALE_BP, TORQUE_SCALE_V)    
+    torque_scale = interp(CS.vEgo * 3.6, TORQUE_SCALE_BP, TORQUE_SCALE_V)
 
     # Subtract offset. Zero angle should correspond to zero torque
     steering_angle_no_offset = CS.steeringAngleDeg - params.angleOffsetAverageDeg
