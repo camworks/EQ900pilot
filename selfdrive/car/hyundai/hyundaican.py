@@ -102,12 +102,26 @@ def create_hda_mfc(packer, active, CS, left_lane, right_lane):
     ldwSysState += 2
 
   values["HDA_LdwSysState"] = ldwSysState
-  values["HDA_USM"] = 2 if active > 1 and CS.out.cruiseState.enabledAcc else 1
-  #values["HDA_VSetReq"] = 100
-  #values["HDA_Active"] = 1 if active > 1 and CS.out.cruiseState.enabledAcc else 0
-  values["HDA_Icon_Wheel"] = 1 if active > 1 and CS.out.cruiseState.enabledAcc else 0
-  values["HDA_Icon_State"] = 2 if active > 1 and CS.out.cruiseState.enabledAcc else 0
-  values["HDA_Chime"] = 1 if active > 1 and CS.out.cruiseState.enabledAcc else 0
+  values["HDA_VSetReq"] = 100
+
+  if active > 1:
+    values["HDA_Active"] = 0
+    values["HDA_USM"] = 1
+    values["HDA_Icon_Wheel"] = 0
+    values["HDA_Icon_State"] = 1
+    values["HDA_Chime"] = 0
+  elif active > 1 and CS.out.cruiseState.enabledAcc:
+    values["HDA_Active"] = 1
+    values["HDA_USM"] = 2
+    values["HDA_Icon_Wheel"] = 1
+    values["HDA_Icon_State"] = 2
+    values["HDA_Chime"] = 1
+  else:
+    values["HDA_Active"] = 0
+    values["HDA_USM"] = 0
+    values["HDA_Icon_Wheel"] = 0
+    values["HDA_Icon_State"] = 0
+    values["HDA_Chime"] = 0
 
   return packer.make_can_msg("LFAHDA_MFC", 0, values)
 
