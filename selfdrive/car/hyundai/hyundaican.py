@@ -102,11 +102,11 @@ def create_hda_mfc(packer, active, CS, left_lane, right_lane):
     ldwSysState += 2
 
   values["HDA_LdwSysState"] = ldwSysState
-  values["HDA_USM"] = 1 if active > 1 and CS.out.cruiseState.enabledAcc else 2
+  values["HDA_USM"] = 2 if active > 1 and CS.out.cruiseState.enabledAcc else 1
   #values["HDA_VSetReq"] = 100
   #values["HDA_Active"] = 1 if active > 1 and CS.out.cruiseState.enabledAcc else 0
   values["HDA_Icon_Wheel"] = 1 if active > 1 and CS.out.cruiseState.enabledAcc else 0
-  values["HDA_Icon_State"] = 2 if active > 1 and CS.out.cruiseState.enabledAcc else 1
+  values["HDA_Icon_State"] = 2 if active > 1 and CS.out.cruiseState.enabledAcc else 0
   values["HDA_Chime"] = 1 if active > 1 and CS.out.cruiseState.enabledAcc else 0
 
   return packer.make_can_msg("LFAHDA_MFC", 0, values)
@@ -188,4 +188,5 @@ def create_scc14(packer, enabled, e_vgo, stopping, standstill, accel, gas_presse
   values["JerkLowerLimit"] = max(-jerk, 1.0) if enabled else 0,  # stock usually is 0.5 but sometimes uses higher values
 
   return packer.make_can_msg("SCC14", 0, values)
+
 

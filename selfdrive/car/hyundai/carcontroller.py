@@ -211,7 +211,7 @@ class CarController:
         accel = actuators.accel if CC.longActive else 0
 
         if accel < 0:
-          accel = interp(accel - CS.out.aEgo, [-1.0, -0.5], [1.3 * accel, accel])
+          accel = interp(accel - CS.out.aEgo, [-1.0, -0.5], [1.5 * accel, accel])
 
         stopping = controls.LoC.long_control_state == LongCtrlState.stopping
         accel = clip(accel, CarControllerParams.ACCEL_MIN, CarControllerParams.ACCEL_MAX)
