@@ -5,6 +5,7 @@ from common.realtime import DT_MDL
 from common.conversions import Conversions as CV
 from selfdrive.modeld.constants import T_IDXS
 from selfdrive.ntune import ntune_common_get
+import common.MoveAvg as mvAvg
 
 # WARNING: this value was determined based on the model's training distribution,
 #          model predictions above this speed can be unpredictable
@@ -24,12 +25,10 @@ CAR_ROTATION_RADIUS = 0.0
 MAX_LATERAL_JERK = 5.0
 
 # atom
-MAX_LATERAL_JERKS = [0, 0.05, 3, 5]
-MAX_LATERAL_JERK_SPEEDS = [0, 10*CV.KPH_TO_MS, 40*CV.KPH_TO_MS, 100*CV.KPH_TO_MS]
+MAX_LATERAL_JERKS = [0, 0.0000001, 5]
+MAX_LATERAL_JERK_SPEEDS = [0, 10*CV.KPH_TO_MS, 50*CV.KPH_TO_MS]
 
-
-STEER_ACTUATORDELAYS =[1, 0.8, 0.3, 0.05]
-STEER_ACTUATORDELAY_SPEEDS = [0, 10*CV.KPH_TO_MS, 40*CV.KPH_TO_MS, 100*CV.KPH_TO_MS]
+moveAvg = mvAvg.MoveAvg()
 
 
 CRUISE_LONG_PRESS = 50
@@ -104,28 +103,32 @@ def get_lag_adjusted_curvature(CP, v_ego, psis, curvatures, curvature_rates):
     curvature_rates = [0.0]*CONTROL_N
 
   # TODO this needs more thought, use .2s extra for now to estimate other delays
-  steerActuatorDelay = interp(v_ego, STEER_ACTUATORDELAY_SPEEDS, STEER_ACTUATORDELAYS )
-  delay = steerActuatorDelay + .2
-  #delay = ntune_common_get('steerActuatorDelay') + .2
-  current_curvature = curvatures[0]
+  delay = ntune_common_get('steerActuatorDelay') + .2
+
+  if v_ego < 3:
+    #current_curvature = moveAvg.get_min(curvatures[0], 5)
+    current_curvature = moveAvg.get_avg(curvatures[0], 5)
+  else:
+    current_curvature = curvatures[0]
+
   psi = interp(delay, T_IDXS[:CONTROL_N], psis)
   desired_curvature_rate = curvature_rates[0]
-
+  
   # MPC can plan to turn the wheel and turn back before t_delay. This means
   # in high delay cases some corrections never even get commanded. So just use
   # psi to calculate a simple linearization of desired curvature
   curvature_diff_from_psi = psi / (max(v_ego, 1e-1) * delay) - current_curvature
   desired_curvature = current_curvature + 2 * curvature_diff_from_psi
 
-  v_ego = max(v_ego, 0.1)
+  v_ego = max(v_ego, 0.1)  
   LATERAL_JERK = interp(v_ego, MAX_LATERAL_JERK_SPEEDS, MAX_LATERAL_JERKS)
   #max_curvature_rate = MAX_LATERAL_JERK / (v_ego**2)
-  max_curvature_rate = LATERAL_JERK / ((v_ego/2)**2) #(v_ego**2)
+  max_curvature_rate = LATERAL_JERK / (v_ego**2)
   safe_desired_curvature_rate = clip(desired_curvature_rate,
-                                          -max_curvature_rate,
-                                          max_curvature_rate)
+                                     -max_curvature_rate,
+                                     max_curvature_rate)
   safe_desired_curvature = clip(desired_curvature,
-                                     current_curvature - max_curvature_rate * DT_MDL,
-                                     current_curvature + max_curvature_rate * DT_MDL)
+                                current_curvature - max_curvature_rate * DT_MDL,
+                                current_curvature + max_curvature_rate * DT_MDL)
 
   return safe_desired_curvature, safe_desired_curvature_rate
