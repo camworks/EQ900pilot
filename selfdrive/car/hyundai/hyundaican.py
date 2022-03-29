@@ -154,18 +154,18 @@ def create_scc11(packer, frame, enabled, set_speed, lead_visible, scc_live, scc1
 
   return packer.make_can_msg("SCC11", 0, values)
 
-def create_scc12(packer, apply_accel, enabled, cnt, scc_live, scc12, gaspressed, brakepressed,
+def create_scc12(packer, accel, enabled, cnt, scc_live, scc12, gaspressed, brakepressed,
                  standstill, car_fingerprint):
   values = copy.copy(scc12)
 
   if car_fingerprint in EV_HYBRID_CAR:
     # from xps-genesis
     if enabled and not brakepressed:
-      values["ACCMode"] = 2 if gaspressed and (apply_accel > -0.2) else 1
-      if apply_accel < 0.0 and standstill:
+      values["ACCMode"] = 2 if gaspressed and (accel > -0.2) else 1
+      if accel < 0.0 and standstill:
         values["StopReq"] = 1
-      values["aReqRaw"] = apply_accel
-      values["aReqValue"] = apply_accel
+      values["aReqRaw"] = accel
+      values["aReqValue"] = accel
     else:
       values["ACCMode"] = 0
       values["aReqRaw"] = 0
@@ -175,8 +175,8 @@ def create_scc12(packer, apply_accel, enabled, cnt, scc_live, scc12, gaspressed,
       values["CR_VSM_Alive"] = cnt
 
   else:
-    values["aReqRaw"] = apply_accel if enabled else 0  # aReqMax
-    values["aReqValue"] = apply_accel if enabled else 0  # aReqMin
+    values["aReqRaw"] = accel if enabled else 0  # aReqMax
+    values["aReqValue"] = accel if enabled else 0  # aReqMin
     values["CR_VSM_Alive"] = cnt
     if not scc_live:
       values["ACCMode"] = 1 if enabled else 0  # 2 if gas padel pressed
