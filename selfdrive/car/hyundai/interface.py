@@ -62,9 +62,9 @@ class CarInterface(CarInterfaceBase):
 
     ret.lateralTuning.torque.useSteeringAngle = True
     MAX_TORQUE = 3.0
-    ret.lateralTuning.torque.kp = 3.0 / MAX_TORQUE
-    ret.lateralTuning.torque.ki = 0.0 / MAX_TORQUE
-    ret.lateralTuning.torque.kd = 0.0 / MAX_TORQUE
+    ret.lateralTuning.torque.kp = 3.5 / MAX_TORQUE
+    ret.lateralTuning.torque.ki = 1.0 / MAX_TORQUE
+    ret.lateralTuning.torque.kd = 1.0 / MAX_TORQUE
     ret.lateralTuning.torque.kf = 0.75 / MAX_TORQUE
 
     ret.steerRatio = 16.5
@@ -78,12 +78,12 @@ class CarInterface(CarInterfaceBase):
     ret.longitudinalTuning.kiBP = [0., 20. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
     ret.longitudinalTuning.kiV = [0.005, 0.06, 0.01]
     ret.longitudinalTuning.kf = 0.9
-    ret.longitudinalActuatorDelayLowerBound = 0.4
+    ret.longitudinalActuatorDelayLowerBound = 0.3
     ret.longitudinalActuatorDelayUpperBound = 0.5
 
     ret.stopAccel = -2.0
     ret.stoppingDecelRate = 0.05  # brake_travel/s while trying to stop
-    ret.vEgoStopping = 0.6
+    ret.vEgoStopping = 0.7
     ret.vEgoStarting = 0.3  # needs to be >= vEgoStopping to avoid state transition oscillation
 
     # genesis
