@@ -57,10 +57,10 @@ class CarInterface(CarInterfaceBase):
     ret.lateralTuning.lqr.k = [-110.73572306, 451.22718255]
     ret.lateralTuning.lqr.l = [0.3233671, 0.3185757]
 
-    ret.steerRatio = 16.
-    ret.steerActuatorDelay = 0.0
-    ret.steerLimitTimer = 1.0
-    ret.steerRateCost = 0.5
+    ret.steerRatio = 16.5
+    ret.steerActuatorDelay = 0.1
+    ret.steerLimitTimer = 1.5
+    ret.steerRateCost = 0.45
 
     # longitudinal
     ret.longitudinalTuning.kpBP = [0., 20.*CV.KPH_TO_MS, 30.*CV.KPH_TO_MS, 70.*CV.KPH_TO_MS, 130.*CV.KPH_TO_MS]
