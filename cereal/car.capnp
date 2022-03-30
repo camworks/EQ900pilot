@@ -465,6 +465,7 @@ struct CarParams {
     pid @26 :LateralPIDTuning;
     indi @27 :LateralINDITuning;
     lqr @40 :LateralLQRTuning;
+    torque @66 :LateralTorqueTuning;    
   }
 
   steerLimitAlert @28 :Bool;
@@ -500,14 +501,14 @@ struct CarParams {
     safetyParam @1 :Int16;
   }
   
-  mdpsBus @66: Int8;
-  sasBus @67: Int8;
-  sccBus @68: Int8;
-  enableAutoHold @69 :Bool;
-  hasScc13 @70 :Bool;
-  hasScc14 @71 :Bool;
-  hasEms @72 :Bool;
-  hasHda @73 :Bool;
+  mdpsBus @67: Int8;
+  sasBus @68: Int8;
+  sccBus @69: Int8;
+  enableAutoHold @70 :Bool;
+  hasScc13 @71 :Bool;
+  hasScc14 @72 :Bool;
+  hasEms @73 :Bool;
+  hasHda @74 :Bool;
 
   struct LateralParams {
     torqueBP @0 :List(Int32);
@@ -521,6 +522,14 @@ struct CarParams {
     kiV @3 :List(Float32);
     kf @4 :Float32;
   }
+
+  struct LateralTorqueTuning {
+    useSteeringAngle @0 :Bool;
+    kp @1 :Float32;
+    ki @2 :Float32;
+    kd @3 :Float32;
+    kf @4 :Float32;
+  }  
 
   struct LongitudinalPIDTuning {
     kpBP @0 :List(Float32);
