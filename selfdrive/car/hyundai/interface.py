@@ -62,9 +62,9 @@ class CarInterface(CarInterfaceBase):
 
     ret.lateralTuning.torque.useSteeringAngle = True
     MAX_TORQUE = 2.0
-    ret.lateralTuning.torque.kp = 3.0 / MAX_TORQUE
+    ret.lateralTuning.torque.kp = 2.0 / MAX_TORQUE
     ret.lateralTuning.torque.ki = 0.0 / MAX_TORQUE
-    ret.lateralTuning.torque.kd = 0.5 / MAX_TORQUE
+    ret.lateralTuning.torque.kd = 0.0 / MAX_TORQUE
     ret.lateralTuning.torque.kf = 0.75 / MAX_TORQUE
 
     ret.steerRatio = 16.
