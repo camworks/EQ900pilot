@@ -18,7 +18,7 @@ from selfdrive.road_speed_limiter import road_speed_limiter_get_active
 VisualAlert = car.CarControl.HUDControl.VisualAlert
 min_set_speed = 30 * CV.KPH_TO_MS
 
-STEER_FAULT_MAX_ANGLE = 180
+STEER_FAULT_MAX_ANGLE = 90
 STEER_FAULT_MAX_FRAMES = 95  # TODO: some cars might have a higher limit
 
 def process_hud_alert(enabled, fingerprint, hud_control):
