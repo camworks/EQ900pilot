@@ -46,26 +46,26 @@ class CarInterface(CarInterfaceBase):
     ret.maxSteeringAngleDeg = 1000.
 
     # lateral
-    # ret.lateralTuning.init('lqr')
-    #
-    # ret.lateralTuning.lqr.scale = 1680.
-    # ret.lateralTuning.lqr.ki = 0.015
-    # ret.lateralTuning.lqr.dcGain = 0.002858
-    #
-    # ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
-    # ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
-    # ret.lateralTuning.lqr.c = [1., 0.]
-    # ret.lateralTuning.lqr.k = [-110.73572306, 451.22718255]
-    # ret.lateralTuning.lqr.l = [0.3233671, 0.3185757]
+    ret.lateralTuning.init('lqr')
 
-    ret.lateralTuning.init('torque')
+    ret.lateralTuning.lqr.scale = 1680.
+    ret.lateralTuning.lqr.ki = 0.015
+    ret.lateralTuning.lqr.dcGain = 0.002858
 
-    ret.lateralTuning.torque.useSteeringAngle = True
-    MAX_TORQUE = 2.0
-    ret.lateralTuning.torque.kp = 2.0 / MAX_TORQUE
-    ret.lateralTuning.torque.ki = 0.0 / MAX_TORQUE
-    ret.lateralTuning.torque.kd = 0.0 / MAX_TORQUE
-    ret.lateralTuning.torque.kf = 0.75 / MAX_TORQUE
+    ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
+    ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
+    ret.lateralTuning.lqr.c = [1., 0.]
+    ret.lateralTuning.lqr.k = [-110.73572306, 451.22718255]
+    ret.lateralTuning.lqr.l = [0.3233671, 0.3185757]
+
+    # ret.lateralTuning.init('torque')
+    #
+    # ret.lateralTuning.torque.useSteeringAngle = True
+    # MAX_TORQUE = 2.0
+    # ret.lateralTuning.torque.kp = 2.0 / MAX_TORQUE
+    # ret.lateralTuning.torque.ki = 0.0 / MAX_TORQUE
+    # ret.lateralTuning.torque.kd = 0.0 / MAX_TORQUE
+    # ret.lateralTuning.torque.kf = 0.75 / MAX_TORQUE
 
     ret.steerRatio = 16.
     ret.steerActuatorDelay = 0.2
