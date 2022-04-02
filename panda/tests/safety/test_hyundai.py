@@ -20,6 +20,7 @@ MAX_ACCEL = 2.0
 MIN_ACCEL = -3.5
 
 class Buttons:
+  NONE = 0
   RESUME = 1
   SET = 2
   CANCEL = 4
@@ -81,12 +82,12 @@ class TestHyundaiSafety(common.PandaSafetyTest):
     values = {"CF_Clu_CruiseSwState": buttons}
     return self.packer.make_can_msg_panda("CLU11", 0, values)
 
-  def _gas_msg(self, gas):
+  def _user_gas_msg(self, gas):
     values = {"CF_Ems_AclAct": gas, "AliveCounter": self.cnt_gas % 4}
     self.__class__.cnt_gas += 1
     return self.packer.make_can_msg_panda("EMS16", 0, values, fix_checksum=checksum)
 
-  def _brake_msg(self, brake):
+  def _user_brake_msg(self, brake):
     values = {"DriverBraking": brake, "AliveCounterTCS": self.cnt_brake % 8}
     self.__class__.cnt_brake += 1
     return self.packer.make_can_msg_panda("TCS13", 0, values, fix_checksum=checksum)
@@ -237,7 +238,7 @@ class TestHyundaiLegacySafetyEV(TestHyundaiSafety):
     self.safety.set_safety_hooks(Panda.SAFETY_HYUNDAI_LEGACY, 1)
     self.safety.init_tests()
 
-  def _gas_msg(self, gas):
+  def _user_gas_msg(self, gas):
     values = {"Accel_Pedal_Pos": gas}
     return self.packer.make_can_msg_panda("E_EMS11", 0, values, fix_checksum=checksum)
 
@@ -249,7 +250,7 @@ class TestHyundaiLegacySafetyHEV(TestHyundaiSafety):
     self.safety.set_safety_hooks(Panda.SAFETY_HYUNDAI_LEGACY, 2)
     self.safety.init_tests()
 
-  def _gas_msg(self, gas):
+  def _user_gas_msg(self, gas):
     values = {"CR_Vcu_AccPedDep_Pos": gas}
     return self.packer.make_can_msg_panda("E_EMS11", 0, values, fix_checksum=checksum)
 
@@ -315,10 +316,19 @@ class TestHyundaiLongitudinalSafety(TestHyundaiSafety):
     self.assertFalse(self._tx(self._send_accel_msg(0, aeb_decel=1.0)))
 
   def test_set_resume_buttons(self):
+    """
+      SET and RESUME enter controls allowed on their falling edge.
+    """
     for btn in range(8):
       self.safety.set_controls_allowed(0)
-      self._rx(self._button_msg(btn))
-      self.assertEqual(btn in [Buttons.RESUME, Buttons.SET], self.safety.get_controls_allowed(), msg=f"btn {btn}")
+      for _ in range(10):
+        self._rx(self._button_msg(btn))
+        self.assertFalse(self.safety.get_controls_allowed())
+
+      # should enter controls allowed on falling edge
+      if btn in (Buttons.RESUME, Buttons.SET):
+        self._rx(self._button_msg(Buttons.NONE))
+        self.assertTrue(self.safety.get_controls_allowed())
 
   def test_cancel_button(self):
     self.safety.set_controls_allowed(1)
