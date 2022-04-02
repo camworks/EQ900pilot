@@ -17,6 +17,7 @@ struct CarEvent @0x9b1657f34caf3ad3 {
   immediateDisable @6 :Bool;
   preEnable @7 :Bool;
   permanent @8 :Bool; # alerts presented regardless of openpilot state
+  override @9 :Bool;
 
   enum EventName @0xbaa8c5d505f727de {
     canError @0;
@@ -31,7 +32,9 @@ struct CarEvent @0x9b1657f34caf3ad3 {
     reverseGear @10;
     buttonCancel @11;
     buttonEnable @12;
-    pedalPressed @13;
+    pedalPressed @13;  # exits active state
+    pedalPressedPreEnable @73;  # added during pre-enable state for either pedal
+    gasPressedOverride @108;  # added when user is pressing gas with no disengage on gas
     cruiseDisabled @14;
     speedTooLow @17;
     outOfSpace @18;
@@ -77,7 +80,6 @@ struct CarEvent @0x9b1657f34caf3ad3 {
     speedTooHigh @70;
     laneChangeBlocked @71;
     relayMalfunction @72;
-    gasPressed @73;
     stockFcw @74;
     startup @75;
     startupNoCar @76;
@@ -129,10 +131,10 @@ struct CarEvent @0x9b1657f34caf3ad3 {
     startupOneplusDEPRECATED @82;
     startupFuzzyFingerprintDEPRECATED @97;
     
-    turningIndicatorOn @108;
-    autoLaneChange @109;
-    slowingDownSpeed @110;
-    slowingDownSpeedSound @111;
+    turningIndicatorOn @109;
+    autoLaneChange @110;
+    slowingDownSpeed @111;
+    slowingDownSpeedSound @112;
   }
 }
 
@@ -427,6 +429,8 @@ struct CarParams {
   carFingerprint @1 :Text;
   fuzzyFingerprint @55 :Bool;
 
+  notCar @66 :Bool;  # flag for non-car robotics platforms
+
   enableGasInterceptor @2 :Bool;
   pcmCruise @3 :Bool;        # is openpilot's state tied to the PCM's cruise state?
   enableDsu @5 :Bool;        # driving support unit
@@ -438,7 +442,7 @@ struct CarParams {
   minSteerSpeed @8 :Float32;
   maxSteeringAngleDeg @54 :Float32;
   safetyConfigs @62 :List(SafetyConfig);
-  alternativeExperience @65 :Int16;      # panda flag for features like no disengage on gas 
+  alternativeExperience @65 :Int16;      # panda flag for features like no disengage on gas
 
   steerMaxBPDEPRECATED @11 :List(Float32);
   steerMaxVDEPRECATED @12 :List(Float32);
@@ -465,7 +469,7 @@ struct CarParams {
     pid @26 :LateralPIDTuning;
     indi @27 :LateralINDITuning;
     lqr @40 :LateralLQRTuning;
-    torque @66 :LateralTorqueTuning;    
+    torque @75 :LateralTorqueTuning;    
   }
 
   steerLimitAlert @28 :Bool;
@@ -529,7 +533,7 @@ struct CarParams {
     ki @2 :Float32;
     kd @3 :Float32;
     kf @4 :Float32;
-  }  
+  }
 
   struct LongitudinalPIDTuning {
     kpBP @0 :List(Float32);
