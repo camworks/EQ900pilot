@@ -43,7 +43,7 @@ class CarInterface(CarInterfaceBase):
     ret.radarOffCan = RADAR_START_ADDR not in fingerprint[1] or DBC[ret.carFingerprint]["radar"] is None
 
     tire_stiffness_factor = 1.
-    ret.maxSteeringAngleDeg = 1000.
+    ret.maxSteeringAngleDeg = 1080.
 
     # lateral
     ret.lateralTuning.init('lqr')
@@ -100,10 +100,9 @@ class CarInterface(CarInterfaceBase):
       ret.wheelbase = 3.01
       ret.centerToFront = ret.wheelbase * 0.4
     elif candidate == CAR.GENESIS_EQ900:
-      tire_stiffness_factor = .95
       ret.mass = 2120
       ret.wheelbase = 3.2
-      ret.centerToFront = ret.wheelbase * 0.5
+      ret.centerToFront = ret.wheelbase * 0.45
     elif candidate == CAR.GENESIS_EQ900_L:
       ret.mass = 2290
       ret.wheelbase = 3.45
