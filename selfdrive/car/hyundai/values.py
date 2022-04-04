@@ -14,8 +14,8 @@ class CarControllerParams:
 
   def __init__(self, CP):
     if CP.lateralTuning.which == 'torque':
-      self.STEER_DELTA_UP = 3.5
-      self.STEER_DELTA_DOWN = 4.5
+      self.STEER_DELTA_UP = 5
+      self.STEER_DELTA_DOWN = 7
     else:
       self.STEER_DELTA_UP = 8
       self.STEER_DELTA_DOWN = 10
