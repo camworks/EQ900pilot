@@ -469,7 +469,7 @@ struct CarParams {
     pid @26 :LateralPIDTuning;
     indi @27 :LateralINDITuning;
     lqr @40 :LateralLQRTuning;
-    torque @75 :LateralTorqueTuning;    
+    torque @77 :LateralTorqueTuning;    
   }
 
   steerLimitAlert @28 :Bool;
@@ -513,6 +513,8 @@ struct CarParams {
   hasScc14 @72 :Bool;
   hasEms @73 :Bool;
   hasHda @74 :Bool;
+  steerFaultMaxAngle @75 :Int16;
+  steerFaultMaxFrames @76 :Int16;
 
   struct LateralParams {
     torqueBP @0 :List(Int32);

@@ -18,8 +18,6 @@ from selfdrive.road_speed_limiter import road_speed_limiter_get_active
 VisualAlert = car.CarControl.HUDControl.VisualAlert
 min_set_speed = 30 * CV.KPH_TO_MS
 
-STEER_FAULT_MAX_ANGLE = 85  # EPS max is 90
-STEER_FAULT_MAX_FRAMES = 90  # EPS counter is 95
 
 def process_hud_alert(enabled, fingerprint, hud_control):
 
@@ -85,6 +83,13 @@ class CarController:
     # self.active_cam_timer = 0
     # self.last_active_cam_frame = 0
 
+    self.angle_limit_counter = 0
+    self.cut_steer_frames = 0
+    self.cut_steer = False
+
+    self.steer_fault_max_angle = CP.steerFaultMaxAngle
+    self.steer_fault_max_frames = CP.steerFaultMaxFrames
+
   def update(self, CC, CS, controls):
     actuators = CC.actuators
     hud_control = CC.hudControl
@@ -137,24 +142,26 @@ class CarController:
 
     self.lkas11_cnt = (self.lkas11_cnt + 1) % 0x10
 
-    if CC.latActive and abs(CS.out.steeringAngleDeg) > STEER_FAULT_MAX_ANGLE:
-      self.angle_limit_counter += 1
-    else:
-      self.angle_limit_counter = 0
-
-    # stop requesting torque to avoid 90 degree fault and hold torque with induced temporary fault
-    # two cycles avoids race conditions every few minutes
-    if self.angle_limit_counter > STEER_FAULT_MAX_FRAMES:
-      self.cut_steer = True
-    elif self.cut_steer_frames > 1:
-      self.cut_steer_frames = 0
-      self.cut_steer = False
-
     cut_steer_temp = False
-    if self.cut_steer:
-      cut_steer_temp = True
-      self.angle_limit_counter = 0
-      self.cut_steer_frames += 1
+
+    if self.steer_fault_max_angle > 0:
+      if lkas_active and abs(CS.out.steeringAngleDeg) > self.steer_fault_max_angle:
+        self.angle_limit_counter += 1
+      else:
+        self.angle_limit_counter = 0
+
+      # stop requesting torque to avoid 90 degree fault and hold torque with induced temporary fault
+      # two cycles avoids race conditions every few minutes
+      if self.angle_limit_counter > self.steer_fault_max_frames:
+        self.cut_steer = True
+      elif self.cut_steer_frames > 1:
+        self.cut_steer_frames = 0
+        self.cut_steer = False
+
+      if self.cut_steer:
+        cut_steer_temp = True
+        self.angle_limit_counter = 0
+        self.cut_steer_frames += 1
 
     can_sends = []
     can_sends.append(create_lkas11(self.packer, self.frame, self.car_fingerprint, apply_steer, lkas_active,

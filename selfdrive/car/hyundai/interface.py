@@ -45,6 +45,9 @@ class CarInterface(CarInterfaceBase):
     tire_stiffness_factor = 1.
     ret.maxSteeringAngleDeg = 1080.
 
+    ret.steerFaultMaxAngle = 85
+    ret.steerFaultMaxFrames = 90
+
     # lateral
     ret.lateralTuning.init('lqr')
 
