@@ -134,10 +134,10 @@ struct CarEvent @0x9b1657f34caf3ad3 {
     startupOneplusDEPRECATED @82;
     startupFuzzyFingerprintDEPRECATED @97;
     
-    turningIndicatorOn @112;
-    autoLaneChange @113;
-    slowingDownSpeed @114;
-    slowingDownSpeedSound @115;
+    turningIndicatorOn @111;
+    autoLaneChange @112;
+    slowingDownSpeed @113;
+    slowingDownSpeedSound @114;
   }
 }
 
@@ -474,7 +474,7 @@ struct CarParams {
     pid @26 :LateralPIDTuning;
     indi @27 :LateralINDITuning;
     lqr @40 :LateralLQRTuning;
-    torque @77 :LateralTorqueTuning;    
+    torque @67 :LateralTorqueTuning;
   }
 
   steerLimitAlert @28 :Bool;
@@ -510,16 +510,16 @@ struct CarParams {
     safetyParam @1 :Int16;
   }
   
-  mdpsBus @67: Int8;
-  sasBus @68: Int8;
-  sccBus @69: Int8;
-  enableAutoHold @70 :Bool;
-  hasScc13 @71 :Bool;
-  hasScc14 @72 :Bool;
-  hasEms @73 :Bool;
-  hasHda @74 :Bool;
-  steerFaultMaxAngle @75 :Int16;
-  steerFaultMaxFrames @76 :Int16;
+  mdpsBus @68: Int8;
+  sasBus @69: Int8;
+  sccBus @70: Int8;
+  enableAutoHold @71 :Bool;
+  hasScc13 @72 :Bool;
+  hasScc14 @73 :Bool;
+  hasEms @74 :Bool;
+  hasHda @75 :Bool;
+  steerFaultMaxAngle @76 :Int16;
+  steerFaultMaxFrames @77 :Int16;
 
   struct LateralParams {
     torqueBP @0 :List(Int32);
@@ -538,7 +538,7 @@ struct CarParams {
     useSteeringAngle @0 :Bool;
     kp @1 :Float32;
     ki @2 :Float32;
-    kd @3 :Float32;
+    friction @3 :Float32;
     kf @4 :Float32;
   }
 

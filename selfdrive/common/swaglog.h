@@ -8,6 +8,7 @@
 #define CLOUDLOG_ERROR 40
 #define CLOUDLOG_CRITICAL 50
 
+
 void cloudlog_e(int levelnum, const char* filename, int lineno, const char* func,
                 const char* fmt, ...) /*__attribute__ ((format (printf, 6, 7)))*/;
 
@@ -17,7 +18,6 @@ void cloudlog_t(int levelnum, const char* filename, int lineno, const char* func
 #define cloudlog(lvl, fmt, ...) cloudlog_e(lvl, __FILE__, __LINE__, \
                                            __func__, \
                                            fmt, ## __VA_ARGS__);
- 
 #define cloudlog_t_m(lvl, fmt, ...) cloudlog_t(lvl, __FILE__, __LINE__, \
                                                __func__, \
                                                fmt, ## __VA_ARGS__);
