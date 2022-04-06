@@ -3,16 +3,8 @@ from numbers import Number
 
 from common.numpy_fast import clip, interp
 
-def apply_deadzone(error, deadzone):
-  if error > deadzone:
-    error -= deadzone
-  elif error < - deadzone:
-    error += deadzone
-  else:
-    error = 0.
-  return error
 
-class PIController():
+class PIDController():
   def __init__(self, k_p, k_i, k_f=0., k_d=0., pos_limit=None, neg_limit=None, rate=100):
     self._k_p = k_p  # proportional gain
     self._k_i = k_i  # integral gain
@@ -52,11 +44,10 @@ class PIController():
     self.f = 0.0
     self.control = 0
 
-  def update(self, setpoint, measurement, speed=0.0, override=False, feedforward=0., error_rate=0.0, deadzone=0., freeze_integrator=False):
+  def update(self, error, error_rate=0.0, speed=0.0, override=False, feedforward=0., freeze_integrator=False):
     self.speed = speed
 
-    error = float(apply_deadzone(setpoint - measurement, deadzone))
-    self.p = error * self.k_p
+    self.p = float(error) * self.k_p
     self.f = feedforward * self.k_f
     self.d = error_rate * self.k_d
 
