@@ -66,6 +66,7 @@ struct CarEvent @0x9b1657f34caf3ad3 {
     accFaulted @51;
     sensorDataInvalid @52;
     commIssue @53;
+    commIssueAvgFreq @109;
     tooDistracted @54;
     posenetInvalid @55;
     soundsUnavailable @56;
@@ -95,6 +96,7 @@ struct CarEvent @0x9b1657f34caf3ad3 {
     deviceFalling @90;
     fanMalfunction @91;
     cameraMalfunction @92;
+    cameraFrameRate @110;
     gpsMalfunction @94;
     processNotRunning @95;
     dashcamMode @96;
@@ -107,6 +109,7 @@ struct CarEvent @0x9b1657f34caf3ad3 {
     highCpuUsage @105;
     cruiseMismatch @106;
     lkasDisabled @107;
+    canBusMissing @111;
 
     radarCanErrorDEPRECATED @15;
     communityFeatureDisallowedDEPRECATED @62;
@@ -131,10 +134,10 @@ struct CarEvent @0x9b1657f34caf3ad3 {
     startupOneplusDEPRECATED @82;
     startupFuzzyFingerprintDEPRECATED @97;
     
-    turningIndicatorOn @109;
-    autoLaneChange @110;
-    slowingDownSpeed @111;
-    slowingDownSpeedSound @112;
+    turningIndicatorOn @112;
+    autoLaneChange @113;
+    slowingDownSpeed @114;
+    slowingDownSpeedSound @115;
   }
 }
 
@@ -650,6 +653,8 @@ struct CarParams {
     programmedFuelInjection @14;
     electricBrakeBooster @15;
     shiftByWire @16;
+
+    debug @17;
   }
 
   enum FingerprintSource {
