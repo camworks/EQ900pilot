@@ -5,6 +5,7 @@ from opendbc.can.parser import CANParser
 from opendbc.can.can_define import CANDefine
 from common.conversions import Conversions as CV
 from common.params import Params
+import copy
 
 GearShifter = car.CarState.GearShifter
 
@@ -29,7 +30,6 @@ class CarState(CarStateBase):
     self.scc_bus = CP.sccBus
     self.has_scc13 = CP.hasScc13 or CP.carFingerprint in FEATURES["has_scc13"]
     self.has_scc14 = CP.hasScc14 or CP.carFingerprint in FEATURES["has_scc14"]
-    self.has_hda = CP.hasHda
     self.leftBlinker = False
     self.rightBlinker = False
     self.cruise_main_button = 0
@@ -37,6 +37,10 @@ class CarState(CarStateBase):
     self.cruise_unavail_cnt = 0
 
     self.apply_steer = 0.
+
+    # for activate HDA
+    self.hda_mfc = None
+    self.has_hda = CP.hasHda
 
     # scc smoother
     self.acc_mode = False
@@ -199,10 +203,13 @@ class CarState(CarStateBase):
     self.scc11 = cp_scc.vl["SCC11"]
     self.scc12 = cp_scc.vl["SCC12"]
     self.mdps12 = cp_mdps.vl["MDPS12"]
-    self.hda_mfc = cp_cam.vl["LFAHDA_MFC"]    
     self.steer_state = cp_mdps.vl["MDPS12"]["CF_Mdps_ToiActive"] #0 NOT ACTIVE, 1 ACTIVE
     self.cruise_unavail_cnt += 1 if cp.vl["TCS13"]["CF_VSM_Avail"] != 1 and cp.vl["TCS13"]["ACCEnable"] != 0 else -self.cruise_unavail_cnt
     self.cruise_unavail = self.cruise_unavail_cnt > 100
+
+    # for activate HDA
+    if self.has_hda:
+      self.hda_mfc = copy.copy(cp_cam.vl["LFAHDA_MFC"])
 
     self.lead_distance = cp_scc.vl["SCC11"]["ACC_ObjDist"] if not self.no_radar else 0
     if self.has_scc13:
@@ -629,6 +636,7 @@ class CarState(CarStateBase):
         ("SCC12", 50),
       ]
 
+      # for activate HDA
       if CP.hasHda:
         signals += [
           ("HDA_USM", "LFAHDA_MFC"),
@@ -636,6 +644,8 @@ class CarState(CarStateBase):
           ("HDA_Icon_State", "LFAHDA_MFC"),
           ("HDA_LdwSysState", "LFAHDA_MFC"),
           ("HDA_Icon_Wheel", "LFAHDA_MFC"),
+          ("HDA_Chime", "LFAHDA_MFC"),
+          ("HDA_VSetReq", "LFAHDA_MFC"),
         ]
         checks += [("LFAHDA_MFC", 20)]
 
