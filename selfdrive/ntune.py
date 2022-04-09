@@ -152,7 +152,7 @@ class nTune():
     if self.checkValue("ki", 0.0, 0.2, 0.01):
       updated = True
 
-    if self.checkValue("dcGain", 0.002, 0.004, 0.0028):
+    if self.checkValue("dcGain", 0.002, 0.004, 0.0027):
       updated = True
 
     if self.checkValue("c_0", 0.3, 1.1, 1.0):
