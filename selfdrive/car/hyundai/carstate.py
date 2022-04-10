@@ -166,7 +166,7 @@ class CarState(CarStateBase):
 
     if not self.car_fingerprint in FEATURES["use_elect_gears"]: # for display current state of gear by Tenesi
       ret.currentGear = cp.vl["LVR11"]["CF_Lvr_CGear"]
-
+      ret.engRpm = cp.vl["EMS_366"]["Eng_RPM"]  # display rpm
 
     # TODO: refactor gear parsing in function
     # Gear Selection via Cluster - For those Kia/Hyundai which are not fully discovered, we can use the Cluster Indicator for Gear Selection,
@@ -295,6 +295,7 @@ class CarState(CarStateBase):
 
       ("CF_Lvr_CGear", "LVR11"),  # for display current state of gear by Tenesi
       ("CF_Lvr_GearInf", "LVR11"),  # Transmission Gear (0 = N or P, 1-8 = Fwd, 14 = Rev)
+      ("Eng_RPM", "EMS_366"),  # display rpm
 
       ("MainMode_ACC", "SCC11"),
       ("SCCInfoDisplay", "SCC11"),

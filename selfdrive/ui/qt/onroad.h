@@ -84,6 +84,7 @@ protected:
   void drawHud(QPainter &p);
   //boxkon
   void drawCurrentGear(QPainter &p);
+  void drawEngRpm(QPainter &p);  //tenesi
 
 private:
   QPixmap get_icon_iol_com(const char* key);
