@@ -66,8 +66,9 @@ class CarInterface(CarInterfaceBase):
     ret.lateralTuning.init('torque')
     ret.lateralTuning.torque.useSteeringAngle = True
     ret.lateralTuning.torque.kp = 1.4
-    ret.lateralTuning.torque.kf = 0.15
+    ret.lateralTuning.torque.kf = 0.08
     ret.lateralTuning.torque.friction = 0.06
+
 
     ret.steerRatio = 16.
     ret.steerActuatorDelay = 0.2
