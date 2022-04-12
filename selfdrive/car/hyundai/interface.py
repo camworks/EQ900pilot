@@ -48,26 +48,26 @@ class CarInterface(CarInterfaceBase):
     ret.steerFaultMaxFrames = 90
 
     # lateral
-    """
-    ret.lateralTuning.init('lqr')
+    lateral_control = Params().get("LateralControl")
+    if lateral_control == 'TORQUE':
+      ret.lateralTuning.init('torque')
+      ret.lateralTuning.torque.useSteeringAngle = True
+      ret.lateralTuning.torque.kp = 1.4
+      ret.lateralTuning.torque.kf = 0.3
+      ret.lateralTuning.torque.kd = 0.7
+      ret.lateralTuning.torque.friction = 0.06
+    else:
+      ret.lateralTuning.init('lqr')
 
-    ret.lateralTuning.lqr.scale = 1680.
-    ret.lateralTuning.lqr.ki = 0.015
-    ret.lateralTuning.lqr.dcGain = 0.002858
+      ret.lateralTuning.lqr.scale = 1700.
+      ret.lateralTuning.lqr.ki = 0.015
+      ret.lateralTuning.lqr.dcGain = 0.0028
 
-    ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
-    ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
-    ret.lateralTuning.lqr.c = [1., 0.]
-    ret.lateralTuning.lqr.k = [-110.73572306, 451.22718255]
-    ret.lateralTuning.lqr.l = [0.3233671, 0.3185757]
-    """
-
-    ret.lateralTuning.init('torque')
-    ret.lateralTuning.torque.useSteeringAngle = True
-    ret.lateralTuning.torque.kp = 1.4
-    ret.lateralTuning.torque.kf = 0.3
-    ret.lateralTuning.torque.kd = 0.7
-    ret.lateralTuning.torque.friction = 0.06
+      ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
+      ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
+      ret.lateralTuning.lqr.c = [1., 0.]
+      ret.lateralTuning.lqr.k = [-110.73572306, 451.22718255]
+      ret.lateralTuning.lqr.l = [0.3233671, 0.3185757]
 
 
     ret.steerRatio = 16.5
