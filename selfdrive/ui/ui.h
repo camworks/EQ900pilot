@@ -157,6 +157,7 @@ public:
 
   bool recording = false;
   bool show_debug = false;
+  std::string lat_control;
   bool show_engrpm = false;  //tenesi
 
 signals:
