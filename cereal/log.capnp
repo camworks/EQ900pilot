@@ -1770,6 +1770,12 @@ struct NavRoute {
   }
 }
 
+struct EncodeData {
+  data @0 :Data;
+  timestampEof @1 :Int64;
+  idx @2 :UInt32;
+}
+
 struct RoadLimitSpeed {
     active @0 :Int16;
     roadLimitSpeed @1 :Int16;
@@ -1855,10 +1861,13 @@ struct Event {
     navThumbnail @84: Thumbnail;
     
     # neokii
-    roadLimitSpeed @86 :RoadLimitSpeed;
+    roadLimitSpeed @89 :RoadLimitSpeed;
 
     # *********** debug ***********
     testJoystick @52 :Joystick;
+    roadEncodeData @86 :EncodeData;
+    driverEncodeData @87 :EncodeData;
+    wideRoadEncodeData @88 :EncodeData;
 
     # *********** legacy + deprecated ***********
     model @9 :Legacy.ModelData; # TODO: rename modelV2 and mark this as deprecated
