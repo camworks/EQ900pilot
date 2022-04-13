@@ -518,6 +518,7 @@ class Tici(HardwareBase):
     except Exception:
       return "--"
 
+
 if __name__ == "__main__":
   t = Tici()
   t.initialize_hardware()

@@ -16,7 +16,7 @@ from common.transformations.camera import eon_f_frame_size, eon_d_frame_size, ti
 from selfdrive.car.fingerprints import FW_VERSIONS
 from selfdrive.manager.process import ensure_running
 from selfdrive.manager.process_config import managed_processes
-from selfdrive.test.process_replay.process_replay import setup_env, check_enabled
+from selfdrive.test.process_replay.process_replay import setup_env
 from selfdrive.test.update_ci_routes import upload_route
 from tools.lib.route import Route
 from tools.lib.framereader import FrameReader
