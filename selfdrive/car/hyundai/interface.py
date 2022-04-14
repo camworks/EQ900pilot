@@ -329,8 +329,13 @@ class CarInterface(CarInterfaceBase):
       ret.safetyConfigs = [get_safety_config(car.CarParams.SafetyModel.hyundaiCommunity, 0)]
     return ret
 
-  def _update(self, c):
-    ret = self.CS.update(self.cp, self.cp_cam)
+  def update(self, c, can_strings):
+    self.cp.update_strings(can_strings)
+    self.cp2.update_strings(can_strings)
+    self.cp_cam.update_strings(can_strings)
+
+    ret = self.CS.update(self.cp, self.cp2, self.cp_cam)
+    ret.canValid = self.cp.can_valid and self.cp2.can_valid and self.cp_cam.can_valid
 
     if self.CP.pcmCruise and not self.CC.scc_live:
       self.CP.pcmCruise = False
@@ -412,7 +417,8 @@ class CarInterface(CarInterfaceBase):
 
     ret.events = events.to_msg()
 
-    return ret
+    self.CS.out = ret.as_reader()
+    return self.CS.out
 
   # scc smoother - hyundai only
   def apply(self, c, controls):

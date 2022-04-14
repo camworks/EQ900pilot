@@ -298,9 +298,7 @@ class Controls:
                                                     LaneChangeState.laneChangeFinishing):
       self.events.add(EventName.laneChange)
 
-    if CS.canTimeout:
-      self.events.add(EventName.canBusMissing)
-    elif not CS.canValid:
+    if not CS.canValid:
       self.events.add(EventName.canError)
 
     for i, pandaState in enumerate(self.sm['pandaStates']):
