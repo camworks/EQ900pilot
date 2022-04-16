@@ -749,8 +749,8 @@ void NvgWindow::drawSpeedLimit(QPainter &p) {
   {
     int radius_ = 192;
 
-    int x = 30;
-    int y = 270;
+    int x = 15;
+    int y = 250;
 
     p.setPen(Qt::NoPen);
     p.setBrush(QBrush(QColor(255, 0, 0, 255)));
@@ -791,8 +791,8 @@ void NvgWindow::drawSpeedLimit(QPainter &p) {
     if(sccStockCamAct == 2 && sccStockCamStatus == 2) {
       int radius_ = 192;
 
-      int x = 30;
-      int y = 270;
+      int x = 15;
+      int y = 250;
 
       p.setPen(Qt::NoPen);
 
