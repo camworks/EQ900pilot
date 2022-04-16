@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cstring>
+#include <limits>
 
 #include <unistd.h>
 #include <fcntl.h>
@@ -54,6 +55,8 @@ bool MessageState::parse(uint64_t sec, const std::vector<uint8_t> &dat) {
         checksum_failed = true;
       } else if (sig.type == SignalType::CHRYSLER_CHECKSUM && chrysler_checksum(address, dat) != tmp) {
         checksum_failed = true;
+      } else if (sig.type == SignalType::HKG_CAN_FD_CHECKSUM && hkg_can_fd_checksum(address, dat) != tmp) {
+        checksum_failed = true;
       } else if (sig.type == SignalType::PEDAL_CHECKSUM && pedal_checksum(dat) != tmp) {
         checksum_failed = true;
       }
@@ -61,7 +64,7 @@ bool MessageState::parse(uint64_t sec, const std::vector<uint8_t> &dat) {
 
     bool counter_failed = false;
     if (!ignore_counter) {
-      if (sig.type == SignalType::HONDA_COUNTER || sig.type == SignalType::VOLKSWAGEN_COUNTER || sig.type == SignalType::PEDAL_COUNTER) { 
+      if (sig.type == SignalType::HONDA_COUNTER || sig.type == SignalType::VOLKSWAGEN_COUNTER || sig.type == SignalType::PEDAL_COUNTER) {
         counter_failed = !update_counter_generic(tmp, sig.size);
       }
     }
