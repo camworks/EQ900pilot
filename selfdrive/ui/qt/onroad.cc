@@ -749,8 +749,8 @@ void NvgWindow::drawSpeedLimit(QPainter &p) {
   {
     int radius_ = 192;
 
-    int x = 30;
-    int y = 270;
+    int x = 15;
+    int y = 250;
 
     p.setPen(Qt::NoPen);
     p.setBrush(QBrush(QColor(255, 0, 0, 255)));
@@ -777,7 +777,7 @@ void NvgWindow::drawSpeedLimit(QPainter &p) {
 
     if(str_left_dist.length() > 0) {
       configFont(p, "Open Sans", 60, "Bold");
-      rect.translate(0, radius_/2 + 45);
+      rect.translate(10, radius_/2 + 45);
       rect.adjust(-30, 0, 30, 0);
       p.setPen(QColor(255, 255, 255, 230));
       p.drawText(rect, Qt::AlignCenter, str_left_dist);
@@ -791,8 +791,8 @@ void NvgWindow::drawSpeedLimit(QPainter &p) {
     if(sccStockCamAct == 2 && sccStockCamStatus == 2) {
       int radius_ = 192;
 
-      int x = 30;
-      int y = 270;
+      int x = 15;
+      int y = 250;
 
       p.setPen(Qt::NoPen);
 
