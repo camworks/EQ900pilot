@@ -28,8 +28,8 @@ class CarInterface(CarInterfaceBase):
 
     v_current_kph = current_speed * CV.MS_TO_KPH
 
-    gas_max_bp = [10., 20., 30., 50., 70., 100, 130.]
-    gas_max_v = [1.3, 1., .8, .6, .45, .2, .1]
+    gas_max_bp = [5., 10., 20., 30., 50., 70., 100, 130.]
+    gas_max_v = [1.4, 1.2, 1., .8, .6, .45, .2, .1]
 
     return CarControllerParams.ACCEL_MIN, interp(v_current_kph, gas_max_bp, gas_max_v)
 
@@ -72,9 +72,9 @@ class CarInterface(CarInterfaceBase):
     else:
       ret.lateralTuning.init('lqr')
 
-      ret.lateralTuning.lqr.scale = 1700.
-      ret.lateralTuning.lqr.ki = 0.015
-      ret.lateralTuning.lqr.dcGain = 0.0028
+      ret.lateralTuning.lqr.scale = 1650.
+      ret.lateralTuning.lqr.ki = 0.01
+      ret.lateralTuning.lqr.dcGain = 0.0027
 
       ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
       ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
@@ -84,13 +84,13 @@ class CarInterface(CarInterfaceBase):
 
 
     ret.steerRatio = 16.
-    ret.steerActuatorDelay = 0.2
-    ret.steerLimitTimer = 2.
+    ret.steerActuatorDelay = 0.1
+    ret.steerLimitTimer = 2.0
     ret.steerRateCost = 0.45
 
     # longitudinal
-    ret.longitudinalTuning.kpBP = [0., 5.*CV.KPH_TO_MS, 20.*CV.KPH_TO_MS, 30.*CV.KPH_TO_MS, 70.*CV.KPH_TO_MS, 130.*CV.KPH_TO_MS]
-    ret.longitudinalTuning.kpV = [1.3, 1.2, 0.8, 0.7, 0.55, 0.35]
+    ret.longitudinalTuning.kpBP = [5.*CV.KPH_TO_MS, 20.*CV.KPH_TO_MS, 30.*CV.KPH_TO_MS, 70.*CV.KPH_TO_MS, 130.*CV.KPH_TO_MS]
+    ret.longitudinalTuning.kpV = [1.2, 0.8, 0.7, 0.55, 0.35]
     ret.longitudinalTuning.kiBP = [0., 20. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
     ret.longitudinalTuning.kiV = [0.005, 0.06, 0.01]
     ret.longitudinalTuning.kf = 0.9
@@ -98,7 +98,7 @@ class CarInterface(CarInterfaceBase):
     ret.longitudinalActuatorDelayUpperBound = 0.5
 
     ret.stopAccel = -2.0
-    ret.stoppingDecelRate = 0.05  # brake_travel/s while trying to stop
+    ret.stoppingDecelRate = 0.075  # brake_travel/s while trying to stop
     ret.vEgoStopping = 0.7
     ret.vEgoStarting = 0.3  # needs to be >= vEgoStopping to avoid state transition oscillation
 
@@ -118,9 +118,9 @@ class CarInterface(CarInterfaceBase):
       ret.wheelbase = 3.01
       ret.centerToFront = ret.wheelbase * 0.4
     elif candidate == CAR.GENESIS_EQ900:
-      ret.mass = 2120
+      ret.mass = 2120. + STD_CARGO_KG
       ret.wheelbase = 3.2
-      ret.centerToFront = ret.wheelbase * 0.45
+      ret.centerToFront = ret.wheelbase * 0.4
     elif candidate == CAR.GENESIS_EQ900_L:
       ret.mass = 2290
       ret.wheelbase = 3.45
@@ -281,7 +281,7 @@ class CarInterface(CarInterfaceBase):
 
       ret.lateralTuning.lqr.scale = 1650.
       ret.lateralTuning.lqr.ki = 0.01
-      ret.lateralTuning.lqr.dcGain = 0.0027
+      ret.lateralTuning.lqr.dcGain = 0.0026
 
 
 
