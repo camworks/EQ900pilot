@@ -63,7 +63,8 @@ class LatControlTorque(LatControl):
       output_torque = self.pid.update(error,
                                       error_rate=error_rate,
                                       override=CS.steeringPressed, feedforward=ff,
-                                      speed=CS.vEgo)
+                                      speed=CS.vEgo,
+                                      freeze_integrator=CS.steeringRateLimited)
 
       friction_compensation = interp(desired_lateral_jerk, [-JERK_THRESHOLD, JERK_THRESHOLD], [-self.friction, self.friction])
       output_torque += friction_compensation
