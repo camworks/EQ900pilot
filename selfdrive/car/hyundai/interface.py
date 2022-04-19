@@ -29,7 +29,7 @@ class CarInterface(CarInterfaceBase):
     v_current_kph = current_speed * CV.MS_TO_KPH
 
     gas_max_bp = [5., 10., 20., 30., 50., 70., 100, 130.]
-    gas_max_v = [1.4, 1.2, 1., .8, .6, .45, .2, .1]
+    gas_max_v = [1.3, 1.2, 1., .8, .6, .45, .2, .1]
 
     return CarControllerParams.ACCEL_MIN, interp(v_current_kph, gas_max_bp, gas_max_v)
 
@@ -53,6 +53,7 @@ class CarInterface(CarInterfaceBase):
     lateral_control = Params().get("LateralControl", encoding='utf-8')
     if lateral_control == 'TORQUE':
       ret.lateralTuning.init('torque')
+
       ret.lateralTuning.torque.useSteeringAngle = True
       ret.lateralTuning.torque.kp = 0.8
       ret.lateralTuning.torque.kf = 0.4
@@ -61,6 +62,7 @@ class CarInterface(CarInterfaceBase):
       ret.lateralTuning.torque.kd = 0.0
     elif lateral_control == 'INDI':
       ret.lateralTuning.init('indi')
+
       ret.lateralTuning.indi.innerLoopGainBP = [0.]
       ret.lateralTuning.indi.innerLoopGainV = [3.3]
       ret.lateralTuning.indi.outerLoopGainBP = [0.]
@@ -84,6 +86,14 @@ class CarInterface(CarInterfaceBase):
     else:
       ret.lateralTuning.init('hybrid')
 
+      ret.lateralTuning.lqr.scale = 1600.
+      ret.lateralTuning.lqr.ki = 0.01
+      ret.lateralTuning.lqr.dcGain = 0.0027
+
+      ret.CP.lateralTuning.hybrid.kp = 0.2
+      ret.CP.lateralTuning.hybrid.ki = 0.03
+      ret.CP.lateralTuning.hybrid.kf = 0.00005
+      ret.CP.lateralTuning.hybrid.kd = 0.1
 
     ret.steerRatio = 16.
     ret.steerActuatorDelay = 0.0
@@ -91,7 +101,7 @@ class CarInterface(CarInterfaceBase):
     ret.steerRateCost = 0.45
 
     # longitudinal
-    ret.longitudinalTuning.kpBP = [5.*CV.KPH_TO_MS, 20.*CV.KPH_TO_MS, 30.*CV.KPH_TO_MS, 70.*CV.KPH_TO_MS, 130.*CV.KPH_TO_MS]
+    ret.longitudinalTuning.kpBP = [0.*CV.KPH_TO_MS, 20.*CV.KPH_TO_MS, 30.*CV.KPH_TO_MS, 70.*CV.KPH_TO_MS, 130.*CV.KPH_TO_MS]
     ret.longitudinalTuning.kpV = [1.2, 0.8, 0.7, 0.55, 0.35]
     ret.longitudinalTuning.kiBP = [0., 20. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
     ret.longitudinalTuning.kiV = [0.005, 0.06, 0.01]
