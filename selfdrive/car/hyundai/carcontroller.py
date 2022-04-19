@@ -174,10 +174,10 @@ class CarController:
                                      left_lane_warning, right_lane_warning, 1, self.ldws_opt, cut_steer_temp))
 
     if self.frame % 2 and CS.mdps_bus: # send clu11 to mdps if it is not on bus 0
-      can_sends.append(create_clu11(self.packer, CS.mdps_bus, CS.clu11, Buttons.NONE, enabled_speed))
+      can_sends.append(create_clu11(self.packer, frame // 2 % 0x10, CS.mdps_bus, CS.clu11, Buttons.NONE, enabled_speed))
 
     if pcm_cancel_cmd and (self.longcontrol and not self.mad_mode_enabled):
-      can_sends.append(create_clu11(self.packer, CS.scc_bus, CS.clu11, Buttons.CANCEL, clu11_speed))
+      can_sends.append(create_clu11(self.packer, frame % 0x10, CS.scc_bus, CS.clu11, Buttons.CANCEL, clu11_speed))
 
     if CS.mdps_bus or self.car_fingerprint in FEATURES["send_mdps12"]:  # send mdps12 to LKAS to prevent LKAS error
       can_sends.append(create_mdps12(self.packer, self.frame, CS.mdps12))
@@ -191,7 +191,7 @@ class CarController:
       # activated_hda: 0 - off, 1 - main road, 2 - highway
       if self.car_fingerprint in FEATURES["send_lfa_mfa"]:
         can_sends.append(create_lfahda_mfc(self.packer, CC.enabled, activated_hda))
-      elif CS.has_hda:
+      elif CS.has_hda or self.car_fingerprint in FEATURES["has_hda"]:
         can_sends.append(create_hda_mfc(self.packer, activated_hda, CS, hud_control.leftLaneVisible, hud_control.rightLaneVisible))
 
     new_actuators = actuators.copy()

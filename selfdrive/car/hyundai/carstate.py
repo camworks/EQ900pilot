@@ -640,7 +640,7 @@ class CarState(CarStateBase):
       ]
 
       # for activate HDA
-      if CP.hasHda:
+      if CP.carFingerprint in FEATURES["has_hda"]:
         signals += [
           ("HDA_USM", "LFAHDA_MFC"),
           ("HDA_Active", "LFAHDA_MFC"),
