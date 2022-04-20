@@ -50,9 +50,7 @@ class SwaglogState : public LogState {
     ctx_j["dirty"] = !getenv("CLEAN");
 
     // device type
-    if (Hardware::EON()) {
-      ctx_j["device"] =  "eon";
-    } else if (Hardware::TICI()) {
+    if (Hardware::TICI()) {
       ctx_j["device"] =  "tici";
     } else {
       ctx_j["device"] =  "pc";
@@ -113,7 +111,7 @@ void cloudlog_t_common(int levelnum, const char* filename, int lineno, const cha
   char* msg_buf = nullptr;
   int ret = vasprintf(&msg_buf, fmt, args);
   if (ret <= 0 || !msg_buf) return;
-  json11::Json::object tspt_j = json11::Json::object{
+  json11::Json::object tspt_j = json11::Json::object{ 
     {"event", msg_buf},
     {"time", std::to_string(nanos_since_boot())}
   };

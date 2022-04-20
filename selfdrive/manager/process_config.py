@@ -1,6 +1,6 @@
 import os
 
-from selfdrive.hardware import EON, TICI, PC
+from selfdrive.hardware import TICI, PC
 from selfdrive.manager.process import PythonProcess, NativeProcess, DaemonProcess
 
 WEBCAM = os.getenv("USE_WEBCAM") is not None
@@ -16,7 +16,7 @@ procs = [
   NativeProcess("modeld", "selfdrive/modeld", ["./modeld"]),
   NativeProcess("navd", "selfdrive/ui/navd", ["./navd"], persistent=True),
   NativeProcess("proclogd", "selfdrive/proclogd", ["./proclogd"]),
-  NativeProcess("sensord", "selfdrive/sensord", ["./sensord"], enabled=not PC, persistent=EON, sigkill=EON),
+  NativeProcess("sensord", "selfdrive/sensord", ["./sensord"], enabled=not PC),
   NativeProcess("ubloxd", "selfdrive/locationd", ["./ubloxd"], enabled=(not PC or WEBCAM)),
   NativeProcess("ui", "selfdrive/ui", ["./ui"], persistent=True, watchdog_max_dt=(5 if TICI else None)),
   NativeProcess("soundd", "selfdrive/ui/soundd", ["./soundd"], persistent=True),
