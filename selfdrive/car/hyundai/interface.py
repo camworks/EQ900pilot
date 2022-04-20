@@ -85,10 +85,9 @@ class CarInterface(CarInterfaceBase):
       ret.lateralTuning.init('hybrid')
 
 
-
     ret.steerRatio = 16.
-    ret.steerActuatorDelay = 0.1
-    ret.steerLimitTimer = 2.0
+    ret.steerActuatorDelay = 0.0
+    ret.steerLimitTimer = 2.5
     ret.steerRateCost = 0.45
 
     # longitudinal
