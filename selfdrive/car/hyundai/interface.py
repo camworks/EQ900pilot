@@ -3,15 +3,12 @@ from typing import List
 
 from cereal import car
 from common.numpy_fast import interp
-from panda import Panda
 from common.conversions import Conversions as CV
-from selfdrive.car.hyundai.values import CAR, DBC, Buttons, CarControllerParams, FEATURES
-from selfdrive.car.hyundai.radar_interface import RADAR_START_ADDR
+from selfdrive.car.hyundai.values import CAR, Buttons, CarControllerParams, FEATURES
 from selfdrive.car import STD_CARGO_KG, scale_rot_inertia, scale_tire_stiffness, gen_empty_fingerprint, get_safety_config
 from selfdrive.car.interfaces import CarInterfaceBase
 from common.params import Params
 from selfdrive.controls.lib.desire_helper import LANE_CHANGE_SPEED_MIN
-
 
 GearShifter = car.CarState.GearShifter
 EventName = car.CarEvent.EventName
@@ -37,11 +34,10 @@ class CarInterface(CarInterfaceBase):
   def get_params(candidate, fingerprint=gen_empty_fingerprint(), car_fw=[], disable_radar=False):  # pylint: disable=dangerous-default-value
     ret = CarInterfaceBase.get_std_params(candidate, fingerprint)
 
-    ret.openpilotLongitudinalControl = Params().get_bool('LongControlEnabled') or disable_radar
+    ret.openpilotLongitudinalControl = Params().get_bool('LongControlEnabled')
 
     ret.carName = "hyundai"
     ret.safetyConfigs = [get_safety_config(car.CarParams.SafetyModel.hyundaiLegacy, 0)]
-    ret.radarOffCan = RADAR_START_ADDR not in fingerprint[1] or DBC[ret.carFingerprint]["radar"] is None
 
     tire_stiffness_factor = 1.
     ret.maxSteeringAngleDeg = 1080.
@@ -86,19 +82,12 @@ class CarInterface(CarInterfaceBase):
     else:
       ret.lateralTuning.init('hybrid')
 
-      ret.lateralTuning.hybrid.scale = 1600
-      #ret.lateralTuning.hybrid.ki = 0.01
-      ret.lateralTuning.hybrid.dcGain = 0.0027
-
-      ret.lateralTuning.hybrid.kp = 0.2
-      ret.lateralTuning.hybrid.ki = 0.02
-      ret.lateralTuning.hybrid.kf = 0.00005
-      ret.lateralTuning.hybrid.kd = 0.1
 
     ret.steerRatio = 16.
     ret.steerActuatorDelay = 0.0
-    ret.steerLimitTimer = 2.5
     ret.steerRateCost = 0.45
+
+    ret.steerLimitTimer = 2.5
 
     # longitudinal
     ret.longitudinalTuning.kpBP = [0.*CV.KPH_TO_MS, 20.*CV.KPH_TO_MS, 30.*CV.KPH_TO_MS, 70.*CV.KPH_TO_MS, 130.*CV.KPH_TO_MS]
@@ -110,7 +99,7 @@ class CarInterface(CarInterfaceBase):
     ret.longitudinalActuatorDelayUpperBound = 0.5
 
     ret.stopAccel = -2.0
-    ret.stoppingDecelRate = 0.1  # brake_travel/s while trying to stop
+    ret.stoppingDecelRate = 0.08  # brake_travel/s while trying to stop
     ret.vEgoStopping = 0.7
     ret.vEgoStarting = 0.3  # needs to be >= vEgoStopping to avoid state transition oscillation
 
