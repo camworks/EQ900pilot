@@ -53,11 +53,11 @@ class CarInterface(CarInterfaceBase):
     if lateral_control == 'TORQUE':
       ret.lateralTuning.init('torque')
       ret.lateralTuning.torque.useSteeringAngle = True
-      ret.lateralTuning.torque.kp = 1.2
-      ret.lateralTuning.torque.kf = 0.1
-      ret.lateralTuning.torque.friction = 0.0
-      ret.lateralTuning.torque.ki = 0.0
-      ret.lateralTuning.torque.kd = 0.0
+      max_lat_accel = 2.5
+      ret.lateralTuning.torque.kp = 2.0 / max_lat_accel
+      ret.lateralTuning.torque.kf = 1.0 / max_lat_accel
+      ret.lateralTuning.torque.friction = 0.6
+      ret.lateralTuning.torque.ki = 0.5 / max_lat_accel
     elif lateral_control == 'INDI':
       ret.lateralTuning.init('indi')
       ret.lateralTuning.indi.innerLoopGainBP = [0.]
