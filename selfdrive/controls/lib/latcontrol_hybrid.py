@@ -16,7 +16,7 @@ class LatControlHybrid(LatControl):
   def __init__(self, CP, CI):
     super().__init__(CP, CI)
     self.scale = CP.lateralTuning.hybrid.scale
-    self.ki = CP.lateralTuning.hybrid.ki
+    self.ki = 0.01
     self.dc_gain = CP.lateralTuning.hybrid.dc_gain
 
     self.A = np.array([0., 1., -0.22619643, 1.21822268]).reshape((2, 2))
