@@ -468,11 +468,11 @@ SettingsWindow::SettingsWindow(QWidget *parent) : QFrame(parent) {
   )");
 }
 
-void SettingsWindow::hideEvent(QHideEvent *event) {
-#ifdef QCOM
-  HardwareEon::close_activities();
-#endif
-}
+//void SettingsWindow::hideEvent(QHideEvent *event) {
+//#ifdef QCOM
+//  HardwareEon::close_activities();
+//#endif
+//}
 
 
 /////////////////////////////////////////////////////////////////////////
