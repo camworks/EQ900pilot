@@ -86,14 +86,14 @@ class CarInterface(CarInterfaceBase):
     else:
       ret.lateralTuning.init('hybrid')
 
-      ret.lateralTuning.lqr.scale = 1600.
-      ret.lateralTuning.lqr.ki = 0.01
-      ret.lateralTuning.lqr.dcGain = 0.0027
+      ret.lateralTuning.hybrid.scale = 1600
+      #ret.lateralTuning.hybrid.ki = 0.01
+      ret.lateralTuning.hybrid.dcGain = 0.0027
 
-      ret.CP.lateralTuning.hybrid.kp = 0.2
-      ret.CP.lateralTuning.hybrid.ki = 0.03
-      ret.CP.lateralTuning.hybrid.kf = 0.00005
-      ret.CP.lateralTuning.hybrid.kd = 0.1
+      ret.lateralTuning.hybrid.kp = 0.2
+      ret.lateralTuning.hybrid.ki = 0.03
+      ret.lateralTuning.hybrid.kf = 0.00005
+      ret.lateralTuning.hybrid.kd = 0.1
 
     ret.steerRatio = 16.
     ret.steerActuatorDelay = 0.0
