@@ -66,7 +66,7 @@ class LateralPlanner:
       d_path_xyz = self.path_xyz
       path_cost = np.clip(abs(self.path_xyz[0, 1] / self.path_xyz_stds[0, 1]), 0.5, 1.0) * MPC_COST_LAT.PATH
       # Heading cost is useful at low speed, otherwise end of plan can be off-heading
-      heading_cost = interp(v_ego, [1.0, 7.0], [MPC_COST_LAT.HEADING, MPC_COST_LAT.LANELESS_HEADING_MIN])
+      heading_cost = interp(v_ego, [2.0, 10.0], [MPC_COST_LAT.HEADING, 0.0])
       self.lat_mpc.set_weights(path_cost, heading_cost, steer_rate_cost)
 
     d_path_xyz[:, 1] += ntune_common_get('pathOffset')
