@@ -19,6 +19,7 @@ def create_lkas11(packer, frame, car_fingerprint, apply_steer, steer_req,
   values["CF_Lkas_ActToi"] = steer_req and not cut_steer_temp
   values["CF_Lkas_ToiFlt"] = cut_steer_temp  # seems to allow actuation on CR_Lkas_StrToqReq
   values["CF_Lkas_MsgCount"] = frame % 0x10
+  values["CF_Lkas_Chksum"] = 0
 
   if car_fingerprint in FEATURES["send_lfa_mfa"]:
     values["CF_Lkas_LdwsActivemode"] = int(left_lane) + (int(right_lane) << 1)
@@ -69,11 +70,11 @@ def create_lkas11(packer, frame, car_fingerprint, apply_steer, steer_req,
 
   return packer.make_can_msg("LKAS11", bus, values)
 
-def create_clu11(packer, frame, bus, clu11, button, speed):
+def create_clu11(packer, bus, clu11, button, speed):
   values = copy.copy(clu11)
   values["CF_Clu_CruiseSwState"] = button
   values["CF_Clu_Vanz"] = speed
-  values["CF_Clu_AliveCnt1"] = frame
+  values["CF_Clu_AliveCnt1"] = (values["CF_Clu_AliveCnt1"] + 1) % 0x10
   return packer.make_can_msg("CLU11", bus, values)
 
 def create_lfahda_mfc(packer, enabled, active):
@@ -153,18 +154,18 @@ def create_scc11(packer, frame, enabled, set_speed, lead_visible, scc_live, scc1
 
   return packer.make_can_msg("SCC11", 0, values)
 
-def create_scc12(packer, accel, enabled, cnt, scc_live, scc12, gaspressed, brakepressed,
+def create_scc12(packer, apply_accel, enabled, cnt, scc_live, scc12, gaspressed, brakepressed,
                  standstill, car_fingerprint):
   values = copy.copy(scc12)
 
   if car_fingerprint in EV_HYBRID_CAR:
     # from xps-genesis
     if enabled and not brakepressed:
-      values["ACCMode"] = 2 if gaspressed and (accel > -0.2) else 1
-      if accel < 0.0 and standstill:
+      values["ACCMode"] = 2 if gaspressed and (apply_accel > -0.2) else 1
+      if apply_accel < 0.0 and standstill:
         values["StopReq"] = 1
-      values["aReqRaw"] = accel
-      values["aReqValue"] = accel
+      values["aReqRaw"] = apply_accel
+      values["aReqValue"] = apply_accel
     else:
       values["ACCMode"] = 0
       values["aReqRaw"] = 0
@@ -174,8 +175,8 @@ def create_scc12(packer, accel, enabled, cnt, scc_live, scc12, gaspressed, brake
       values["CR_VSM_Alive"] = cnt
 
   else:
-    values["aReqRaw"] = accel if enabled else 0  # aReqMax
-    values["aReqValue"] = accel if enabled else 0  # aReqMin
+    values["aReqRaw"] = apply_accel if enabled else 0  # aReqMax
+    values["aReqValue"] = apply_accel if enabled else 0  # aReqMin
     values["CR_VSM_Alive"] = cnt
     if not scc_live:
       values["ACCMode"] = 1 if enabled else 0  # 2 if gas padel pressed
