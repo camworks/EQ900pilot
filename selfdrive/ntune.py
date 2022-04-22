@@ -172,10 +172,10 @@ class nTune():
     if self.checkValue("steerRatio", 10.0, 20.0, 16.5):
       updated = True
 
-    if self.checkValue("steerActuatorDelay", 0., 0.8, 0.2):
+    if self.checkValue("steerActuatorDelay", 0., 0.8, 0.1):
       updated = True
 
-    if self.checkValue("steerRateCost", 0.1, 1.5, 0.35):
+    if self.checkValue("steerRateCost", 0.1, 1.5, 0.45):
       updated = True
 
     if self.checkValue("pathOffset", -1.0, 1.0, 0.0):
@@ -186,13 +186,13 @@ class nTune():
   def checkValidLQR(self):
     updated = False
 
-    if self.checkValue("scale", 500.0, 5000.0, 1600.0):
+    if self.checkValue("scale", 500.0, 5000.0, 1650.0):
       updated = True
 
     if self.checkValue("ki", 0.0, 0.2, 0.01):
       updated = True
 
-    if self.checkValue("dcGain", 0.002, 0.004, 0.0025):
+    if self.checkValue("dcGain", 0.002, 0.004, 0.0027):
       updated = True
 
     if self.checkValue("steerLimitTimer", 0.5, 3.0, 2.5):
@@ -235,7 +235,7 @@ class nTune():
     if self.checkValue("sccBrakeFactor", 0.5, 1.5, 1.0):
       updated = True
 
-    if self.checkValue("sccCurvatureFactor", 0.5, 1.5, 0.98):
+    if self.checkValue("sccCurvatureFactor", 0.5, 1.5, 1.0):
       updated = True
 
     return updated

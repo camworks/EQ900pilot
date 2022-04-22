@@ -93,7 +93,7 @@ def create_lfahda_mfc(packer, enabled, active):
   return packer.make_can_msg("LFAHDA_MFC", 0, values)
 
 def create_hda_mfc(packer, active, CS, left_lane, right_lane):
-  values = copy.copy(CS.lfahda_mfc)
+  values = CS.hda_mfc
 
   ldwSysState = 0
   if left_lane:
@@ -102,11 +102,26 @@ def create_hda_mfc(packer, active, CS, left_lane, right_lane):
     ldwSysState += 2
 
   values["HDA_LdwSysState"] = ldwSysState
-  values["HDA_USM"] = 2
   values["HDA_VSetReq"] = 100
-  values["HDA_Icon_Wheel"] = 1 if active > 1 and CS.out.cruiseState.enabledAcc else 0
-  values["HDA_Icon_State"] = 2 if active > 1 else 0
-  values["HDA_Chime"] = 1 if active > 1 else 0
+
+  if active > 1 and CS.out.cruiseState.enabledAcc:
+    values["HDA_Active"] = 0
+    values["HDA_USM"] = 2
+    values["HDA_Icon_Wheel"] = 1
+    values["HDA_Icon_State"] = 2
+    values["HDA_Chime"] = 1
+  elif active > 1 and not CS.out.cruiseState.enabledAcc:
+    values["HDA_Active"] = 0
+    values["HDA_USM"] = 1
+    values["HDA_Icon_Wheel"] = 0
+    values["HDA_Icon_State"] = 1
+    values["HDA_Chime"] = 0
+  else:
+    values["HDA_Active"] = 0
+    values["HDA_USM"] = 0
+    values["HDA_Icon_Wheel"] = 0
+    values["HDA_Icon_State"] = 0
+    values["HDA_Chime"] = 0
 
   return packer.make_can_msg("LFAHDA_MFC", 0, values)
 
@@ -123,11 +138,11 @@ def create_mdps12(packer, frame, mdps12):
 
   return packer.make_can_msg("MDPS12", 2, values)
 
-def create_scc11(packer, frame, enabled, set_speed, lead_visible, scc_live, scc11, active_cam, stock_cam):
+def create_scc11(packer, frame, enabled, set_speed, lead_visible, scc_live, scc11, active_cam, stock_cam, active):
   values = copy.copy(scc11)
   values["AliveCounterACC"] = frame // 2 % 0x10
 
-  if not stock_cam:
+  if not stock_cam and active < 2:
     values["Navi_SCC_Camera_Act"] = 2 if active_cam else 0
     values["Navi_SCC_Camera_Status"] = 2 if active_cam else 0
 
@@ -176,7 +191,7 @@ def create_scc13(packer, scc13):
   values = copy.copy(scc13)
   return packer.make_can_msg("SCC13", 0, values)
 
-def create_scc14(packer, enabled, e_vgo, standstill, accel, gaspressed, objgap, scc14):
+def create_scc14(packer, enabled, e_vgo, stopping, standstill, accel, gas_pressed, objgap, jerk, scc14):
   values = copy.copy(scc14)
 
   # from xps-genesis

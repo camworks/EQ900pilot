@@ -94,7 +94,7 @@ class LanePlanner:
 
     if ENABLE_ZORROBYTE:
       # zorrobyte code
-      if l_prob > 0.5 and r_prob > 0.5:
+      if l_prob > 0.4 and r_prob > 0.4:
         self.frame += 1
         if self.frame > 20:
           self.frame = 0

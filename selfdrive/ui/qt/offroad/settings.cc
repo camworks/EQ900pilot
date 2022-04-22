@@ -700,6 +700,12 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
                                             "../assets/offroad/icon_shell.png",
                                             this));
 
+  toggles.append(new ParamControl("ShowEngRPMUI",
+                                            "Show EngRPM UI",
+                                            "",
+                                            "../assets/offroad/icon_shell.png",
+                                            this));  // tenesi
+
   /*toggles.append(new ParamControl("CustomLeadMark",
                                             "Use custom lead mark",
                                             "",

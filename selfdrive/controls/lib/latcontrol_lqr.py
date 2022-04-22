@@ -7,8 +7,8 @@ from cereal import log
 from selfdrive.controls.lib.latcontrol import LatControl, MIN_STEER_SPEED
 from selfdrive.ntune import nTune
 
-TORQUE_SCALE_BP = [0., 30., 80., 100., 130.]
-TORQUE_SCALE_V = [0.2, 0.35, 0.63, 0.67, 0.7]
+TORQUE_SCALE_BP = [0., 20., 30., 60., 80., 100., 130.]
+TORQUE_SCALE_V = [0.13, 0.18, 0.23, 0.46, 0.53, 0.6, 0.77]
 
 class LatControlLQR(LatControl):
   def __init__(self, CP, CI):
@@ -38,7 +38,7 @@ class LatControlLQR(LatControl):
     self.tune.check()
     lqr_log = log.ControlsState.LateralLQRState.new_message()
 
-    #torque_scale = (0.45 + CS.vEgo / 60.0)**2  # Scale actuator model with speed
+    # torque_scale = (0.45 + CS.vEgo / 60.0)**2  # Scale actuator model with speed
     torque_scale = interp(CS.vEgo * 3.6, TORQUE_SCALE_BP, TORQUE_SCALE_V)
 
     # Subtract offset. Zero angle should correspond to zero torque

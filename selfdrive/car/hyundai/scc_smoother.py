@@ -26,7 +26,7 @@ WAIT_COUNT = [12, 13, 14, 15, 16]
 AliveIndex = 0
 WaitIndex = 0
 
-MIN_CURVE_SPEED = 32. * CV.KPH_TO_MS
+MIN_CURVE_SPEED = 10. * CV.KPH_TO_MS
 
 EventName = car.CarEvent.EventName
 

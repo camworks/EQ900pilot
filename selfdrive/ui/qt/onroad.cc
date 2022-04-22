@@ -164,8 +164,7 @@ void OnroadWindow::offroadTransition(bool offroad) {
 
   if(offroad && recorder) {
     recorder->stop(false);
-  }
-
+    }
 }
 
 void OnroadWindow::paintEvent(QPaintEvent *event) {
@@ -310,10 +309,9 @@ void NvgWindow::drawLaneLines(QPainter &painter, const UIState *s) {
     // FIXME: painter.drawPolygon can be slow if hue is not rounded
     curve_hue = int(curve_hue * 100 + 0.5) / 100;
 
-    bg.setColorAt(0.0 / 1.5, QColor::fromHslF(148 / 360., 1.0, 0.5, 1.0));
-    bg.setColorAt(0.55 / 1.5, QColor::fromHslF(112 / 360., 1.0, 0.68, 0.8));
-    bg.setColorAt(0.9 / 1.5, QColor::fromHslF(curve_hue / 360., 1.0, 0.65, 0.6));
-    bg.setColorAt(1.0, QColor::fromHslF(curve_hue / 360., 1.0, 0.65, 0.0));
+    bg.setColorAt(0.0, QColor::fromHslF(148 / 360., 0.94, 0.51, 0.4));
+    bg.setColorAt(0.75 / 1.5, QColor::fromHslF(curve_hue / 360., 1.0, 0.68, 0.35));
+    bg.setColorAt(1.0, QColor::fromHslF(curve_hue / 360., 1.0, 0.68, 0.0));
   } else {
     bg.setColorAt(0, whiteColor());
     bg.setColorAt(1, whiteColor(0));
@@ -445,7 +443,10 @@ void NvgWindow::drawHud(QPainter &p) {
 
   const SubMaster &sm = *(s->sm);
 
+  double cur_t = millis_since_boot();
   drawLaneLines(p, s);
+  double elapsed = millis_since_boot() - cur_t;
+  qDebug() << "Took" << elapsed << "ms to draw";
 
   auto leads = sm["modelV2"].getModelV2().getLeadsV3();
   if (leads[0].getProb() > .5) {
@@ -462,6 +463,9 @@ void NvgWindow::drawHud(QPainter &p) {
   drawRestArea(p);
   drawTurnSignals(p);
   drawGpsStatus(p);
+  drawCurrentGear(p);
+  if(s->show_engrpm)  //tenesi
+    drawEngRpm(p);
 
   if(s->show_debug && width() > 1200)
     drawDebugText(p);
@@ -482,16 +486,17 @@ void NvgWindow::drawHud(QPainter &p) {
 
   int mdps_bus = car_params.getMdpsBus();
   int scc_bus = car_params.getSccBus();
+  bool has_hda = car_params.getHasHda();  
 
   QString infoText;
-  infoText.sprintf("%s AO(%.2f/%.2f) SR(%.2f) SRC(%.2f) SAD(%.2f) BUS(MDPS %d, SCC %d) SCC(%.2f/%.2f/%.2f)",
+  infoText.sprintf("%s AO(%.2f/%.2f) SR(%.2f) SRC(%.2f) SAD(%.2f) BUS(MDPS %d, SCC %d, HDA %d) SCC(%.2f/%.2f/%.2f)",
                       s->lat_control.c_str(),
                       live_params.getAngleOffsetDeg(),
                       live_params.getAngleOffsetAverageDeg(),
                       controls_state.getSteerRatio(),
                       controls_state.getSteerRateCost(),
                       controls_state.getSteerActuatorDelay(),
-                      mdps_bus, scc_bus,
+                      mdps_bus, scc_bus, has_hda,
                       controls_state.getSccGasFactor(),
                       controls_state.getSccBrakeFactor(),
                       controls_state.getSccCurvatureFactor()
@@ -566,6 +571,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   int gap = car_state.getCruiseGap();
   bool longControl = scc_smoother.getLongControl();
   int autoTrGap = scc_smoother.getAutoTrGap();
+  x = radius / 2 + (bdr_s * 2) + (radius + 50);
 
   p.setPen(Qt::NoPen);
   p.setBrush(QBrush(QColor(0, 0, 0, 255 * .1f)));
@@ -648,7 +654,9 @@ void NvgWindow::drawMaxSpeed(QPainter &p) {
         snprintf(str, sizeof(str), "%d", (int)(cruiseMaxSpeed*KM_TO_MILE + 0.5));
 
     configFont(p, "Open Sans", 76, "Bold");
-    drawText(p, rc.center().x(), 195, str, 255);
+    QColor textColor = QColor(255, 0, 255, 200);
+    drawTextWithColor(p, rc.center().x(), 195, str, textColor);   
+
   } else {
     if(long_control) {
       configFont(p, "Open Sans", 48, "sans-semibold");
@@ -667,7 +675,8 @@ void NvgWindow::drawMaxSpeed(QPainter &p) {
 void NvgWindow::drawSpeed(QPainter &p) {
   UIState *s = uiState();
   const SubMaster &sm = *(s->sm);
-  float cur_speed = std::max(0.0, sm["carState"].getCarState().getCluSpeedMs() * (s->scene.is_metric ? MS_TO_KPH : MS_TO_MPH));
+  float cur_speed = sm["carState"].getCarState().getCluSpeedMs() * (s->scene.is_metric ? MS_TO_KPH : MS_TO_MPH);  
+  //float cur_speed = std::max(0.0, sm["carState"].getCarState().getCluSpeedMs() * (s->scene.is_metric ? MS_TO_KPH : MS_TO_MPH));
   auto car_state = sm["carState"].getCarState();
   float accel = car_state.getAEgo();
 
@@ -685,6 +694,12 @@ void NvgWindow::drawSpeed(QPainter &p) {
     a = std::max(a, 60);
     color = QColor(255, a, a, 230);
   }
+
+  bool brakeLights = car_state.getBrakeLights();
+  bool brakePress = car_state.getBrakePressed();
+
+  if( brakePress ) color = QColor(255, 0, 0, 200);
+  else if( brakeLights ) color = QColor(255, 0, 255, 100);
 
   QString speed;
   speed.sprintf("%.0f", cur_speed);
@@ -734,8 +749,8 @@ void NvgWindow::drawSpeedLimit(QPainter &p) {
   {
     int radius_ = 192;
 
-    int x = 30;
-    int y = 270;
+    int x = 15;
+    int y = 250;
 
     p.setPen(Qt::NoPen);
     p.setBrush(QBrush(QColor(255, 0, 0, 255)));
@@ -762,7 +777,7 @@ void NvgWindow::drawSpeedLimit(QPainter &p) {
 
     if(str_left_dist.length() > 0) {
       configFont(p, "Open Sans", 60, "Bold");
-      rect.translate(0, radius_/2 + 45);
+      rect.translate(10, radius_/2 + 45);
       rect.adjust(-30, 0, 30, 0);
       p.setPen(QColor(255, 255, 255, 230));
       p.drawText(rect, Qt::AlignCenter, str_left_dist);
@@ -776,8 +791,8 @@ void NvgWindow::drawSpeedLimit(QPainter &p) {
     if(sccStockCamAct == 2 && sccStockCamStatus == 2) {
       int radius_ = 192;
 
-      int x = 30;
-      int y = 270;
+      int x = 15;
+      int y = 250;
 
       p.setPen(Qt::NoPen);
 
@@ -1034,8 +1049,8 @@ void NvgWindow::drawDebugText(QPainter &p) {
   float aReqValueMin = controls_state.getAReqValueMin();
   float aReqValueMax = controls_state.getAReqValueMax();
 
-  //int sccStockCamAct = (int)controls_state.getSccStockCamAct();
-  //int sccStockCamStatus = (int)controls_state.getSccStockCamStatus();
+//  int sccStockCamAct = (int)controls_state.getSccStockCamAct();
+//  int sccStockCamStatus = (int)controls_state.getSccStockCamStatus();
 
   float vEgo = car_state.getVEgo();
   float vEgoRaw = car_state.getVEgoRaw();
@@ -1100,4 +1115,84 @@ void NvgWindow::drawDebugText(QPainter &p) {
   y += height;
   str.sprintf("Lead: %.1f/%.1f/%.1f\n", radar_dist, vision_dist, (radar_dist - vision_dist));
   p.drawText(text_x, y, str);
+}
+
+void NvgWindow::drawCurrentGear(QPainter &p) {
+  const SubMaster &sm = *(uiState()->sm);
+  auto car_state = sm["carState"].getCarState();
+
+  float currentGear = car_state.getCurrentGear();
+  int gearShifter = (int)car_state.getGearShifter();
+  float textSize = 25 * 7.f;
+
+  QRect rc(220, 30, 184, 202);
+  p.setPen(QPen(QColor(0xff, 0xff, 0xff, 100), 10));
+  p.setBrush(QColor(0, 0, 0, 100));
+  p.drawRoundedRect(rc, 20, 20);
+  p.setPen(Qt::NoPen);
+
+  QString str;
+  configFont(p, "Open Sans", textSize, "Bold");
+
+  QColor textColor0 = QColor(120, 255, 120, 200);
+  QColor textColor1 = QColor(255, 0, 0, 200);
+  QColor textColor2 = QColor(255, 255, 255, 200);
+  QColor textColor3 = QColor(255, 255, 0, 200);
+
+  if ((currentGear < 9) && (currentGear !=0)) {
+    str.sprintf("%.0f", currentGear);
+    drawTextWithColor(p, rc.center().x(), rc.center().y() + 70, str, textColor0);
+  } else if (currentGear == 14 ) {
+    configFont(p, "Open Sans", textSize, "Bold");
+    drawTextWithColor(p, rc.center().x(), rc.center().y() + 70, "R", textColor1);
+  } else if (gearShifter == 1 ) {
+    configFont(p, "Open Sans", textSize, "Bold");
+    drawTextWithColor(p, rc.center().x(), rc.center().y() + 70, "P", textColor2);
+  } else if (gearShifter == 3 ) {
+    configFont(p, "Open Sans", textSize, "Bold");
+    drawTextWithColor(p, rc.center().x(), rc.center().y() + 70, "N", textColor3);
+  } else {
+    configFont(p, "Open Sans", textSize, "Bold");
+    drawTextWithColor(p, rc.center().x(), rc.center().y() + 70, "", textColor3);
+  }
+}
+
+// tenesi
+void NvgWindow::drawEngRpm(QPainter &p) {
+  const SubMaster &sm = *(uiState()->sm);
+  auto car_state = sm["carState"].getCarState();
+
+  float eng_rpm = car_state.getEngRpm(); // car.capnp에 정의된 engrpm 변수명의 데이터를 읽는다..
+  float textSize_1 = 48;
+  float textSize_2 = 65;
+
+  QString rpm; // - rpm 데이터를 문자화한다..
+
+  rpm.sprintf("%.0f", eng_rpm); // 문자변수에 포맷을 지정해서 저장.
+  configFont(p, "Open Sans", textSize_2, "Regular");
+
+  QRect rc(220, 232, 184, 202);
+  p.setPen(QPen(QColor(0xff, 0xff, 0xff, 100), 10));
+  p.setBrush(QColor(0, 0, 0, 100));
+  p.drawRoundedRect(rc, 20, 20);
+  p.setPen(Qt::NoPen);
+
+  QColor textColor0 = QColor(255, 255, 255, 200); // white
+  QColor textColor1 = QColor(120, 255, 120, 200); // green
+  QColor textColor2 = QColor(255, 255, 0, 200); // yellow
+  QColor textColor3 = QColor(255, 0, 0, 200);  // red
+
+  if (eng_rpm < 1099) {
+   drawTextWithColor(p, rc.center().x(), rc.center().y() + 60, rpm, textColor0);
+  } else if (eng_rpm < 2300) {
+   drawTextWithColor(p, rc.center().x(), rc.center().y() + 60, rpm, textColor1);
+  } else if (eng_rpm < 2999) {
+   drawTextWithColor(p, rc.center().x(), rc.center().y() + 60, rpm, textColor2);
+  } else if (eng_rpm > 3000) {
+   drawTextWithColor(p, rc.center().x(), rc.center().y() + 60, rpm, textColor2);
+  }
+
+  configFont(p, "Open Sans", textSize_1, "Bold");
+  drawTextWithColor(p, rc.center().x(), 310, "RPM", textColor0);
+
 }

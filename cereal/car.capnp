@@ -223,6 +223,10 @@ struct CarState {
     rr @3 :Float32;
   }
 
+  # Gear Current By Tenesi
+  currentGear @47 :Float32;
+  engRpm @48 :Float32;
+
   struct WheelSpeeds {
     # optional wheel speeds
     fl @0 :Float32;
@@ -414,6 +418,7 @@ struct CarControl {
       promptDistracted @8;
       
       slowingDownSpeed @9;
+      ding @10;        
     }
   }
 
@@ -516,7 +521,7 @@ struct CarParams {
   hasScc13 @72 :Bool;
   hasScc14 @73 :Bool;
   hasEms @74 :Bool;
-  hasLfaHda @75 :Bool;
+  hasHda @75 :Bool;
   steerFaultMaxAngle @76 :Int16;
   steerFaultMaxFrames @77 :Int16;
 
