@@ -1,11 +1,10 @@
 import math
 from selfdrive.controls.lib.pid import PIDController
-from common.numpy_fast import interp
+from common.numpy_fast import clip, interp
 from selfdrive.controls.lib.latcontrol import LatControl, MIN_STEER_SPEED
 from selfdrive.controls.lib.vehicle_model import ACCELERATION_DUE_TO_GRAVITY
 from cereal import log
 from selfdrive.ntune import nTune
-from selfdrive.controls.lib.latcontrol_pid import ERROR_RATE_FRAME
 
 # At higher speeds (25+mph) we can assume:
 # Lateral acceleration achieved by a specific car correlates to
@@ -14,9 +13,10 @@ from selfdrive.controls.lib.latcontrol_pid import ERROR_RATE_FRAME
 
 # This controller applies torque to achieve desired lateral
 # accelerations. To compensate for the low speed effects we
-# use a LOW_SPEED_FACTOR in the error. Additionally there is
+# use a LOW_SPEED_FACTOR in the error. Additionally, there is
 # friction in the steering wheel that needs to be overcome to
 # move it at all, this is compensated for too.
+
 
 LOW_SPEED_FACTOR = 200
 JERK_THRESHOLD = 0.2
@@ -26,11 +26,8 @@ class LatControlTorque(LatControl):
   def __init__(self, CP, CI):
     super().__init__(CP, CI)
     self.pid = PIDController(CP.lateralTuning.torque.kp, CP.lateralTuning.torque.ki,
-                            k_f=CP.lateralTuning.torque.kf, pos_limit=1.0, neg_limit=-1.0)
+                             k_f=CP.lateralTuning.torque.kf, neg_limit=-self.steer_max, pos_limit=self.steer_max)
     self.get_steer_feedforward = CI.get_steer_feedforward_function()
-    self.steer_max = 1.0
-    self.pid.pos_limit = self.steer_max
-    self.pid.neg_limit = -self.steer_max
     self.use_steering_angle = CP.lateralTuning.torque.useSteeringAngle
     self.friction = CP.lateralTuning.torque.friction
     self.tune = nTune(CP, self)
@@ -53,14 +50,20 @@ class LatControlTorque(LatControl):
         actual_curvature = -VM.calc_curvature(math.radians(CS.steeringAngleDeg - params.angleOffsetDeg), CS.vEgo, params.roll)
       else:
         actual_curvature = llk.angularVelocityCalibrated.value[2] / CS.vEgo
-      desired_lateral_accel = desired_curvature * CS.vEgo**2
-      desired_lateral_jerk = desired_curvature_rate * CS.vEgo**2
-      actual_lateral_accel = actual_curvature * CS.vEgo**2
+
+      desired_lateral_accel = desired_curvature * CS.vEgo ** 2
+      desired_lateral_jerk = desired_curvature_rate * CS.vEgo ** 2
+      actual_lateral_accel = actual_curvature * CS.vEgo ** 2
 
       setpoint = desired_lateral_accel + LOW_SPEED_FACTOR * desired_curvature
       measurement = actual_lateral_accel + LOW_SPEED_FACTOR * actual_curvature
       error = setpoint - measurement
       pid_log.error = error
+
+      friction_compensation = interp(desired_lateral_jerk, [-JERK_THRESHOLD, JERK_THRESHOLD], [-self.friction, self.friction])
+      # avoid deadzone near saturation
+      self.pid.pos_limit = self.steer_max - friction_compensation
+      self.pid.neg_limit = -self.steer_max - friction_compensation
 
       ff = desired_lateral_accel - params.roll * ACCELERATION_DUE_TO_GRAVITY
       output_torque = self.pid.update(error,
@@ -68,7 +71,6 @@ class LatControlTorque(LatControl):
                                       speed=CS.vEgo,
                                       freeze_integrator=CS.steeringRateLimited)
 
-      friction_compensation = interp(desired_lateral_jerk, [-JERK_THRESHOLD, JERK_THRESHOLD], [-self.friction, self.friction])
       output_torque += friction_compensation
 
       pid_log.active = True
@@ -82,4 +84,4 @@ class LatControlTorque(LatControl):
       angle_steers_des = math.degrees(VM.get_steer_from_curvature(-desired_curvature, CS.vEgo, params.roll)) + params.angleOffsetDeg
 
     #TODO left is positive in this convention
-    return -output_torque, angle_steers_des, pid_log
+    return -clip(output_torque, -self.steer_max, self.steer_max), angle_steers_des, pid_log
