@@ -221,7 +221,7 @@ class nTune():
       updated = True
     if self.checkValue("maxLatAccel", 1.0, 4.0, 2.9):
       updated = True
-    if self.checkValue("friction", 0.0, 0.2, 0.005):
+    if self.checkValue("friction", 0.0, 0.2, 0.01):
       updated = True
 
     return updated
