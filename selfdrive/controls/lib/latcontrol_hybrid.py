@@ -9,15 +9,15 @@ from selfdrive.controls.lib.pid import PIDController
 
 ERROR_RATE_FRAME = 5
 
-TORQUE_SCALE_BP = [0., 30., 80., 100., 130.]
-TORQUE_SCALE_V = [0.2, 0.35, 0.63, 0.67, 0.7]
+#TORQUE_SCALE_BP = [0., 30., 80., 100., 130.]
+#TORQUE_SCALE_V = [0.2, 0.35, 0.63, 0.67, 0.7]
 
 class LatControlHybrid(LatControl):
   def __init__(self, CP, CI):
     super().__init__(CP, CI)
     self.scale = 1600.
     self.ki = 0.01
-    self.dc_gain = 0.0025
+    self.dc_gain = 0.0027
 
     self.A = np.array([0., 1., -0.22619643, 1.21822268]).reshape((2, 2))
     self.B = np.array([-1.92006585e-04, 3.95603032e-05]).reshape((2, 1))
@@ -29,10 +29,10 @@ class LatControlHybrid(LatControl):
     self.i_unwind_rate = 0.3 * DT_CTRL
     self.i_rate = 1.0 * DT_CTRL
 
-    self.pid = PIDController(k_p=0.2,
-                             k_i=0.02,
-                             k_f=0.00005,
-                             k_d=0.1,
+    self.pid = PIDController(k_p=0.5,
+                             k_i=0.01,
+                             k_f=0.0,
+                             k_d=0.01,
                              pos_limit=1.0, neg_limit=-1.0)
     self.get_steer_feedforward = CI.get_steer_feedforward_function()
     self.errors = []
@@ -52,8 +52,8 @@ class LatControlHybrid(LatControl):
 
     angle_steers_des_no_offset = math.degrees(VM.get_steer_from_curvature(-desired_curvature, CS.vEgo, params.roll))
 
-    #torque_scale = (0.45 + CS.vEgo / 60.0)**2  # Scale actuator model with speed
-    torque_scale = interp(CS.vEgo * 3.6, TORQUE_SCALE_BP, TORQUE_SCALE_V)
+    torque_scale = (0.45 + CS.vEgo / 60.0)**2  # Scale actuator model with speed
+    #torque_scale = interp(CS.vEgo * 3.6, TORQUE_SCALE_BP, TORQUE_SCALE_V)
 
     steering_angle_no_offset = CS.steeringAngleDeg - params.angleOffsetAverageDeg
     desired_angle = angle_steers_des_no_offset

@@ -18,18 +18,6 @@ from selfdrive.controls.lib.latcontrol_pid import ERROR_RATE_FRAME
 # friction in the steering wheel that needs to be overcome to
 # move it at all, this is compensated for too.
 
-# At higher speeds (25+mph) we can assume:
-# Lateral acceleration achieved by a specific car correlates to
-# torque applied to the steering rack. It does not correlate to
-# wheel slip, or to speed.
-
-# This controller applies torque to achieve desired lateral
-# accelerations. To compensate for the low speed effects we
-# use a LOW_SPEED_FACTOR in the error. Additionally there is
-# friction in the steering wheel that needs to be overcome to
-# move it at all, this is compensated for too.
-
-
 LOW_SPEED_FACTOR = 200
 JERK_THRESHOLD = 0.2
 
