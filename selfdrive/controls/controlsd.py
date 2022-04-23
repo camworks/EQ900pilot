@@ -156,8 +156,6 @@ class Controls:
     elif self.CP.lateralTuning.which() == 'hybrid':
       self.LaC = LatControlHybrid(self.CP, self.CI)
 
-
-
     self.initialized = False
     self.state = State.disabled
     self.enabled = False
