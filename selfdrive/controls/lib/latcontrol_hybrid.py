@@ -17,7 +17,7 @@ class LatControlHybrid(LatControl):
     super().__init__(CP, CI)
     self.scale = 1600.
     self.ki = 0.01
-    self.dc_gain = 0.0027
+    self.dc_gain = 0.0025
 
     self.A = np.array([0., 1., -0.22619643, 1.21822268]).reshape((2, 2))
     self.B = np.array([-1.92006585e-04, 3.95603032e-05]).reshape((2, 1))
@@ -29,10 +29,8 @@ class LatControlHybrid(LatControl):
     self.i_unwind_rate = 0.3 * DT_CTRL
     self.i_rate = 1.0 * DT_CTRL
 
-    self.pid = PIDController(k_p=0.5,
-                             k_i=0.01,
-                             k_f=0.0,
-                             k_d=0.01,
+    self.pid = PIDController(CP.lateralTuning.hybrid.kp, CP.lateralTuning.hybrid.ki,
+                             k_f=CP.lateralTuning.hybrid.kf, k_d=CP.lateralTuning.hybrid.kd,
                              pos_limit=1.0, neg_limit=-1.0)
     self.get_steer_feedforward = CI.get_steer_feedforward_function()
     self.errors = []

@@ -591,7 +591,10 @@ struct CarParams {
   }
 
   struct LateralHybridTuning {
-
+    kp @0 :Float32;
+    ki @1 :Float32;
+    kf @2 :Float32;
+    kd @3 :Float32;
   }
 
   enum SafetyModel {
