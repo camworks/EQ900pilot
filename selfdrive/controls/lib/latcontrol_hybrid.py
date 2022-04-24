@@ -15,24 +15,22 @@ TORQUE_SCALE_V = [0.2, 0.35, 0.63, 0.67, 0.7]
 class LatControlHybrid(LatControl):
   def __init__(self, CP, CI):
     super().__init__(CP, CI)
-    self.scale = 1600.
+    self.scale = 1680.
     self.ki = 0.01
-    self.dc_gain = 0.0025
+    self.dc_gain = 0.0028
 
     self.A = np.array([0., 1., -0.22619643, 1.21822268]).reshape((2, 2))
     self.B = np.array([-1.92006585e-04, 3.95603032e-05]).reshape((2, 1))
     self.C = np.array([1., 0.]).reshape((1, 2))
-    self.K = np.array([-110., 451.]).reshape((1, 2))
-    self.L = np.array([0.33, 0.318]).reshape((2, 1))
+    self.K = np.array([-110.73572306, 451.22718255]).reshape((1, 2))
+    self.L = np.array([0.3233671, 0.3185757]).reshape((2, 1))
 
     self.x_hat = np.array([[0], [0]])
     self.i_unwind_rate = 0.3 * DT_CTRL
     self.i_rate = 1.0 * DT_CTRL
 
-    self.pid = PIDController(k_p=0.2,
-                             k_i=0.02,
-                             k_f=0.00005,
-                             k_d=0.1,
+    self.pid = PIDController(CP.lateralTuning.hybrid.kp, CP.lateralTuning.hybrid.ki,
+                             k_f=CP.lateralTuning.hybrid.kf, k_d=CP.lateralTuning.pid.kd,
                              pos_limit=1.0, neg_limit=-1.0)
     self.get_steer_feedforward = CI.get_steer_feedforward_function()
     self.errors = []

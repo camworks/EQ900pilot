@@ -590,7 +590,10 @@ struct CarParams {
   }
 
   struct LateralHybridTuning {
-
+    kp @0 :List(Float32);
+    ki @1 :List(Float32);
+    kf @2 :List(Float32);
+    kd @3 :List(Float32);
   }
 
   enum SafetyModel {
