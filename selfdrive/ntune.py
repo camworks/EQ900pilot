@@ -25,8 +25,6 @@ class LatType(Enum):
   LQR = 1
   INDI = 2
   TORQUE = 3
-  HYBRIDE = 4
-
 
 class nTune():
 
@@ -62,14 +60,6 @@ class nTune():
     elif "LatControlINDI" in str(type(ctrl)):
       self.type = LatType.INDI
       self.file = CONF_LAT_INDI_FILE
-    elif "LatControlHybrid" in str(type(ctrl)):
-      self.type = LatType.LQR
-      self.file = CONF_LAT_LQR_FILE
-      ctrl.A = np.array([0., 1., -0.22619643, 1.21822268]).reshape((2, 2))
-      ctrl.B = np.array([-1.92006585e-04, 3.95603032e-05]).reshape((2, 1))
-      ctrl.C = np.array([1., 0.]).reshape((1, 2))
-      ctrl.K = np.array([-110., 451.]).reshape((1, 2))
-      ctrl.L = np.array([0.33, 0.318]).reshape((2, 1))
     else:
       self.file = CONF_PATH + group + ".json"
 
@@ -158,8 +148,6 @@ class nTune():
       return self.checkValidIndi()
     elif self.type == LatType.TORQUE:
       return self.checkValidTorque()
-    elif self.type == LatType.HYBRID:
-      return self.checkValidHybrid
     elif self.group == "common":
       return self.checkValidCommon()
     else:
@@ -173,8 +161,6 @@ class nTune():
       self.updateIndi()
     elif self.type == LatType.TORQUE:
       self.updateTorque()
-    if self.type == LatType.HYBRIDE:
-      self.updateLQR()
 
   def checkValidCommon(self):
     updated = False
@@ -241,23 +227,6 @@ class nTune():
 
     return updated
 
-  def checkValidHybrid(self):
-    updated = False
-
-    if self.checkValue("scale", 500.0, 5000.0, 1650.0):
-      updated = True
-
-    if self.checkValue("ki", 0.0, 0.2, 0.01):
-      updated = True
-
-    if self.checkValue("dcGain", 0.002, 0.004, 0.0027):
-      updated = True
-
-    if self.checkValue("steerLimitTimer", 0.5, 3.0, 2.5):
-      updated = True
-
-    return updated
-
   def checkValidISCC(self):
     updated = False
 
@@ -303,16 +272,6 @@ class nTune():
       torque.friction = float(self.config["friction"])
       torque.reset()
 
-  def updateHybrid(self):
-    lqr = self.get_ctrl()
-    if lqr is not None:
-      lqr.scale = float(self.config["scale"])
-      lqr.ki = float(self.config["ki"])
-      lqr.dc_gain = float(self.config["dcGain"])
-
-      lqr.x_hat = np.array([[0], [0]])
-      lqr.reset()
-
   def read_cp(self):
 
     try:
@@ -325,11 +284,10 @@ class nTune():
         elif self.type == LatType.INDI:
           pass
         elif self.type == LatType.TORQUE:
-          pass
-        elif self.type == LatType.HYBRIDE:
-          self.config["scale"] = round(self.CP.lateralTuning.lqr.scale, 2)
-          self.config["ki"] = round(self.CP.lateralTuning.lqr.ki, 3)
-          self.config["dcGain"] = round(self.CP.lateralTuning.lqr.dcGain, 6)          
+          self.config["useSteeringAngle"] = 1. if self.CP.lateralTuning.torque.useSteeringAngle else 0.
+          self.config["maxLatAccel"] = round(2. / self.CP.lateralTuning.torque.kp, 2)
+          self.config["friction"] = round(self.CP.lateralTuning.torque.friction, 3)
+          self.config["ki_factor"] = round(self.CP.lateralTuning.torque.ki * self.config["maxLatAccel"], 2)
         else:
           self.config["useLiveSteerRatio"] = 1.
           self.config["steerRatio"] = round(self.CP.steerRatio, 2)
