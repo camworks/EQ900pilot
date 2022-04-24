@@ -219,11 +219,11 @@ class nTune():
 
     if self.checkValue("useSteeringAngle", 0., 1., 1.):
       updated = True
-    if self.checkValue("maxLatAccel", 1.0, 4.0, 2.5):
+    if self.checkValue("maxLatAccel", 1.0, 4.0, 2.85):
       updated = True
-    if self.checkValue("friction", 0.0, 0.2, 0.01):
+    if self.checkValue("friction", 0.0, 0.2, 0.005):
       updated = True
-    if self.checkValue("ki_factor", 0.0, 1.0, 0.5):
+    if self.checkValue("ki_factor", 0.0, 1.0, 0.05):
       updated = True
 
     return updated
@@ -268,7 +268,7 @@ class nTune():
       torque.use_steering_angle = float(self.config["useSteeringAngle"]) > 0.5
       max_lat_accel = float(self.config["maxLatAccel"])
       torque.pid._k_p = [[0], [2.0 / max_lat_accel]]
-      torque.pid.k_f = 1.0 / max_lat_accel
+      torque.pid.k_f = 0.85 / max_lat_accel
       torque.pid._k_i = [[0], [self.config["ki_factor"] / max_lat_accel]]
       torque.friction = float(self.config["friction"])
       torque.reset()
