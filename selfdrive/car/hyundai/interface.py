@@ -53,9 +53,9 @@ class CarInterface(CarInterfaceBase):
       ret.lateralTuning.torque.useSteeringAngle = True
       max_lat_accel = 2.5
       ret.lateralTuning.torque.kp = 2.0 / max_lat_accel
-      ret.lateralTuning.torque.kf = 1.0 / max_lat_accel
-      ret.lateralTuning.torque.friction = 0.01
-      ret.lateralTuning.torque.ki = 0.25 / max_lat_accel
+      ret.lateralTuning.torque.kf = 0.85 / max_lat_accel
+      ret.lateralTuning.torque.friction = 0.005
+      ret.lateralTuning.torque.ki = 0.01 / max_lat_accel
     elif lateral_control == 'INDI':
       ret.lateralTuning.init('indi')
 
@@ -84,18 +84,18 @@ class CarInterface(CarInterfaceBase):
 
       ret.lateralTuning.hybrid.kp = 0.2
       ret.lateralTuning.hybrid.ki = 0.02
-      ret.lateralTuning.hybrid.kf = 0.00005
+      ret.lateralTuning.hybrid.kf = 0.0005
       ret.lateralTuning.hybrid.kd = 0.1
 
     ret.steerRatio = 16.
-    ret.steerActuatorDelay = 0.0
-    ret.steerRateCost = 0.45
+    ret.steerActuatorDelay = 0.2
+    ret.steerRateCost = 0.5
 
     ret.steerLimitTimer = 2.5
 
     # longitudinal
     ret.longitudinalTuning.kpBP = [0.*CV.KPH_TO_MS, 5.*CV.KPH_TO_MS, 20.*CV.KPH_TO_MS, 30.*CV.KPH_TO_MS, 70.*CV.KPH_TO_MS, 130.*CV.KPH_TO_MS]
-    ret.longitudinalTuning.kpV = [1.2, 1.05, 0.85, 0.7, 0.55, 0.35]
+    ret.longitudinalTuning.kpV = [1.2, 1.15, 0.87, 0.72, 0.55, 0.35]
     ret.longitudinalTuning.kiBP = [0., 20. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
     ret.longitudinalTuning.kiV = [0.005, 0.06, 0.01]
     ret.longitudinalTuning.kf = 0.9
@@ -103,7 +103,7 @@ class CarInterface(CarInterfaceBase):
     ret.longitudinalActuatorDelayUpperBound = 0.45
 
     ret.stopAccel = -2.0
-    ret.stoppingDecelRate = 0.07  # brake_travel/s while trying to stop
+    ret.stoppingDecelRate = 0.08  # brake_travel/s while trying to stop
     ret.vEgoStopping = 0.7
     ret.vEgoStarting = 0.3  # needs to be >= vEgoStopping to avoid state transition oscillation
 
