@@ -82,13 +82,19 @@ class CarInterface(CarInterfaceBase):
       ret.lateralTuning.torque.ki = 0.5 / max_lat_accel
       ret.lateralTuning.torque.deadzoneBP = [0.]
       ret.lateralTuning.torque.deadzoneV = [0.]
-    else:
+    elif lateral_control == 'HYBRID':
       ret.lateralTuning.init('hybrid')
 
       ret.lateralTuning.hybrid.kp = 0.285
       ret.lateralTuning.hybrid.ki = 0.008
       ret.lateralTuning.hybrid.kf = 0.006
       ret.lateralTuning.hybrid.kd = 0.04
+    else:
+      ret.lateralTuning.init('discrete')
+
+      ret.lateralTuning.discrete.kp = 0.285
+      ret.lateralTuning.discrete.ki = 0.008
+      ret.lateralTuning.discrete.kd = 0.04
 
     ret.steerRatio = 16.
     ret.steerActuatorDelay = 0.15

@@ -111,10 +111,14 @@ class TestCarModel(unittest.TestCase):
       tuning = self.CP.lateralTuning.which()
       if tuning == 'pid':
         self.assertTrue(len(self.CP.lateralTuning.pid.kpV))
-      elif tuning == 'lqr':
-        self.assertTrue(len(self.CP.lateralTuning.lqr.a))
+      elif tuning == 'torque':
+        self.assertTrue(self.CP.lateralTuning.torque.kf > 0)
       elif tuning == 'indi':
         self.assertTrue(len(self.CP.lateralTuning.indi.outerLoopGainV))
+      elif tuning == 'discrete':
+        self.assertTrue(self.CP.lateralTuning.discrete)
+      elif tuning == 'lqr':
+        self.assertTrue(len(self.CP.lateralTuning.lqr.a))
       else:
         raise Exception("unkown tuning")
 

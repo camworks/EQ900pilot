@@ -589,6 +589,7 @@ struct ControlsState @0x97ff69c53601abf1 {
     debugState @59 :LateralDebugState;
     torqueState @60 :LateralTorqueState;
     hybridState @74 :LateralHybridState;
+    discreteState @75 :LateralDiscreteState;
   }
 
   angleSteers @61 :Float32;
@@ -702,6 +703,17 @@ struct ControlsState @0x97ff69c53601abf1 {
     output @3 :Float32;
     saturated @4 :Bool;
   }
+  
+  struct LateralDiscreteState {
+    active @0 :Bool;
+    steeringAngleDeg @1 :Float32;
+    steeringAngleDesiredDeg @2 :Float32;
+    angleError @3 :Float32;
+    gains @4 :List(Float32);
+    output @5 :Float32;
+    saturated @6 :Bool;
+   }
+
 
   # deprecated
   vEgoDEPRECATED @0 :Float32;
