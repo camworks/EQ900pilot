@@ -128,7 +128,6 @@ void OnroadWindow::mouseReleaseEvent(QMouseEvent* e) {
     bool sidebarVisible = geometry().x() > 0;
     map->setVisible(!sidebarVisible && !map->isVisible());
   }
-
   // propagation event to parent(HomeWindow)
   QWidget::mouseReleaseEvent(e);
 }
@@ -164,7 +163,7 @@ void OnroadWindow::offroadTransition(bool offroad) {
 
   if(offroad && recorder) {
     recorder->stop(false);
-    }
+  }
 }
 
 void OnroadWindow::paintEvent(QPaintEvent *event) {
