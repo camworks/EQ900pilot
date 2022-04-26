@@ -7,7 +7,7 @@ from selfdrive.hardware import TICI
 from selfdrive.swaglog import cloudlog
 from selfdrive.ntune import ntune_common_get
 
-ENABLE_ZORROBYTE = True
+ENABLE_ZORROBYTE = False
 ENABLE_INC_LANE_PROB = True
 
 TRAJECTORY_SIZE = 33
