@@ -7,7 +7,7 @@ from selfdrive.hardware import TICI
 from selfdrive.swaglog import cloudlog
 from selfdrive.ntune import ntune_common_get
 
-ENABLE_ZORROBYTE = False
+ENABLE_ZORROBYTE = True
 ENABLE_INC_LANE_PROB = True
 
 TRAJECTORY_SIZE = 33
@@ -92,7 +92,7 @@ class LanePlanner:
 
     if ENABLE_ZORROBYTE:
       # zorrobyte code
-      if l_prob > 0.4 and r_prob > 0.4:
+      if l_prob > 0.5 and r_prob > 0.5:
         self.frame += 1
         if self.frame > 20:
           self.frame = 0
