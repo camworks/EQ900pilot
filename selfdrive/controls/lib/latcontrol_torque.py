@@ -76,7 +76,8 @@ class LatControlTorque(LatControl):
 
       ff = desired_lateral_accel - params.roll * ACCELERATION_DUE_TO_GRAVITY
       # convert friction into lateral accel units for feedforward
-      friction_compensation = interp(desired_lateral_jerk, [-JERK_THRESHOLD, JERK_THRESHOLD], [-self.friction, self.friction])
+      friction_compensation = interp(desired_lateral_jerk, [-JERK_THRESHOLD, JERK_THRESHOLD],
+                                     [-self.friction, self.friction])
       ff += friction_compensation / CP.lateralTuning.torque.kf
       output_torque = self.pid.update(error_deadzone,
                                       override=CS.steeringPressed, feedforward=ff,
@@ -93,5 +94,5 @@ class LatControlTorque(LatControl):
 
       angle_steers_des = math.degrees(VM.get_steer_from_curvature(-desired_curvature, CS.vEgo, params.roll)) + params.angleOffsetDeg
 
-    #TODO left is positive in this convention
+    # TODO left is positive in this convention
     return -output_torque, angle_steers_des, pid_log
