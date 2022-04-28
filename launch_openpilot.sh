@@ -48,5 +48,8 @@ if [ -f "/data/bootanimation.zip" ]; then
 fi
 
 export PASSIVE="0"
-exec ./launch_chffrplus.sh
 
+if [ -f /EON ]; then
+  exec ./scripts/init_eon.sh
+  exec ./launch_chffrplus.sh
+fi
