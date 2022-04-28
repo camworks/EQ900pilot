@@ -43,8 +43,4 @@ if [ ! -f "/BOOTLOGO" ]; then
   echo =================================================================
 fi
 
-if [ ! -f "/data/params/DongleId" ]; then
-  echo -n "N/A" > /data/params/d/DongleId;
-fi
-
 exec ./launch_chffrplus.sh
