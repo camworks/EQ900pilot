@@ -138,8 +138,8 @@ class CarInterface(CarInterfaceBase):
         ret.lateralTuning.torque.kf = 0.9 / max_lat_accel
         ret.lateralTuning.torque.friction = 0.001
         ret.lateralTuning.torque.ki = 0.03 / max_lat_accel
-        ret.lateralTuning.torque.deadzoneBP = [0., 60. *CV.KPH_TO_MS]
-        ret.lateralTuning.torque.deadzoneV = [0., 0.02]
+        ret.lateralTuning.torque.deadzoneBP = [0., 80. *CV.KPH_TO_MS]
+        ret.lateralTuning.torque.deadzoneV = [0., 0.01]
 
     elif candidate == CAR.GENESIS_EQ900_L:
       ret.mass = 2290
@@ -230,16 +230,6 @@ class CarInterface(CarInterfaceBase):
       ret.wheelbase = 2.845
       ret.centerToFront = ret.wheelbase * 0.385
       ret.steerRatio = 16.
-
-      if ret.lateralTuning.which() == 'torque':
-        ret.lateralTuning.torque.useSteeringAngle = True
-        max_lat_accel = 2.5
-        ret.lateralTuning.torque.kp = 2.0 / max_lat_accel
-        ret.lateralTuning.torque.kf = 1.0 / max_lat_accel
-        ret.lateralTuning.torque.friction = 0.01
-        ret.lateralTuning.torque.ki = 0.5 / max_lat_accel
-        ret.lateralTuning.torque.deadzoneBP = [0., 20.]
-        ret.lateralTuning.torque.deadzoneV = [0., 0.02]
 
     elif candidate in [CAR.GRANDEUR_IG_FL, CAR.GRANDEUR_IG_FL_HEV]:
       tire_stiffness_factor = 0.8
