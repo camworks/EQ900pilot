@@ -31,7 +31,7 @@ class LatControlHybrid(LatControl):
 
     self.pid = PIDController(CP.lateralTuning.hybrid.kp, CP.lateralTuning.hybrid.ki,
                              k_f=CP.lateralTuning.hybrid.kf, k_d=CP.lateralTuning.hybrid.kd,
-                             pos_limit=1.0, neg_limit=-1.0)
+                             pos_limit=self.steer_max, neg_limit=-self.steer_max)
     self.get_steer_feedforward = CI.get_steer_feedforward_function()
     self.errors = []
     self.reset()
@@ -43,7 +43,7 @@ class LatControlHybrid(LatControl):
     self.pid.reset()
     self.errors = []
 
-  def update(self, active, CS, CP, VM, params, last_actuators, desired_curvature, desired_curvature_rate, llk):
+  def update(self, active, CS, VM, params, last_actuators, desired_curvature, desired_curvature_rate, llk):
 
     lat_log = log.ControlsState.LateralHybridState.new_message()
     lat_log.steeringAngleDeg = float(CS.steeringAngleDeg)
@@ -95,9 +95,7 @@ class LatControlHybrid(LatControl):
       angle_steers_des = angle_steers_des_no_offset + params.angleOffsetDeg
       error = angle_steers_des - CS.steeringAngleDeg
 
-      self.pid.pos_limit = self.steer_max
-      self.pid.neg_limit = -self.steer_max
-
+      # offset does not contribute to resistive torque
       steer_feedforward = self.get_steer_feedforward(angle_steers_des_no_offset, CS.vEgo)
 
       error_rate = 0
