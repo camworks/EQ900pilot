@@ -81,7 +81,7 @@ class CarInterface(CarInterfaceBase):
       ret.lateralTuning.torque.friction = 0.01
       ret.lateralTuning.torque.ki = 0.5 / max_lat_accel
       ret.lateralTuning.torque.deadzoneBP = [0.]
-      ret.lateralTuning.torque.deadzoneV = [0.]
+      ret.lateralTuning.torque.deadzoneV = [0.001]
     else:
       ret.lateralTuning.init('hybrid')
 
