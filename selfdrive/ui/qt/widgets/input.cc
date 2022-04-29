@@ -254,6 +254,52 @@ RichTextDialog::RichTextDialog(const QString &prompt_text, const QString &btn_te
 }
 
 bool RichTextDialog::alert(const QString &prompt_text, QWidget *parent) {
-  auto d = RichTextDialog(prompt_text, "Ok", parent);
+  auto d = RichTextDialog(prompt_text, "Close", parent);
+  return d.exec();
+}
+
+// Update Info
+
+UpdateInfoDialog::UpdateInfoDialog(const QString &prompt_text, const QString &confirm_text, const QString &cancel_text,
+                               QWidget *parent) : QDialogBase(parent) {
+  QFrame *container = new QFrame(this);
+  container->setStyleSheet("QFrame { background-color: #1B1B1B; }");
+  QVBoxLayout *main_layout = new QVBoxLayout(container);
+  main_layout->setContentsMargins(32, 32, 32, 32);
+
+  QLabel *title = new QLabel("UPDATE", this);
+  title->setAlignment(Qt::AlignHCenter);
+  title->setStyleSheet("font-size: 70px; font-weight: bold; color: #AEFF82;");
+  main_layout->addWidget(title, 0, Qt::AlignTop | Qt::AlignHCenter);
+
+  QLabel *prompt = new QLabel(prompt_text, this);
+  prompt->setAlignment(Qt::AlignLeft);
+  prompt->setStyleSheet("font-size: 50px; font-weight: light; color: #FFFFFF; margin: 45px;");
+  main_layout->addWidget(new ScrollView(prompt, this), 1, Qt::AlignTop);
+
+  // Update + Cancel buttons
+  QHBoxLayout *btn_layout = new QHBoxLayout();
+  btn_layout->setSpacing(30);
+  main_layout->addLayout(btn_layout);
+
+  if (confirm_text.length()) {
+    QPushButton* confirm_btn = new QPushButton(confirm_text);
+    btn_layout->addWidget(confirm_btn);
+    QObject::connect(confirm_btn, &QPushButton::clicked, this, &UpdateInfoDialog::accept);
+  }
+
+  if (cancel_text.length()) {
+    QPushButton* cancel_btn = new QPushButton(cancel_text);
+    btn_layout->addWidget(cancel_btn);
+    QObject::connect(cancel_btn, &QPushButton::clicked, this, &UpdateInfoDialog::reject);
+  }
+
+  QVBoxLayout *outer_layout = new QVBoxLayout(this);
+  outer_layout->setContentsMargins(30, 30, 30, 30);
+  outer_layout->addWidget(container);
+}
+
+bool UpdateInfoDialog::confirm(const QString &prompt_text, QWidget *parent) {
+  auto d = UpdateInfoDialog(prompt_text, "Update", "Cancel", parent);
   return d.exec();
 }
