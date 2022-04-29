@@ -14,7 +14,7 @@ class CarControllerParams:
 
   def __init__(self, CP):
     self.STEER_MAX = 409   # 409 is the max, 255 is stock
-    if CP.lateralTuning.wich == 'torque':
+    if CP.lateralTuning == 'torque':
       self.STEER_DELTA_UP = 3
       self.STEER_DELTA_DOWN = 7
     else:
