@@ -75,11 +75,11 @@ class CarInterface(CarInterfaceBase):
       ret.lateralTuning.init('torque')
 
       ret.lateralTuning.torque.useSteeringAngle = True
-      max_lat_accel = 2.5
-      ret.lateralTuning.torque.kp = 2.0 / max_lat_accel
-      ret.lateralTuning.torque.kf = 1.0 / max_lat_accel
+      ret.lateralTuning.torque.kp = 0.7
+      ret.lateralTuning.torque.ki = 0.2
+      ret.lateralTuning.torque.kf = 0.2
       ret.lateralTuning.torque.friction = 0.01
-      ret.lateralTuning.torque.ki = 0.5 / max_lat_accel
+
       ret.lateralTuning.torque.deadzoneBP = [0.]
       ret.lateralTuning.torque.deadzoneV = [0.001]
     else:
@@ -133,13 +133,9 @@ class CarInterface(CarInterfaceBase):
       # thanks to 파파
       if ret.lateralTuning.which() == 'torque':
         ret.lateralTuning.torque.useSteeringAngle = True
-        max_lat_accel = 3.2
-        ret.lateralTuning.torque.kp = 2.0 / max_lat_accel
-        ret.lateralTuning.torque.kf = 0.9 / max_lat_accel
-        ret.lateralTuning.torque.friction = 0.001
-        ret.lateralTuning.torque.ki = 0.03 / max_lat_accel
-        ret.lateralTuning.torque.deadzoneBP = [0., 80. *CV.KPH_TO_MS]
-        ret.lateralTuning.torque.deadzoneV = [0., 0.01]
+        ret.lateralTuning.torque.kp = 0.6
+        ret.lateralTuning.torque.ki = 0.2
+        ret.lateralTuning.torque.kf = 0.01
 
     elif candidate == CAR.GENESIS_EQ900_L:
       ret.mass = 2290
@@ -184,11 +180,9 @@ class CarInterface(CarInterfaceBase):
 
       if ret.lateralTuning.which() == 'torque':
         ret.lateralTuning.torque.useSteeringAngle = True
-        max_lat_accel = 3.5
-        ret.lateralTuning.torque.kp = 2.0 / max_lat_accel
-        ret.lateralTuning.torque.kf = 1.0 / max_lat_accel
-        ret.lateralTuning.torque.friction = 0.0
-        ret.lateralTuning.torque.ki = 0.5 / max_lat_accel
+        ret.lateralTuning.torque.kp = 0.57
+        ret.lateralTuning.torque.ki = 0.15
+        ret.lateralTuning.torque.kf = 0.0
 
     elif candidate in [CAR.ELANTRA, CAR.ELANTRA_GT_I30]:
       ret.mass = 1275. + STD_CARGO_KG
@@ -305,6 +299,13 @@ class CarInterface(CarInterfaceBase):
       tire_stiffness_factor = 0.8
 
       ret.steerRatio = 14.5
+      ret.steerRateCost = 0.4
+
+      if ret.lateralTuning.which() == 'torque':
+        ret.lateralTuning.torque.useSteeringAngle = True
+        ret.lateralTuning.torque.kp = 0.63
+        ret.lateralTuning.torque.ki = 0.15
+        ret.lateralTuning.torque.kf = 0.31
 
 
 
