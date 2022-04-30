@@ -662,6 +662,7 @@ DeveloperPanel::DeveloperPanel(QWidget *parent) : QFrame(parent) {
   layout->addWidget(new C2WithCommaPowerToggle());
   layout->addWidget(new JoystickModeToggle());
   layout->addWidget(new NoSmartMDPSToggle());
+  layout->addWidget(new UserSpecificFeature());
   layout->addWidget(new TimeZoneSelectCombo());
   const char* cal_ok = "cp -f /data/openpilot/selfdrive/assets/addon/param/CalibrationParams /data/params/d/";
   auto calokbtn = new ButtonControl("Enable Calibration by Force", "RUN");

@@ -6987,3 +6987,40 @@ RPMAnimatedMaxValue::RPMAnimatedMaxValue() : AbstractControl("AnimatedRPM Max", 
 void RPMAnimatedMaxValue::refresh() {
   label.setText(QString::fromStdString(params.get("AnimatedRPMMax")));
 }
+
+UserSpecificFeature::UserSpecificFeature() : AbstractControl("FeatureNumber", "User Specific Feature", "") {
+  btn.setStyleSheet(R"(
+    padding: -10;
+    border-radius: 35px;
+    font-size: 35px;
+    font-weight: 500;
+    color: #E4E4E4;
+    background-color: #393939;
+  )");
+  edit.setStyleSheet(R"(
+    background-color: grey;
+    font-size: 55px;
+    font-weight: 500;
+    height: 120px;
+  )");
+  btn.setFixedSize(150, 100);
+  edit.setAlignment(Qt::AlignVCenter|Qt::AlignLeft);
+
+  hlayout->addWidget(&edit);
+  hlayout->addWidget(&btn);
+
+  QObject::connect(&btn, &QPushButton::clicked, [=]() {
+    QString targetvalue = InputDialog::getText("User Specific Features", this, "Put your number you know.", false, 1, QString::fromStdString(params.get("UserSpecificFeature")));
+    if (targetvalue.length() > 0 && targetvalue != QString::fromStdString(params.get("UserSpecificFeature"))) {
+      params.put("UserSpecificFeature", targetvalue.toStdString());
+      refresh();
+    }
+   });
+  refresh();
+}
+
+void UserSpecificFeature::refresh() {
+  auto strs = QString::fromStdString(params.get("UserSpecificFeature"));
+  edit.setText(QString::fromStdString(strs.toStdString()));
+  btn.setText("SET");
+}

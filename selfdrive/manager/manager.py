@@ -209,6 +209,7 @@ def manager_init() -> None:
     ("ShowStopLine", "0"),
     ("RoutineDriveOption", "OPKR"),
     ("SshEnabled", "1"),
+    ("UserSpecificFeature", "0"),
    ]
   if not PC:
     default_params.append(("LastUpdateTime", datetime.datetime.utcnow().isoformat().encode('utf8')))
