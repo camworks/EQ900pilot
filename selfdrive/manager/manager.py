@@ -76,7 +76,7 @@ def manager_init() -> None:
     ("TorqueKp", "20"),
     ("TorqueKf", "10"),
     ("TorqueKi", "5"),
-    ("TorqueFriction", "1"),
+    ("TorqueFriction", "10"),
     ("TorqueUseAngle", "1"),
     ("TorqueMaxLatAccel", "30"),
     ("CameraOffsetAdj", "60"),

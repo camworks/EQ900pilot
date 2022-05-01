@@ -48,7 +48,7 @@ def set_lat_tune(tune, name, max_lat_accel=2.5, FRICTION=.1):
     TorqueKp = float(Decimal(params.get("TorqueKp", encoding="utf8")) * Decimal('0.1'))
     TorqueKf = float(Decimal(params.get("TorqueKf", encoding="utf8")) * Decimal('0.1'))
     TorqueKi = float(Decimal(params.get("TorqueKi", encoding="utf8")) * Decimal('0.1'))
-    TorqueFriction = float(Decimal(params.get("TorqueFriction", encoding="utf8")) * Decimal('0.01'))
+    TorqueFriction = float(Decimal(params.get("TorqueFriction", encoding="utf8")) * Decimal('0.001'))
     TorqueUseAngle = params.get_bool('TorqueUseAngle')
     max_lat_accel = float(Decimal(params.get("TorqueMaxLatAccel", encoding="utf8")) * Decimal('0.1'))
     tune.init('torque')

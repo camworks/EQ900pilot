@@ -54,7 +54,7 @@ class LatControlTorque(LatControl):
       self.kp = float(Decimal(self.params.get("TorqueKp", encoding="utf8")) * Decimal('0.1')) / self.max_lat_accel
       self.kf = float(Decimal(self.params.get("TorqueKf", encoding="utf8")) * Decimal('0.1')) / self.max_lat_accel
       self.ki = float(Decimal(self.params.get("TorqueKi", encoding="utf8")) * Decimal('0.1')) / self.max_lat_accel
-      self.friction = float(Decimal(self.params.get("TorqueFriction", encoding="utf8")) * Decimal('0.01'))
+      self.friction = float(Decimal(self.params.get("TorqueFriction", encoding="utf8")) * Decimal('0.001'))
       self.use_steering_angle = self.params.get_bool('TorqueUseAngle')
       self.pid = PIDController(self.kp, self.ki,
                               k_f=self.kf, pos_limit=1.0, neg_limit=-1.0)

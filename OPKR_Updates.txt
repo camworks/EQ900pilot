@@ -1,2 +1,5 @@
 2022-04-29
-- updates information test
+- Add updates information
+2022-05-01
+- Change 10unit to 100unit of Torque friction.
+  ★★★You must be ensure the value again.

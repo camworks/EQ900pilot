@@ -852,7 +852,7 @@ class CarController():
           max_lat_accel = float(Decimal(self.params.get("TorqueMaxLatAccel", encoding="utf8"))*Decimal('0.1'))
           self.str_log2 = 'T={:0.2f}/{:0.2f}/{:0.2f}/{:0.2f}'.format(float(Decimal(self.params.get("TorqueKp", encoding="utf8"))*Decimal('0.1'))/max_lat_accel, \
            float(Decimal(self.params.get("TorqueKf", encoding="utf8"))*Decimal('0.1'))/max_lat_accel, float(Decimal(self.params.get("TorqueKi", encoding="utf8"))*Decimal('0.1'))/max_lat_accel, \
-           float(Decimal(self.params.get("TorqueFriction", encoding="utf8")) * Decimal('0.01')))
+           float(Decimal(self.params.get("TorqueFriction", encoding="utf8")) * Decimal('0.001')))
 
     trace1.printf1('{}  {}'.format(str_log1, self.str_log2))
 

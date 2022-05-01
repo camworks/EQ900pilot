@@ -4515,7 +4515,7 @@ TorqueFriction::TorqueFriction() : AbstractControl("Friction", "Adjust Friction"
   QObject::connect(&btnminus, &QPushButton::clicked, [=]() {
     auto str = QString::fromStdString(params.get("TorqueFriction"));
     int value = str.toInt();
-    value = value - 1;
+    value = value - 5;
     if (value <= 0) {
       value = 0;
     }
@@ -4527,9 +4527,9 @@ TorqueFriction::TorqueFriction() : AbstractControl("Friction", "Adjust Friction"
  QObject::connect(&btnplus, &QPushButton::clicked, [=]() {
     auto str = QString::fromStdString(params.get("TorqueFriction"));
     int value = str.toInt();
-    value = value + 1;
-    if (value >= 30) {
-      value = 30;
+    value = value + 5;
+    if (value >= 300) {
+      value = 300;
     }
     QString values = QString::number(value);
     params.put("TorqueFriction", values.toStdString());
@@ -4541,7 +4541,7 @@ TorqueFriction::TorqueFriction() : AbstractControl("Friction", "Adjust Friction"
 void TorqueFriction::refresh() {
   auto strs = QString::fromStdString(params.get("TorqueFriction"));
   int valuei = strs.toInt();
-  float valuef = valuei * 0.01;
+  float valuef = valuei * 0.001;
   QString valuefs = QString::number(valuef);
   label.setText(QString::fromStdString(valuefs.toStdString()));
 }
