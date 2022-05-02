@@ -715,7 +715,9 @@ static int bb_ui_draw_measure(UIState *s, const char* bb_value, const char* bb_u
       nvgFontSize(s->vg, (int)(bb_uomFontSize*2.5));
       nvgFillColor(s->vg, bb_uomColor);
       if (custom == 2) {
-        nvgText(s->vg, -15, 0, bb_uom, NULL);
+        nvgFontFace(s->vg, "KaiGenGothicKR-Medium");
+        nvgFontSize(s->vg, (int)(bb_uomFontSize*1.5));
+        nvgText(s->vg, -19, 0, bb_uom, NULL);
       } else {
         nvgText(s->vg, 0, 0, bb_uom, NULL);
       }
@@ -1106,7 +1108,7 @@ static void bb_ui_draw_measures_left(UIState *s, int bb_x, int bb_y, int bb_w ) 
     //char uom_str[6];
     std::string trans_gear_val = "S " + std::to_string(int(scene.gear_step));
     std::string gap = "";
-    NVGcolor val_color = COLOR_OCHRE_ALPHA(200);
+    NVGcolor val_color = COLOR_YELLOW_ALPHA(200);
     NVGcolor uom_color2 = COLOR_WHITE_ALPHA(200);
     if (scene.cruise_gap == 1) {
       uom_color2 = COLOR_RED_ALPHA(240);

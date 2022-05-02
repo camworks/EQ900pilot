@@ -42,8 +42,10 @@ SwitchOpenpilot::SwitchOpenpilot() : ButtonControl("Change Repo/Branch", "", "Ch
               QString as = a.toString(time_format);
               QString cmd1 = "mv /data/openpilot /data/openpilot_" + as;
               QString cmd2 = "git clone -b " + githubbranch + " --single-branch https://github.com/" + githubid + "/" + githubrepo + ".git /data/openpilot";
+              QString cmd3 = "rm -f /data/openpilot_" + as + "/prebuilt";
               QProcess::execute("pkill -f thermald");
               QProcess::execute(cmd1);
+              QProcess::execute(cmd3);
               QProcess::execute(cmd2);
               QProcess::execute("chmod -R g-rwx /data/openpilot");
               QProcess::execute("chmod -R o-rwx /data/openpilot");
