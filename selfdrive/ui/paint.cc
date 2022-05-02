@@ -230,98 +230,6 @@ static void ui_draw_world(UIState *s) {
   nvgResetScissor(s->vg);
 }
 
-// TPMS code added from OPKR
-static void ui_draw_tpms(UIState *s) {
-  UIScene &scene = s->scene;
-  char tpmsFl[64];
-  char tpmsFr[64];
-  char tpmsRl[64];
-  char tpmsRr[64];
-  int viz_tpms_w = 180;
-  int viz_tpms_h = 145;
-  int viz_tpms_x = s->fb_w - viz_tpms_w - bdr_s;
-  int viz_tpms_y = s->fb_h - bdr_s - 295;
-  float maxv = 0;
-  float minv = 300;
-  const Rect rect = {viz_tpms_x, viz_tpms_y, viz_tpms_w, viz_tpms_h};
-  int font_size;
-
-  if (maxv < scene.tpmsPressureFl) {maxv = scene.tpmsPressureFl;}
-  if (maxv < scene.tpmsPressureFr) {maxv = scene.tpmsPressureFr;}
-  if (maxv < scene.tpmsPressureRl) {maxv = scene.tpmsPressureRl;}
-  if (maxv < scene.tpmsPressureRr) {maxv = scene.tpmsPressureRr;}
-  if (minv > scene.tpmsPressureFl) {minv = scene.tpmsPressureFl;}
-  if (minv > scene.tpmsPressureFr) {minv = scene.tpmsPressureFr;}
-  if (minv > scene.tpmsPressureRl) {minv = scene.tpmsPressureRl;}
-  if (minv > scene.tpmsPressureRr) {minv = scene.tpmsPressureRr;}
-
-  // Draw Border
-  ui_draw_rect(s->vg, rect, COLOR_WHITE_ALPHA(100), 7, 20.);
-  // Draw Background
-  if (((maxv - minv) > 3 && scene.tpmsUnit != 2) || ((maxv - minv) > 0.2 && scene.tpmsUnit == 2)) {
-    ui_fill_rect(s->vg, rect, COLOR_RED_ALPHA(80), 20);
-  }
-
-  nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_BASELINE);
-  const int pos_x = viz_tpms_x + (viz_tpms_w / 2);
-  const int pos_y = viz_tpms_y + 40;
-  if (scene.tpmsUnit != 0) {
-    ui_draw_text(s, pos_x, pos_y, (scene.tpmsUnit == 2) ? "TPMS(bar)" : "TPMS(psi)", 45, COLOR_WHITE_ALPHA(180), "sans-regular");
-    snprintf(tpmsFl, sizeof(tpmsFl), "%.1f", scene.tpmsPressureFl);
-    snprintf(tpmsFr, sizeof(tpmsFr), "%.1f", scene.tpmsPressureFr);
-    snprintf(tpmsRl, sizeof(tpmsRl), "%.1f", scene.tpmsPressureRl);
-    snprintf(tpmsRr, sizeof(tpmsRr), "%.1f", scene.tpmsPressureRr);
-    font_size = (scene.tpmsUnit == 2) ? 60 : 55;
-  } else {
-    ui_draw_text(s, pos_x, pos_y, "TPMS(psi)", 45, COLOR_WHITE_ALPHA(180), "sans-regular");
-    snprintf(tpmsFl, sizeof(tpmsFl), "%.0f", scene.tpmsPressureFl);
-    snprintf(tpmsFr, sizeof(tpmsFr), "%.0f", scene.tpmsPressureFr);
-    snprintf(tpmsRl, sizeof(tpmsRl), "%.0f", scene.tpmsPressureRl);
-    snprintf(tpmsRr, sizeof(tpmsRr), "%.0f", scene.tpmsPressureRr);
-    font_size = 65;
-  }
-  if ((scene.tpmsPressureFl < 32 && scene.tpmsUnit != 2) || (scene.tpmsPressureFl < 2.2 && scene.tpmsUnit == 2)) {
-    ui_draw_text(s, pos_x-45, pos_y+45, tpmsFl, font_size, COLOR_YELLOW_ALPHA(scene.tpms_blinkingrate>=60?200:0), "sans-bold");
-  } else if (scene.tpmsPressureFl > 50) {
-    ui_draw_text(s, pos_x-45, pos_y+45, "N/A", 50, COLOR_WHITE_ALPHA(200), "sans-semibold");
-  } else if ((scene.tpmsPressureFl > 45 && scene.tpmsUnit != 2) || (scene.tpmsPressureFl > 2.8 && scene.tpmsUnit == 2)) {
-    ui_draw_text(s, pos_x-45, pos_y+45, tpmsFl, font_size, COLOR_RED, "sans-semibold");
-  } else {
-    ui_draw_text(s, pos_x-45, pos_y+45, tpmsFl, font_size, COLOR_GREEN_ALPHA(200), "sans-semibold");
-  }
-  if ((scene.tpmsPressureFr < 32 && scene.tpmsUnit != 2) || (scene.tpmsPressureFr < 2.2 && scene.tpmsUnit == 2)) {
-    ui_draw_text(s, pos_x+45, pos_y+45, tpmsFr, font_size, COLOR_YELLOW_ALPHA(scene.tpms_blinkingrate>=60?200:0), "sans-bold");
-  } else if (scene.tpmsPressureFr > 50) {
-    ui_draw_text(s, pos_x+45, pos_y+45, "N/A", 50, COLOR_WHITE_ALPHA(200), "sans-semibold");
-  } else if ((scene.tpmsPressureFr > 45 && scene.tpmsUnit != 2) || (scene.tpmsPressureFr > 2.8 && scene.tpmsUnit == 2)) {
-    ui_draw_text(s, pos_x+45, pos_y+45, tpmsFr, font_size, COLOR_RED, "sans-semibold");
-  } else {
-    ui_draw_text(s, pos_x+45, pos_y+45, tpmsFr, font_size, COLOR_GREEN_ALPHA(200), "sans-semibold");
-  }
-  if ((scene.tpmsPressureRl < 32 && scene.tpmsUnit != 2) || (scene.tpmsPressureRl < 2.2 && scene.tpmsUnit == 2)) {
-    ui_draw_text(s, pos_x-45, pos_y+90, tpmsRl, font_size, COLOR_YELLOW_ALPHA(scene.tpms_blinkingrate>=60?200:0), "sans-bold");
-  } else if (scene.tpmsPressureRl > 50) {
-    ui_draw_text(s, pos_x-45, pos_y+90, "N/A", 50, COLOR_WHITE_ALPHA(200), "sans-semibold");
-  } else if ((scene.tpmsPressureRl > 45 && scene.tpmsUnit != 2) || (scene.tpmsPressureRl > 2.8 && scene.tpmsUnit == 2)) {
-    ui_draw_text(s, pos_x-45, pos_y+90, tpmsFr, font_size, COLOR_RED, "sans-semibold");
-  } else {
-    ui_draw_text(s, pos_x-45, pos_y+90, tpmsRl, font_size, COLOR_GREEN_ALPHA(200), "sans-semibold");
-  }
-  if ((scene.tpmsPressureRr < 32 && scene.tpmsUnit != 2) || (scene.tpmsPressureRr < 2.2 && scene.tpmsUnit == 2)) {
-    ui_draw_text(s, pos_x+45, pos_y+90, tpmsRr, font_size, COLOR_YELLOW_ALPHA(scene.tpms_blinkingrate>=60?200:0), "sans-bold");
-  } else if (scene.tpmsPressureRr > 50) {
-    ui_draw_text(s, pos_x+45, pos_y+90, "N/A", 50, COLOR_WHITE_ALPHA(200), "sans-semibold");
-  } else if ((scene.tpmsPressureRr > 45 && scene.tpmsUnit != 2) || (scene.tpmsPressureRr > 2.8 && scene.tpmsUnit == 2)) {
-    ui_draw_text(s, pos_x+45, pos_y+90, tpmsFr, font_size, COLOR_RED, "sans-semibold");
-  } else {
-    ui_draw_text(s, pos_x+45, pos_y+90, tpmsRr, font_size, COLOR_GREEN_ALPHA(200), "sans-semibold");
-  }
-  if (((scene.tpmsPressureFl < 32 || scene.tpmsPressureFr < 32 || scene.tpmsPressureRl < 32 || scene.tpmsPressureRr < 32) && scene.tpmsUnit != 2) || ((scene.tpmsPressureFl < 2.2 || scene.tpmsPressureFr < 2.2 || scene.tpmsPressureRl < 2.2 || scene.tpmsPressureRr < 2.2) && scene.tpmsUnit == 2)){
-    scene.tpms_blinkingrate -= 5;
-    if(scene.tpms_blinkingrate < 0) scene.tpms_blinkingrate = 120;
-  }
-}
-
 static void ui_draw_standstill(UIState *s) {
   const UIScene &scene = s->scene;
 
@@ -729,9 +637,9 @@ static void ui_draw_vision_face(UIState *s) {
 static int bb_ui_draw_measure(UIState *s, const char* bb_value, const char* bb_uom, const char* bb_label,
     int bb_x, int bb_y, int bb_uom_dx,
     NVGcolor bb_valueColor, NVGcolor bb_labelColor, NVGcolor bb_uomColor,
-    int bb_valueFontSize, int bb_labelFontSize, int bb_uomFontSize, bool other)  {
+    int bb_valueFontSize, int bb_labelFontSize, int bb_uomFontSize, int custom)  {
   nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_BASELINE);
-  if (other) {
+  if (custom == 1) {
     int num_value = atoi(bb_value);
     nvgBeginPath(s->vg);
     nvgMoveTo(s->vg, bb_x-80, bb_y+90);
@@ -806,7 +714,11 @@ static int bb_ui_draw_measure(UIState *s, const char* bb_value, const char* bb_u
       nvgFontFace(s->vg, "sans-regular");
       nvgFontSize(s->vg, (int)(bb_uomFontSize*2.5));
       nvgFillColor(s->vg, bb_uomColor);
-      nvgText(s->vg, 0, 0, bb_uom, NULL);
+      if (custom == 2) {
+        nvgText(s->vg, -15, 0, bb_uom, NULL);
+      } else {
+        nvgText(s->vg, 0, 0, bb_uom, NULL);
+      }
       nvgRestore(s->vg);
     }
   }
@@ -814,7 +726,7 @@ static int bb_ui_draw_measure(UIState *s, const char* bb_value, const char* bb_u
 }
 
 static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w ) {
-  const UIScene &scene = s->scene;
+  UIScene &scene = s->scene;
   int bb_rx = bb_x + (int)(bb_w/2);
   int bb_ry = bb_y - 20;
   NVGcolor lab_color = COLOR_WHITE_ALPHA(200);
@@ -844,7 +756,7 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
     bb_ry +=bb_ui_draw_measure(s, cpu_temp_val.c_str(), uom_str, "CPU TEMP",
         bb_rx, bb_ry, bb_uom_dx,
         val_color, lab_color, uom_color,
-        value_fontSize, label_fontSize, uom_fontSize, false);
+        value_fontSize, label_fontSize, uom_fontSize, 0);
   }
   //CPU LOAD
   if (scene.batt_less) {
@@ -864,7 +776,7 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
     bb_ry +=bb_ui_draw_measure(s, cpu_usage_val.c_str(), uom_str, "CPU LOAD",
         bb_rx, bb_ry, bb_uom_dx,
         val_color, lab_color, uom_color,
-        value_fontSize, label_fontSize, uom_fontSize, false);
+        value_fontSize, label_fontSize, uom_fontSize, 0);
   }
   //BAT STAT
   if (!scene.batt_less) {
@@ -896,7 +808,7 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
     bb_ry +=bb_ui_draw_measure(s, bat_temp_val.c_str(), bat_level_val.c_str(), "BAT STAT",
         bb_rx, bb_ry, bb_uom_dx,
         val_color, lab_color, uom_color2,
-        value_fontSize, label_fontSize, uom_fontSize, false);
+        value_fontSize, label_fontSize, uom_fontSize, 0);
   }
   //add Ublox GPS accuracy
   if (scene.gpsAccuracyUblox != 0.00) {
@@ -923,7 +835,7 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
     bb_ry +=bb_ui_draw_measure(s, val_str, uom_str, "GPS PREC",
         bb_rx, bb_ry, bb_uom_dx,
         val_color, lab_color, uom_color,
-        value_fontSize, label_fontSize, uom_fontSize, false);
+        value_fontSize, label_fontSize, uom_fontSize, 0);
   }
   //add altitude
   if (scene.gpsAccuracyUblox != 0.00) {
@@ -935,25 +847,7 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
     bb_ry +=bb_ui_draw_measure(s, val_str, uom_str, "ALTITUDE",
         bb_rx, bb_ry, bb_uom_dx,
         val_color, lab_color, uom_color,
-        value_fontSize, label_fontSize, uom_fontSize, false);
-  }
-  //engine rpm
-  if (scene.engine_rpm < 9998) {
-    //char val_str[16];
-    char uom_str[6];
-    std::string engine_rpm_val = std::to_string(int(scene.engine_rpm));
-    NVGcolor val_color = COLOR_WHITE_ALPHA(200);
-    if(scene.engine_rpm > 2500) {
-      val_color = nvgRGBA(255, 188, 3, 200);
-    }
-    if(scene.engine_rpm > 3500) {
-      val_color = nvgRGBA(255, 0, 0, 200);
-    }
-    snprintf(uom_str, sizeof(uom_str), "%d", scene.gear_step);
-    bb_ry +=bb_ui_draw_measure(s, engine_rpm_val.c_str(), uom_str, "ENG RPM",
-        bb_rx, bb_ry, bb_uom_dx,
-        val_color, lab_color, uom_color,
-        value_fontSize, label_fontSize, uom_fontSize, false);
+        value_fontSize, label_fontSize, uom_fontSize, 0);
   }
 
   //finally draw the frame
@@ -962,6 +856,95 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
   nvgStrokeColor(s->vg, COLOR_WHITE_ALPHA(80));
   nvgStrokeWidth(s->vg, 6);
   nvgStroke(s->vg);
+
+// TPMS code added from OPKR
+  char tpmsFl[64];
+  char tpmsFr[64];
+  char tpmsRl[64];
+  char tpmsRr[64];
+  int viz_tpms_w = 180;
+  int viz_tpms_h = 145;
+  int viz_tpms_x = s->fb_w - viz_tpms_w - bdr_s;
+  int viz_tpms_y = bb_ry + 60;
+  float maxv = 0;
+  float minv = 300;
+  const Rect rect = {viz_tpms_x, viz_tpms_y, viz_tpms_w, viz_tpms_h};
+  int font_size;
+
+  if (maxv < scene.tpmsPressureFl) {maxv = scene.tpmsPressureFl;}
+  if (maxv < scene.tpmsPressureFr) {maxv = scene.tpmsPressureFr;}
+  if (maxv < scene.tpmsPressureRl) {maxv = scene.tpmsPressureRl;}
+  if (maxv < scene.tpmsPressureRr) {maxv = scene.tpmsPressureRr;}
+  if (minv > scene.tpmsPressureFl) {minv = scene.tpmsPressureFl;}
+  if (minv > scene.tpmsPressureFr) {minv = scene.tpmsPressureFr;}
+  if (minv > scene.tpmsPressureRl) {minv = scene.tpmsPressureRl;}
+  if (minv > scene.tpmsPressureRr) {minv = scene.tpmsPressureRr;}
+
+  // Draw Border
+  ui_draw_rect(s->vg, rect, COLOR_WHITE_ALPHA(100), 7, 20.);
+  // Draw Background
+  if (((maxv - minv) > 3 && scene.tpmsUnit != 2) || ((maxv - minv) > 0.2 && scene.tpmsUnit == 2)) {
+    ui_fill_rect(s->vg, rect, COLOR_RED_ALPHA(80), 20);
+  }
+
+  nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_BASELINE);
+  const int pos_x = viz_tpms_x + (viz_tpms_w / 2);
+  const int pos_y = viz_tpms_y + 40;
+  if (scene.tpmsUnit != 0) {
+    ui_draw_text(s, pos_x, pos_y, (scene.tpmsUnit == 2) ? "TPMS(bar)" : "TPMS(psi)", 45, COLOR_WHITE_ALPHA(180), "sans-regular");
+    snprintf(tpmsFl, sizeof(tpmsFl), "%.1f", scene.tpmsPressureFl);
+    snprintf(tpmsFr, sizeof(tpmsFr), "%.1f", scene.tpmsPressureFr);
+    snprintf(tpmsRl, sizeof(tpmsRl), "%.1f", scene.tpmsPressureRl);
+    snprintf(tpmsRr, sizeof(tpmsRr), "%.1f", scene.tpmsPressureRr);
+    font_size = (scene.tpmsUnit == 2) ? 60 : 55;
+  } else {
+    ui_draw_text(s, pos_x, pos_y, "TPMS(psi)", 45, COLOR_WHITE_ALPHA(180), "sans-regular");
+    snprintf(tpmsFl, sizeof(tpmsFl), "%.0f", scene.tpmsPressureFl);
+    snprintf(tpmsFr, sizeof(tpmsFr), "%.0f", scene.tpmsPressureFr);
+    snprintf(tpmsRl, sizeof(tpmsRl), "%.0f", scene.tpmsPressureRl);
+    snprintf(tpmsRr, sizeof(tpmsRr), "%.0f", scene.tpmsPressureRr);
+    font_size = 65;
+  }
+  if ((scene.tpmsPressureFl < 32 && scene.tpmsUnit != 2) || (scene.tpmsPressureFl < 2.2 && scene.tpmsUnit == 2)) {
+    ui_draw_text(s, pos_x-45, pos_y+45, tpmsFl, font_size, COLOR_YELLOW_ALPHA(scene.tpms_blinkingrate>=60?200:0), "sans-bold");
+  } else if (scene.tpmsPressureFl > 50) {
+    ui_draw_text(s, pos_x-45, pos_y+45, "N/A", 50, COLOR_WHITE_ALPHA(200), "sans-semibold");
+  } else if ((scene.tpmsPressureFl > 45 && scene.tpmsUnit != 2) || (scene.tpmsPressureFl > 2.8 && scene.tpmsUnit == 2)) {
+    ui_draw_text(s, pos_x-45, pos_y+45, tpmsFl, font_size, COLOR_RED, "sans-semibold");
+  } else {
+    ui_draw_text(s, pos_x-45, pos_y+45, tpmsFl, font_size, COLOR_GREEN_ALPHA(200), "sans-semibold");
+  }
+  if ((scene.tpmsPressureFr < 32 && scene.tpmsUnit != 2) || (scene.tpmsPressureFr < 2.2 && scene.tpmsUnit == 2)) {
+    ui_draw_text(s, pos_x+45, pos_y+45, tpmsFr, font_size, COLOR_YELLOW_ALPHA(scene.tpms_blinkingrate>=60?200:0), "sans-bold");
+  } else if (scene.tpmsPressureFr > 50) {
+    ui_draw_text(s, pos_x+45, pos_y+45, "N/A", 50, COLOR_WHITE_ALPHA(200), "sans-semibold");
+  } else if ((scene.tpmsPressureFr > 45 && scene.tpmsUnit != 2) || (scene.tpmsPressureFr > 2.8 && scene.tpmsUnit == 2)) {
+    ui_draw_text(s, pos_x+45, pos_y+45, tpmsFr, font_size, COLOR_RED, "sans-semibold");
+  } else {
+    ui_draw_text(s, pos_x+45, pos_y+45, tpmsFr, font_size, COLOR_GREEN_ALPHA(200), "sans-semibold");
+  }
+  if ((scene.tpmsPressureRl < 32 && scene.tpmsUnit != 2) || (scene.tpmsPressureRl < 2.2 && scene.tpmsUnit == 2)) {
+    ui_draw_text(s, pos_x-45, pos_y+90, tpmsRl, font_size, COLOR_YELLOW_ALPHA(scene.tpms_blinkingrate>=60?200:0), "sans-bold");
+  } else if (scene.tpmsPressureRl > 50) {
+    ui_draw_text(s, pos_x-45, pos_y+90, "N/A", 50, COLOR_WHITE_ALPHA(200), "sans-semibold");
+  } else if ((scene.tpmsPressureRl > 45 && scene.tpmsUnit != 2) || (scene.tpmsPressureRl > 2.8 && scene.tpmsUnit == 2)) {
+    ui_draw_text(s, pos_x-45, pos_y+90, tpmsFr, font_size, COLOR_RED, "sans-semibold");
+  } else {
+    ui_draw_text(s, pos_x-45, pos_y+90, tpmsRl, font_size, COLOR_GREEN_ALPHA(200), "sans-semibold");
+  }
+  if ((scene.tpmsPressureRr < 32 && scene.tpmsUnit != 2) || (scene.tpmsPressureRr < 2.2 && scene.tpmsUnit == 2)) {
+    ui_draw_text(s, pos_x+45, pos_y+90, tpmsRr, font_size, COLOR_YELLOW_ALPHA(scene.tpms_blinkingrate>=60?200:0), "sans-bold");
+  } else if (scene.tpmsPressureRr > 50) {
+    ui_draw_text(s, pos_x+45, pos_y+90, "N/A", 50, COLOR_WHITE_ALPHA(200), "sans-semibold");
+  } else if ((scene.tpmsPressureRr > 45 && scene.tpmsUnit != 2) || (scene.tpmsPressureRr > 2.8 && scene.tpmsUnit == 2)) {
+    ui_draw_text(s, pos_x+45, pos_y+90, tpmsFr, font_size, COLOR_RED, "sans-semibold");
+  } else {
+    ui_draw_text(s, pos_x+45, pos_y+90, tpmsRr, font_size, COLOR_GREEN_ALPHA(200), "sans-semibold");
+  }
+  if (((scene.tpmsPressureFl < 32 || scene.tpmsPressureFr < 32 || scene.tpmsPressureRl < 32 || scene.tpmsPressureRr < 32) && scene.tpmsUnit != 2) || ((scene.tpmsPressureFl < 2.2 || scene.tpmsPressureFr < 2.2 || scene.tpmsPressureRl < 2.2 || scene.tpmsPressureRr < 2.2) && scene.tpmsUnit == 2)){
+    scene.tpms_blinkingrate -= 5;
+    if(scene.tpms_blinkingrate < 0) scene.tpms_blinkingrate = 120;
+  }
 }
 
 static void bb_ui_draw_measures_left(UIState *s, int bb_x, int bb_y, int bb_w ) {
@@ -1004,7 +987,7 @@ static void bb_ui_draw_measures_left(UIState *s, int bb_x, int bb_y, int bb_w ) 
     bb_ry +=bb_ui_draw_measure(s, val_str, uom_str, "REL DIST",
         bb_rx, bb_ry, bb_uom_dx,
         val_color, lab_color, uom_color,
-        value_fontSize, label_fontSize, uom_fontSize, false);
+        value_fontSize, label_fontSize, uom_fontSize, 0);
   }
   //add visual radar relative speed
   if (true) {
@@ -1033,7 +1016,7 @@ static void bb_ui_draw_measures_left(UIState *s, int bb_x, int bb_y, int bb_w ) 
     bb_ry +=bb_ui_draw_measure(s, val_str, uom_str, "REL SPD",
         bb_rx, bb_ry, bb_uom_dx,
         val_color, lab_color, uom_color,
-        value_fontSize, label_fontSize, uom_fontSize, false);
+        value_fontSize, label_fontSize, uom_fontSize, 0);
   }
   //add steering angle
   if (true) {
@@ -1056,7 +1039,7 @@ static void bb_ui_draw_measures_left(UIState *s, int bb_x, int bb_y, int bb_w ) 
     bb_ry +=bb_ui_draw_measure(s, val_str, uom_str, "STR ANG",
         bb_rx, bb_ry, bb_uom_dx,
         val_color, lab_color, uom_color,
-        value_fontSize, label_fontSize, uom_fontSize, false);
+        value_fontSize, label_fontSize, uom_fontSize, 0);
   }
 
   //add steerratio from lateralplan
@@ -1073,30 +1056,74 @@ static void bb_ui_draw_measures_left(UIState *s, int bb_x, int bb_y, int bb_w ) 
     bb_ry +=bb_ui_draw_measure(s, val_str, uom_str, "SteerRatio",
         bb_rx, bb_ry, bb_uom_dx,
         val_color, lab_color, uom_color,
-        value_fontSize, label_fontSize, uom_fontSize, false);
+        value_fontSize, label_fontSize, uom_fontSize, 0);
   }
 
-  //cruise gap
-  if (scene.longitudinal_control && scene.radar_long_helper < 2) {
-    char val_str[16];
-    char uom_str[6];
-    NVGcolor val_color = COLOR_WHITE_ALPHA(200);
-    if (scene.controls_state.getEnabled()) {
-      if (scene.cruise_gap == scene.dynamic_tr_mode) {
-        snprintf(val_str, sizeof(val_str), "AUT");
-        snprintf(uom_str, sizeof(uom_str), "%.2f",(scene.dynamic_tr_value));
-      } else {
-        snprintf(val_str, sizeof(val_str), "%d",(scene.cruise_gap));
-        snprintf(uom_str, sizeof(uom_str), "S");
-      }
+  // //engine rpm
+  // if (scene.engine_rpm < 9998) {
+  //   //char val_str[16];
+  //   char uom_str[6];
+  //   std::string engine_rpm_val = std::to_string(int(scene.engine_rpm));
+  //   NVGcolor val_color = COLOR_WHITE_ALPHA(200);
+  //   if(scene.engine_rpm > 2500) {
+  //     val_color = nvgRGBA(255, 188, 3, 200);
+  //   }
+  //   if(scene.engine_rpm > 3500) {
+  //     val_color = nvgRGBA(255, 0, 0, 200);
+  //   }
+  //   snprintf(uom_str, sizeof(uom_str), "%d", scene.gear_step);
+  //   bb_ry +=bb_ui_draw_measure(s, engine_rpm_val.c_str(), uom_str, "ENG RPM",
+  //       bb_rx, bb_ry, bb_uom_dx,
+  //       val_color, lab_color, uom_color,
+  //       value_fontSize, label_fontSize, uom_fontSize, 1);
+  // }
+
+  // //cruise gap
+  // if (scene.longitudinal_control && scene.radar_long_helper < 2) {
+  //   char val_str[16];
+  //   char uom_str[6];
+  //   NVGcolor val_color = COLOR_WHITE_ALPHA(200);
+  //   if (scene.controls_state.getEnabled()) {
+  //     if (scene.cruise_gap == scene.dynamic_tr_mode) {
+  //       snprintf(val_str, sizeof(val_str), "AUT");
+  //       snprintf(uom_str, sizeof(uom_str), "%.2f",(scene.dynamic_tr_value));
+  //     } else {
+  //       snprintf(val_str, sizeof(val_str), "%d",(scene.cruise_gap));
+  //       snprintf(uom_str, sizeof(uom_str), "S");
+  //     }
+  //   } else {
+  //     snprintf(val_str, sizeof(val_str), "-");
+  //     snprintf(uom_str, sizeof(uom_str), "");
+  //   }
+  //   bb_ry +=bb_ui_draw_measure(s, val_str, uom_str, "Cruise Gap",
+  //       bb_rx, bb_ry, bb_uom_dx,
+  //       val_color, lab_color, uom_color,
+  //       value_fontSize, label_fontSize, uom_fontSize, 0);
+  // }
+
+  if (0 < scene.gear_step && scene.gear_step < 9) {
+    //char val_str[16];
+    //char uom_str[6];
+    std::string trans_gear_val = "S " + std::to_string(int(scene.gear_step));
+    std::string gap = "";
+    NVGcolor val_color = COLOR_OCHRE_ALPHA(200);
+    NVGcolor uom_color2 = COLOR_WHITE_ALPHA(200);
+    if (scene.cruise_gap == 1) {
+      uom_color2 = COLOR_RED_ALPHA(240);
+      gap = "■";
+    } else if (scene.cruise_gap == 2) {
+      uom_color2 = COLOR_OCHRE_ALPHA(220);
+      gap = "■■";
+    } else if (scene.cruise_gap == 3) {
+      uom_color2 = COLOR_GREEN_ALPHA(200);
+      gap = "■■■";
     } else {
-      snprintf(val_str, sizeof(val_str), "-");
-      snprintf(uom_str, sizeof(uom_str), "");
+      gap = "■■■■";
     }
-    bb_ry +=bb_ui_draw_measure(s, val_str, uom_str, "Cruise Gap",
+    bb_ry +=bb_ui_draw_measure(s, trans_gear_val.c_str(), gap.c_str(), "GEAR",
         bb_rx, bb_ry, bb_uom_dx,
-        val_color, lab_color, uom_color,
-        value_fontSize, label_fontSize, uom_fontSize, false);
+        val_color, lab_color, uom_color2,
+        value_fontSize, label_fontSize, uom_fontSize, 2);
   }
 
   //finally draw the frame
@@ -1397,7 +1424,6 @@ static void ui_draw_vision_header(UIState *s) {
   ui_draw_vision_event(s);
   if (!s->scene.comma_stock_ui) {
     bb_ui_draw_UI(s);
-    ui_draw_tpms(s);
     if (s->scene.controls_state.getEnabled()) {
       ui_draw_standstill(s);
     }
