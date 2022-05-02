@@ -663,6 +663,12 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
                                             "../assets/offroad/icon_shell.png",
                                             this));
 
+  toggles.append(new ParamControl("ShowGearUI",
+                                            "Show Gear UI",
+                                            "",
+                                            "../assets/offroad/icon_shell.png",
+                                            this));  // boxkon
+
   toggles.append(new ParamControl("ShowEngRPMUI",
                                             "Show EngRPM UI",
                                             "",

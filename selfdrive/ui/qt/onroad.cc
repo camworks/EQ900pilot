@@ -459,7 +459,10 @@ void NvgWindow::drawHud(QPainter &p) {
   drawRestArea(p);
   drawTurnSignals(p);
   drawGpsStatus(p);
-  drawCurrentGear(p);
+
+  if(s->show_gear)
+    drawCurrentGear(p);
+
   if(s->show_engrpm)  //tenesi
     drawEngRpm(p);
 

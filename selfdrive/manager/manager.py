@@ -60,6 +60,7 @@ def manager_init() -> None:
     ("DisableOpFcw", "0"),
     ("ShowDebugUI", "0"),
     ("NewRadarInterface", "0"),
+    ("ShowGearUI", "0"), # boxkon
     ("ShowEngRPMUI", "0"), # tenesi
   ]
   if not PC:
