@@ -145,6 +145,9 @@ class DriverStatus():
     self.second3 = 0.0
     self.second4 = 0.0
 
+    self.user_distracted_count = 0
+    self.user_distracted = False
+
     self._set_timers(active_monitoring=True)
 
   def _set_timers(self, active_monitoring):
@@ -320,6 +323,7 @@ class DriverStatus():
         self.awareness_passive = min(self.awareness_passive + self.step_change, 1.)
       # don't display alert banner when awareness is recovering and has cleared orange
       if self.awareness > self.threshold_prompt:
+        self.user_distracted = False
         return
 
     standstill_exemption = standstill and self.awareness - self.step_change <= self.threshold_prompt
@@ -341,6 +345,12 @@ class DriverStatus():
     elif self.awareness <= self.threshold_prompt:
       # prompt orange alert
       if self.active_monitoring_mode and car_speed > 1:
+        if self.monitoring_mode and not self.user_distracted:
+          self.user_distracted_count += 1
+          self.user_distracted = True
+          if self.user_distracted_count > 2:
+            self.user_distracted_count = 0
+            Params().put_bool("OpkrWakeUp", True)
         alert = EventName.promptDriverDistracted
     elif self.awareness <= self.threshold_pre:
       # pre green alert

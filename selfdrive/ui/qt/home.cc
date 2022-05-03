@@ -510,6 +510,10 @@ void HomeWindow::mousePressEvent(QMouseEvent* e) {
     QUIState::ui_state.scene.touched2 = true;
     QTimer::singleShot(500, []() { QUIState::ui_state.scene.touched2 = false; });
   }
+
+  if (QUIState::ui_state.scene.monitoring_mode) {
+    Params().putBool("OpkrWakeUp", false);
+  }
 }
 
 // OffroadHome: the offroad home page
