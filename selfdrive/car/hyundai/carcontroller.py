@@ -825,7 +825,8 @@ class CarController():
     # str_log3 = 'ST1/ST2={}/{} CI/D={}/{:.1f} TM/D/V={:03.0f}/{:03.0f}/{:03.0f}'.format(int(self.sm['radarState'].leadOne.status), int(self.sm['radarState'].leadTwo.status), \
     #  int(self.NC.cut_in), (self.sm['radarState'].leadOne.dRel - self.sm['radarState'].leadTwo.dRel), self.NC.cut_in_run_timer, self.sm['radarState'].leadOne.dRel, (self.sm['radarState'].leadOne.vRel * CV.MS_TO_KPH * 0.45))
     # trace1.printf3('{}'.format(str_log3))
-    trace1.printf3('{}'.format(v_speeds))
+    v_speed_out = ' '.join(map(str, v_speeds))
+    trace1.printf3('{:s}'.format(v_speed_out))
 
     self.cc_timer += 1
     if self.cc_timer > 100:
