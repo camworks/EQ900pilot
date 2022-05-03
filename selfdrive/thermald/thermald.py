@@ -446,13 +446,13 @@ def thermald_thread() -> NoReturn:
       if started_ts is None:
         started_ts = sec_since_boot()
         started_seen = True
-       if params.get_bool("OpkrWakeUp") and not wakeup_running:
-         wakeup_running = True
-         subprocess.Popen([mediaplayer + 'mediaplayer', '/data/openpilot/selfdrive/assets/addon/sound/wakeup.mp3'], shell = False, stdin=None, stdout=None, stderr=None, env = env, close_fds=True)
-       elif wakeup_running:
-         if not params.get_bool("OpkrWakeUp"):
-           wakeup_running = False
-           pass
+      if params.get_bool("OpkrWakeUp") and not wakeup_running:
+        wakeup_running = True
+        subprocess.Popen([mediaplayer + 'mediaplayer', '/data/openpilot/selfdrive/assets/addon/sound/wakeup.mp3'], shell = False, stdin=None, stdout=None, stderr=None, env = env, close_fds=True)
+      elif wakeup_running:
+        if not params.get_bool("OpkrWakeUp"):
+          wakeup_running = False
+          pass
     else:
       if onroad_conditions["ignition"] and (startup_conditions != startup_conditions_prev):
         cloudlog.event("Startup blocked", startup_conditions=startup_conditions, onroad_conditions=onroad_conditions)
