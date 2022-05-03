@@ -502,7 +502,7 @@ def thermald_thread() -> NoReturn:
       hotspot_run = True
 
     opkrwakeup = params.get_bool("OpkrWakeUp")
-    rcount = str(randint(1, 4))
+    rcount = str(randint(1, 5))
     cmd1 = '/data/openpilot/selfdrive/assets/addon/sound/wakeup_' + rcount + '.wav'
     if opkrwakeup and not wakeuprunning:
       wakeuprunning = True
