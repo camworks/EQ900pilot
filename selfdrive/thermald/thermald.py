@@ -26,6 +26,8 @@ from selfdrive.swaglog import cloudlog
 from selfdrive.thermald.power_monitoring import PowerMonitoring
 from selfdrive.version import terms_version, training_version
 
+from random import randint
+
 FW_SIGNATURE = get_expected_signature()
 
 ThermalStatus = log.DeviceState.ThermalStatus
@@ -237,7 +239,7 @@ def thermald_thread() -> NoReturn:
   c2withCommaPower = params.get_bool("C2WithCommaPower")
 
   is_openpilot_dir = True
-  wakeup_running = 0
+  wakeuprunning = False
 
   while 1:
     ts = sec_since_boot()
@@ -499,14 +501,17 @@ def thermald_thread() -> NoReturn:
       os.system("service call wifi 37 i32 0 i32 1 &")
       hotspot_run = True
 
-    # opkr_wakeup = params.get_bool("OpkrWakeUp")
-    # if opkr_wakeup and wakeup_running == 0:
-    #   wakeup_running = 1
-    #   subprocess.Popen([mediaplayer + 'mediaplayer', '/data/openpilot/selfdrive/assets/addon/sound/wakeup.wav'], shell = False, stdin=None, stdout=None, stderr=None, env = env, close_fds=True)
-    # elif wakeup_running == 1:
-    #   if not opkr_wakeup:
-    #     wakeup_running = 0
-    #     pass
+    opkrwakeup = params.get_bool("OpkrWakeUp")
+    rcount = str(randint(1, 4))
+    cmd1 = '/data/openpilot/selfdrive/assets/addon/sound/wakeup_' + rcount + '.wav'
+    if opkrwakeup and not wakeuprunning:
+      wakeuprunning = True
+      subprocess.Popen([mediaplayer + 'mediaplayer', cmd1], shell = False, stdin=None, stdout=None, stderr=None, env = env, close_fds=True)
+    elif wakeuprunning:
+      if not opkrwakeup:
+        wakeuprunning = False
+        os.system("pkill -f mediaplayer")
+
     # Offroad power monitoring
     power_monitor.calculate(pandaState)
     msg.deviceState.offroadPowerUsageUwh = power_monitor.get_power_used()
