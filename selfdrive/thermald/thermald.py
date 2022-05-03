@@ -237,7 +237,7 @@ def thermald_thread() -> NoReturn:
   c2withCommaPower = params.get_bool("C2WithCommaPower")
 
   is_openpilot_dir = True
-  wakeup_running = False
+  wakeup_running = 0
 
   while 1:
     ts = sec_since_boot()
@@ -442,16 +442,17 @@ def thermald_thread() -> NoReturn:
       HARDWARE.set_power_save(not should_start)
 
     if should_start:
+      print("Running Openpilot")
       off_ts = None
       if started_ts is None:
         started_ts = sec_since_boot()
         started_seen = True
-      if params.get_bool("OpkrWakeUp") and not wakeup_running:
-        wakeup_running = True
+      if params.get_bool("OpkrWakeUp") and wakeup_running == 0:
+        wakeup_running = 1
         subprocess.Popen([mediaplayer + 'mediaplayer', '/data/openpilot/selfdrive/assets/addon/sound/wakeup.wav'], shell = False, stdin=None, stdout=None, stderr=None, env = env, close_fds=True)
-      elif wakeup_running:
+      elif wakeup_running == 1:
         if not params.get_bool("OpkrWakeUp"):
-          wakeup_running = False
+          wakeup_running = 0
           pass
     else:
       if onroad_conditions["ignition"] and (startup_conditions != startup_conditions_prev):
