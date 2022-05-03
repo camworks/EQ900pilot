@@ -402,7 +402,7 @@ struct CarControl {
     rightLaneDepart @8: Bool;
     leftLaneDepart @9: Bool;
     vFuture @10:Float32;
-	vSpeeds @11 :List(Int32);
+    vSpeeds @11 :List(Int32);
 
     enum VisualAlert {
       # these are the choices from the Honda
