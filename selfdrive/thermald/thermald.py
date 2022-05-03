@@ -446,14 +446,6 @@ def thermald_thread() -> NoReturn:
       if started_ts is None:
         started_ts = sec_since_boot()
         started_seen = True
-      if params.get_bool("OpkrWakeUp") and wakeup_running == 0:
-        wakeup_running = 1
-        subprocess.Popen([mediaplayer + 'mediaplayer', '/data/openpilot/selfdrive/assets/addon/sound/wakeup.wav'], shell = False, stdin=None, stdout=None, stderr=None, env = env, close_fds=True)
-      elif wakeup_running == 1:
-        if not params.get_bool("OpkrWakeUp"):
-          wakeup_running = 0
-          pass
-      print('{}  {}'.format(wakeup_running, params.get_bool("OpkrWakeUp")))
     else:
       if onroad_conditions["ignition"] and (startup_conditions != startup_conditions_prev):
         cloudlog.event("Startup blocked", startup_conditions=startup_conditions, onroad_conditions=onroad_conditions)
@@ -507,6 +499,15 @@ def thermald_thread() -> NoReturn:
       os.system("service call wifi 37 i32 0 i32 1 &")
       hotspot_run = True
 
+    opkr_wakeup = params.get_bool("PutPrebuiltOn")
+    if opkr_wakeup and wakeup_running == 0:
+      wakeup_running = 1
+      subprocess.Popen([mediaplayer + 'mediaplayer', '/data/openpilot/selfdrive/assets/addon/sound/wakeup.wav'], shell = False, stdin=None, stdout=None, stderr=None, env = env, close_fds=True)
+    elif wakeup_running == 1:
+      if not opkr_wakeup:
+        wakeup_running = 0
+        pass
+    print('{}  {}'.format(wakeup_running, opkr_wakeup))
     # Offroad power monitoring
     power_monitor.calculate(pandaState)
     msg.deviceState.offroadPowerUsageUwh = power_monitor.get_power_used()
