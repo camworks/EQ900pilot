@@ -746,15 +746,13 @@ class Controls:
     hudControl.rightLaneVisible = True
     hudControl.leftLaneVisible = True
 
-    speeds = self.sm['longitudinalPlan'].speeds
+    speeds = self.sm['longitudinalPlan'].speeds # 17 lists
     if len(speeds) > 1:
       v_future = speeds[0]
     else:
       v_future = 100.0
     v_future_speed= float((v_future * CV.MS_TO_MPH + 10.0) if CS.isMph else (v_future * CV.MS_TO_KPH))
-    v_op_speeds = [int(round(speeds[i] * CV.MS_TO_MPH)) for i in range(len(speeds))] if CS.isMph else [int(round(speeds[i] * CV.MS_TO_KPH)) for i in range(len(speeds))]
     hudControl.vFuture = v_future_speed
-    hudControl.vSpeeds = v_op_speeds
 
     recent_blinker = (self.sm.frame - self.last_blinker_frame) * DT_CTRL < 5.0  # 5s blinker cooldown
     ldw_allowed = self.is_ldw_enabled and CS.vEgo > LDW_MIN_SPEED and not recent_blinker \

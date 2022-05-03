@@ -198,7 +198,7 @@ class CarController():
     self.sm = messaging.SubMaster(['controlsState', 'radarState', 'longitudinalPlan'])
 
   def update(self, c, enabled, CS, frame, actuators, pcm_cancel_cmd, visual_alert,
-             left_lane, right_lane, left_lane_depart, right_lane_depart, set_speed, lead_visible, v_future, v_speeds):
+             left_lane, right_lane, left_lane_depart, right_lane_depart, set_speed, lead_visible, v_future):
 
     self.vFuture = v_future
     path_plan = self.NC.update_lateralPlan()
@@ -825,8 +825,6 @@ class CarController():
     # str_log3 = 'ST1/ST2={}/{} CI/D={}/{:.1f} TM/D/V={:03.0f}/{:03.0f}/{:03.0f}'.format(int(self.sm['radarState'].leadOne.status), int(self.sm['radarState'].leadTwo.status), \
     #  int(self.NC.cut_in), (self.sm['radarState'].leadOne.dRel - self.sm['radarState'].leadTwo.dRel), self.NC.cut_in_run_timer, self.sm['radarState'].leadOne.dRel, (self.sm['radarState'].leadOne.vRel * CV.MS_TO_KPH * 0.45))
     # trace1.printf3('{}'.format(str_log3))
-    v_speed_out = ' '.join(map(str, v_speeds))
-    trace1.printf3('{:s}'.format(v_speed_out))
 
     self.cc_timer += 1
     if self.cc_timer > 100:
