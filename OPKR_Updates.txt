@@ -5,3 +5,5 @@
   ★★★You must ensure the value again.
 2022-05-02
 - Add transmission gear number and Gruise Gap
+2022-05-03
+- Add wakeup music on unsleep mode
