@@ -360,7 +360,7 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"ShowStopLine", PERSISTENT},
     {"NoSmartMDPS", PERSISTENT},
     {"UserSpecificFeature", PERSISTENT},
-    {"OpkrWakeUp", CLEAR_ON_MANAGER_START | CLEAR_ON_IGNITION_OFF},
+    {"OpkrWakeUp", CLEAR_ON_MANAGER_START},
 };
 
 } // namespace
