@@ -506,10 +506,15 @@ def thermald_thread() -> NoReturn:
       rcount = str(randint(1, 5))
       cmd1 = '/data/openpilot/selfdrive/assets/addon/sound/wakeup_' + rcount + '.wav'
       wakeuprunning = True
+      wakeupstarted = sec_since_boot()
       subprocess.Popen([mediaplayer + 'mediaplayer', cmd1], shell = False, stdin=None, stdout=None, stderr=None, env = env, close_fds=True)
     elif wakeuprunning:
       if not opkrwakeup:
         wakeuprunning = False
+        os.system("pkill -f mediaplayer")
+      elif sec_since_boot() - wakeupstarted > 180:
+        wakeuprunning = False
+        Params().put_bool("OpkrWakeUp", False)
         os.system("pkill -f mediaplayer")
 
     # Offroad power monitoring
