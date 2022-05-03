@@ -442,7 +442,6 @@ def thermald_thread() -> NoReturn:
       HARDWARE.set_power_save(not should_start)
 
     if should_start:
-      print("Running Openpilot")
       off_ts = None
       if started_ts is None:
         started_ts = sec_since_boot()
@@ -454,6 +453,7 @@ def thermald_thread() -> NoReturn:
         if not params.get_bool("OpkrWakeUp"):
           wakeup_running = 0
           pass
+      print('{}  {}'.format(wakeup_running, params.get_bool("OpkrWakeUp")))
     else:
       if onroad_conditions["ignition"] and (startup_conditions != startup_conditions_prev):
         cloudlog.event("Startup blocked", startup_conditions=startup_conditions, onroad_conditions=onroad_conditions)
