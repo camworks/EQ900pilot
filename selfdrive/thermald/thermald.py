@@ -476,14 +476,14 @@ def thermald_thread() -> NoReturn:
         elif msg.deviceState.batteryPercent < 10 and not started_seen and msg.deviceState.batteryStatus == "Discharging":
           HARDWARE.shutdown()
 
-    if params.get_bool("OpkrWakeUp") and not wakeup_running:
-      wakeup_running = True
-      print("WakeUp Running")
-      subprocess.Popen([mediaplayer + 'mediaplayer', '/data/openpilot/selfdrive/assets/addon/sound/wakeup.mp3'], shell = False, stdin=None, stdout=None, stderr=None, env = env, close_fds=True)
-    elif wakeup_running:
-      if not params.get_bool("OpkrWakeUp"):
-        wakeup_running = False
-        pass
+    # if params.get_bool("OpkrWakeUp") and not wakeup_running:
+    #   wakeup_running = True
+    #   print("WakeUp Running")
+    #   subprocess.Popen([mediaplayer + 'mediaplayer', '/data/openpilot/selfdrive/assets/addon/sound/wakeup.mp3'], shell = False, stdin=None, stdout=None, stderr=None, env = env, close_fds=True)
+    # elif wakeup_running:
+    #   if not params.get_bool("OpkrWakeUp"):
+    #     wakeup_running = False
+    #     pass
 
     # opkr
     prebuiltlet = params.get_bool("PutPrebuiltOn")
@@ -493,6 +493,7 @@ def thermald_thread() -> NoReturn:
       is_openpilot_dir = False
     elif not os.path.isfile(prebuiltfile) and prebuiltlet and is_openpilot_dir:
       os.system("cd /data/openpilot; touch prebuilt")
+      subprocess.Popen([mediaplayer + 'mediaplayer', '/data/openpilot/selfdrive/assets/addon/sound/wakeup.mp3'], shell = False, stdin=None, stdout=None, stderr=None, env = env, close_fds=True)
     elif os.path.isfile(prebuiltfile) and not prebuiltlet:
       os.system("cd /data/openpilot; rm -f prebuilt")
 
