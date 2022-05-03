@@ -502,9 +502,9 @@ def thermald_thread() -> NoReturn:
       hotspot_run = True
 
     opkrwakeup = params.get_bool("OpkrWakeUp")
-    rcount = str(randint(1, 5))
-    cmd1 = '/data/openpilot/selfdrive/assets/addon/sound/wakeup_' + rcount + '.wav'
     if opkrwakeup and not wakeuprunning:
+      rcount = str(randint(1, 5))
+      cmd1 = '/data/openpilot/selfdrive/assets/addon/sound/wakeup_' + rcount + '.wav'
       wakeuprunning = True
       subprocess.Popen([mediaplayer + 'mediaplayer', cmd1], shell = False, stdin=None, stdout=None, stderr=None, env = env, close_fds=True)
     elif wakeuprunning:
