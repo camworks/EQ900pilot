@@ -1193,7 +1193,7 @@ static void draw_safetysign(UIState *s) {
       } else if (safety_dist < 10000) {
         snprintf(safetyDist, sizeof(safetyDist), "%.2fkm", safety_dist/1000);
       } else {
-        snprintf(safetyDist, sizeof(safetyDist), "%.1fkm", safety_dist/10000);
+        snprintf(safetyDist, sizeof(safetyDist), "%.1fkm", safety_dist/1000);
       }
       opacity = safety_dist>600 ? 0 : (600 - safety_dist) * 0.425;
     } else {
@@ -1202,7 +1202,7 @@ static void draw_safetysign(UIState *s) {
       } else if (safety_dist < 10000) {
         snprintf(safetyDist, sizeof(safetyDist), "%.2fmi", safety_dist/1000);
       } else {
-        snprintf(safetyDist, sizeof(safetyDist), "%.1fmi", safety_dist/10000);
+        snprintf(safetyDist, sizeof(safetyDist), "%.1fmi", safety_dist/1000);
       }
       opacity = safety_dist>600 ? 0 : (600 - safety_dist) * 0.425;
     }
