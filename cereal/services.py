@@ -49,6 +49,7 @@ services = {
   "gnssMeasurements": (True, 10.),
   "clocks": (True, 1., 1),
   "ubloxRaw": (True, 20.),
+  "gnssMeasurements": (True, 20.),
   "liveLocationKalman": (True, 20., 5),
   "liveParameters": (True, 20., 5),
   "cameraOdometry": (True, 20., 5),

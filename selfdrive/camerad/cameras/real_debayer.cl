@@ -115,7 +115,7 @@ __kernel void debayer10(const __global uchar * in,
   const int y_global_mod = (y_global == 0 || y_global == RGB_HEIGHT - 1) ? -1: 1;
 
   // cache padding
-  if (x_local < 1) {
+  if (x_global >= 1 && x_local < 1) {
     localColOffset = x_local;
     globalColOffset = -1;
     cached[(y_local + 1) * localRowLen + x_local] = val_from_10(in, x_global-x_global_mod, y_global, black_level);
@@ -135,6 +135,11 @@ __kernel void debayer10(const __global uchar * in,
     if (localColOffset != -1) {
       cached[(y_local + 2) * localRowLen + localColOffset] = val_from_10(in, x_global+(x_global_mod*globalColOffset), y_global+y_global_mod, black_level);
     }
+  }
+
+  // don't care
+  if (x_global < 1 || x_global >= RGB_WIDTH - 1 || y_global < 1 || y_global >= RGB_HEIGHT - 1) {
+    return;
   }
 
   // sync
