@@ -75,7 +75,7 @@ class CarInterface(CarInterfaceBase):
       ret.lateralTuning.init('torque')
 
       ret.lateralTuning.torque.useSteeringAngle = True
-      max_lat_accel = 1.8
+      max_lat_accel = 2.0
       ret.lateralTuning.torque.kp = 1.0 / max_lat_accel
       ret.lateralTuning.torque.kf = 1.0 / max_lat_accel
       ret.lateralTuning.torque.ki = 0.25 / max_lat_accel
@@ -309,13 +309,8 @@ class CarInterface(CarInterfaceBase):
       ret.steerRateCost = 0.4
 
       if ret.lateralTuning.which() == 'torque':
-        #ret.disableLateralLiveTuning = True
-        #ret.lateralTuning.torque.kp = 0.63
-        #ret.lateralTuning.torque.ki = 0.15
-        #ret.lateralTuning.torque.kf = 0.31
-
         ret.lateralTuning.torque.useSteeringAngle = True
-        max_lat_accel = 2.2
+        max_lat_accel = 2.9
         ret.lateralTuning.torque.kp = 1.0 / max_lat_accel
         ret.lateralTuning.torque.kf = 1.0 / max_lat_accel
         ret.lateralTuning.torque.ki = 0.25 / max_lat_accel
