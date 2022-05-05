@@ -274,8 +274,8 @@ class nTune():
       torque.use_steering_angle = float(self.config["useSteeringAngle"]) > 0.5
       max_lat_accel = float(self.config["maxLatAccel"])
       torque.pid._k_p = [[0], [1.0 / max_lat_accel]]
-      torque.pid.k_f = 0.9 / max_lat_accel
-      torque.pid._k_i = [[0], [0.02 / max_lat_accel]]
+      torque.pid.k_f = 1.0 / max_lat_accel
+      torque.pid._k_i = [[0], [0.1 / max_lat_accel]]
       torque.pid._k_d = [[0], [float(self.config["kd"])]]
       torque.friction = float(self.config["friction"])
       torque.deadzone = float(self.config["deadzone"])
