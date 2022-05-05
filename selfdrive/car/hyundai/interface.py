@@ -92,8 +92,8 @@ class CarInterface(CarInterfaceBase):
       ret.lateralTuning.hybrid.kd = 0.04
 
     ret.steerRatio = 16.
-    ret.steerActuatorDelay = 0.15
-    ret.steerRateCost = 0.45
+    ret.steerActuatorDelay = 0.2
+    ret.steerRateCost = 0.4
 
     ret.steerLimitTimer = 2.5
 
@@ -104,11 +104,11 @@ class CarInterface(CarInterfaceBase):
     ret.longitudinalTuning.kiV = [0.02, 0.05, 0.09, 0.025]
     ret.longitudinalTuning.kf = 0.9
     ret.longitudinalActuatorDelayLowerBound = 0.3
-    ret.longitudinalActuatorDelayUpperBound = 0.5
+    ret.longitudinalActuatorDelayUpperBound = 0.4
 
     ret.stopAccel = -2.0
     ret.stoppingDecelRate = 0.15  # brake_travel/s while trying to stop
-    ret.vEgoStopping = 0.6
+    ret.vEgoStopping = 0.5
     ret.vEgoStarting = 0.3
 
     # genesis
