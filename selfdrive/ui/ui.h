@@ -96,6 +96,9 @@ typedef struct UIScene {
   mat3 view_from_calib;
   cereal::PandaState::PandaType pandaType;
 
+  // ui add
+  bool steeringPressed, engaged, override;
+
   // Brake on SPD
   bool brakePress;
   bool brakeLights;
