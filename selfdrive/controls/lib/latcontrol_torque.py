@@ -58,7 +58,8 @@ class LatControlTorque(LatControl):
     if CS.vEgo < MIN_STEER_SPEED or not active:
       output_torque = 0.0
       pid_log.active = False
-      self.pid.reset()
+      if not active:
+        self.pid.reset()
       angle_steers_des = 0.0
     else:
       if self.use_steering_angle:
