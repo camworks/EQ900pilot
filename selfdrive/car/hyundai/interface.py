@@ -91,8 +91,8 @@ class CarInterface(CarInterfaceBase):
       ret.lateralTuning.hybrid.kf = 0.006
       ret.lateralTuning.hybrid.kd = 0.04
 
-    ret.steerRatio = 16.
-    ret.steerActuatorDelay = 0.2
+    ret.steerRatio = 16.5
+    ret.steerActuatorDelay = 0.1
     ret.steerRateCost = 0.4
 
     ret.steerLimitTimer = 2.5
