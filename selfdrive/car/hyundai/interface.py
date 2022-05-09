@@ -78,7 +78,7 @@ class CarInterface(CarInterfaceBase):
       max_lat_accel = 2.0
       ret.lateralTuning.torque.kp = 1.0 / max_lat_accel
       ret.lateralTuning.torque.kf = 1.0 / max_lat_accel
-      ret.lateralTuning.torque.ki = 0.25 / max_lat_accel
+      ret.lateralTuning.torque.ki = 0.1 / max_lat_accel
       ret.lateralTuning.torque.friction = 0.01
 
       ret.lateralTuning.torque.kd = 0.0
@@ -134,11 +134,11 @@ class CarInterface(CarInterfaceBase):
       # thanks to 파파
       if ret.lateralTuning.which() == 'torque':
         ret.lateralTuning.torque.useSteeringAngle = True
-        max_lat_accel = 3.0
-        ret.lateralTuning.torque.kp = 2.0 / max_lat_accel
-        ret.lateralTuning.torque.kf = 0.9 / max_lat_accel
-        ret.lateralTuning.torque.ki = 0.02 / max_lat_accel
-        ret.lateralTuning.torque.friction = 0.005
+        max_lat_accel = 2.5
+        ret.lateralTuning.torque.kp = 1.67 / max_lat_accel
+        ret.lateralTuning.torque.kf = 0.75 / max_lat_accel
+        ret.lateralTuning.torque.ki = 0.01 / max_lat_accel
+        ret.lateralTuning.torque.friction = 0.001
         ret.lateralTuning.torque.kd = 0.0
 
     elif candidate == CAR.GENESIS_EQ900_L:
