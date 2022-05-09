@@ -47,7 +47,7 @@ procs = [
   #PythonProcess("statsd", "selfdrive.statsd", persistent=True),
   #PythonProcess("mapd", "selfdrive.mapd.mapd", enabled=not PC, persistent=True),
   # EON only
-  PythonProcess("rtshield", "selfdrive.rtshield", enabled=EON),
+  #PythonProcess("rtshield", "selfdrive.rtshield", enabled=EON),
   #PythonProcess("shutdownd", "selfdrive.hardware.eon.shutdownd", enabled=EON),
   PythonProcess("androidd", "selfdrive.hardware.eon.androidd", enabled=EON, persistent=True),
   #PythonProcess("gpxd", "selfdrive.dragonpilot.gpxd"),
