@@ -66,11 +66,11 @@ class LateralPlanner:
     # Calculate final driving path and set MPC costs
     if self.use_lanelines:
       d_path_xyz = self.LP.get_d_path(v_ego, self.t_idxs, self.path_xyz)
-      self.lat_mpc.set_weights(MPC_COST_LAT.PATH, MPC_COST_LAT.HEADING, MPC_COST_LAT.LAT_JERK)
+      self.lat_mpc.set_weights(MPC_COST_LAT.PATH, MPC_COST_LAT.HEADING, MPC_COST_LAT.LAT_JERK, steer_rate_cost)
     else:
       d_path_xyz = self.path_xyz
       heading_cost = interp(v_ego, [0.0, 5.0, 10.0], [MPC_COST_LAT.HEADING2, MPC_COST_LAT.HEADING, MPC_COST_LAT.HEADING_LL])
-      self.lat_mpc.set_weights(MPC_COST_LAT.PATH, heading_cost, MPC_COST_LAT.LAT_JERK)
+      self.lat_mpc.set_weights(MPC_COST_LAT.PATH, heading_cost, MPC_COST_LAT.LAT_JERK, steer_rate_cost)
 
     d_path_xyz[:, 1] += ntune_common_get('pathOffset')
 
